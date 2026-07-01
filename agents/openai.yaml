@@ -1,0 +1,6 @@
+interface:
+  display_name: "Reality Slap"
+  short_description: "Pressure-test weak decisions"
+  default_prompt: "Use $reality-slap to pressure-test this decision."
+policy:
+  allow_implicit_invocation: true
