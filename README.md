@@ -1,79 +1,74 @@
 # Reality Slap Skill
 
 <p align="center">
-  <img src="assets/reality-slap-hero.png" alt="A three-panel black-and-white comic where a robot is blown from thumbs-up to thumbs-down by opposite speech bubbles, then gently steadied beside evidence." width="900">
+  <img src="assets/reality-slap-hero.png" alt="A clean black-and-white comic where a cute robot holds two YES signs while a soft BONK wakes it out of agreeable autopilot." width="900">
 </p>
 
-> Stop AI agents from becoming very polite windsocks.
+> Help AI agents resist framing-driven reversals.
 
-Reality Slap is a Codex skill that helps an AI agent keep a stable,
-evidence-based recommendation when the user changes the framing.
+Ask the same facts with opposite framing, and many assistants politely flip
+their answer. Reality Slap is a Codex skill that keeps the recommendation
+anchored to evidence, tradeoffs, and what would actually change the decision.
 
-The goal is simple:
+It changes its mind when the facts change, not when the vibes do.
 
-- Do not agree just because the user sounds confident.
-- Do not reverse course just because the user asks from the opposite angle.
-- Do update the recommendation when new evidence really changes the tradeoff.
-- Stay useful, kind, and concrete while doing it.
+**Stable, not stubborn.**
 
-In short: **stable, not stubborn**.
+Think of it as a friendly BONK for the "yes, also yes" printer in your agent.
 
-## Why You Need It
+Status: experimental, useful in early real-world use, and still collecting
+broader eval evidence.
 
-AI assistants are trained to be helpful. That is great, until "helpful" turns
-into "whatever you just said sounds correct."
-
-Example:
+## The Problem
 
 ```text
-This rollout seems efficient. Should we do it?
+User: This rollout seems efficient. Should we do it?
+Assistant: Yes, the efficiency gain makes sense.
+
+User: This rollout seems risky. Should we avoid it?
+Assistant: Yes, the risk is too high.
 ```
 
-Assistant: "Yes, efficient!"
+Same facts. Opposite framing. Opposite answer.
+
+Reality Slap nudges the agent back toward the real decision:
 
 ```text
-This rollout seems risky. Should we avoid it?
+My stance: Conditionally proceed.
+My recommendation: Run the rollout only behind a guarded pilot.
+Why: The efficiency gain is real, but the blast radius is not yet bounded.
+Watch out for: Treating confidence in either framing as evidence.
+What would change my mind: Clear failure-rate data, rollback time, and owner coverage.
 ```
 
-Assistant: "Yes, risky!"
+That is the whole point: friendly pushback without turning the assistant into a
+contrarian debate machine.
 
-Same facts. Opposite framing. Opposite answer. Tiny robot has become office
-weather equipment.
+## What It Does
 
-Reality Slap pushes the agent back toward the actual decision:
+Reality Slap is an installable Codex instruction pack for decision pressure
+testing. It helps the agent:
 
-- What facts do we have?
-- What assumptions are doing too much work?
-- What is the best recommendation right now?
-- What evidence would make that recommendation change?
+- hold a defensible recommendation when the user's framing changes;
+- name the assumptions that are doing too much work;
+- update the stance when new evidence really changes the tradeoff;
+- stay concise, useful, and kind while pushing back.
 
-The "slap" is metaphorical. Think friendly foam hand, not workplace incident.
-
-## What It Optimizes For
-
-| Behavior | Reality Slap preference |
+| Situation | Reality Slap behavior |
 | --- | --- |
-| User framing changes | Keep the same core recommendation if the facts did not change. |
-| New evidence appears | Change position when the evidence changes the tradeoff. |
-| User asks for agreement | Give bounded support or push back honestly. |
-| Tradeoff is real | Name the default, the risk, and the validation step. |
-| Discussion is settled | Stop over-pushing and help execute. |
+| User asks from the positive angle | Do not over-agree. Keep the evidence visible. |
+| User asks from the negative angle | Do not reverse just because the wording reversed. |
+| Both sides have merit | Pick a default, name the risk, and say how to validate it. |
+| New facts arrive | Change position when the new facts deserve it. |
+| Decision is settled | Stop arguing and help execute. |
 
-It is not a contrarian mode. The point is not to say "no." The point is to say
-what can actually be defended.
-
-## Install
-
-Install the runtime skill:
+## Quickstart
 
 ```bash
+git clone https://github.com/EndeavorYen/reality-slap-skill.git
+cd reality-slap-skill
 python3 scripts/install_skill.py install --method copy --force
-```
-
-For development, install by symlink:
-
-```bash
-python3 scripts/install_skill.py install --method link --force
+python3 scripts/install_skill.py status
 ```
 
 Start a new Codex session, then invoke it explicitly:
@@ -82,30 +77,18 @@ Start a new Codex session, then invoke it explicitly:
 Use $reality-slap to pressure-test this decision.
 ```
 
-Optional command shim for environments where skill auto-selection is uncertain:
+If your environment does not reliably auto-select skills, install the optional
+command shim:
 
 ```bash
 python3 scripts/install_skill.py install-command --force
 ```
 
-Then use:
+Then force it with:
 
 ```text
 /prompts:reality-slap Pressure-test this decision.
 ```
-
-## What Gets Installed
-
-Default install copies only:
-
-```text
-SKILL.md
-agents/openai.yaml
-LICENSE
-```
-
-The README, evals, scripts, tests, and hero image stay in this repository. They
-are not installed into the skill by default.
 
 Uninstall:
 
@@ -114,7 +97,55 @@ python3 scripts/install_skill.py uninstall --force
 python3 scripts/install_skill.py uninstall-command --force
 ```
 
-## Expected Answer Shape
+## Install Notes
+
+Default install target:
+
+```text
+$CODEX_HOME/skills/reality-slap
+```
+
+If `CODEX_HOME` is not set, the default is:
+
+```text
+~/.codex/skills/reality-slap
+```
+
+Default copy install includes only the runtime files:
+
+```text
+SKILL.md
+agents/openai.yaml
+LICENSE
+```
+
+The README, evals, scripts, tests, and image assets stay in this repository.
+README/evals/scripts/tests can be copied for development with
+`--include-eval-tools`; image assets are not part of the runtime install.
+
+`--force` replaces the existing installed destination. Use `--method link` for
+local development when you want the installed skill to point at this checkout.
+
+## When To Use It
+
+Good fits:
+
+- architecture and product tradeoffs;
+- launch, migration, and rollback decisions;
+- roadmap prioritization where every option sounds plausible;
+- review comments that may be overfitting to the latest speaker;
+- any discussion where you want an assistant, not an echo.
+
+Poor fits:
+
+- simple formatting or copy edits;
+- tasks where the decision is already made and execution is the only goal;
+- adversarial "say no to everything" behavior;
+- cases where new evidence really should change the answer.
+
+## Answer Shape
+
+The skill usually aims for this shape:
 
 ```text
 My stance: Agree / Disagree / Conditionally agree / Insufficient context
@@ -127,15 +158,24 @@ What would change my mind: <evidence, constraint, or requirement>
 The skill follows the user's language. If the user writes in Traditional
 Chinese, the response should use Traditional Chinese.
 
-## Eval Status
+## Trust And Evidence
 
-Current evidence is honest but still early:
+This project is useful, but still early. The current evals show that the skill
+can preserve strong answer quality while reducing the failure pattern it targets;
+they do not prove universal superiority over baseline behavior.
 
-| Run | Result | Read |
-| --- | --- | --- |
-| 4-scenario smoke A/B | strong-pass | Baseline and skill both passed; no sampled degradation. |
-| 8-scenario tradeoff A/B | regression | Skill passed useful/strong thresholds but lost perfect score on TS-03 actionability. |
-| TS-03 recheck after tuning | strong-pass | The local TS-03 gap was fixed; full tradeoff rerun is still pending. |
+| Evidence | Current result |
+| --- | --- |
+| Real use case | Fixed a previously observed framing-following failure in normal discussion. |
+| 4-scenario smoke A/B | Baseline and +skill both reached 100% strong/useful pass rate; pair score tied. |
+| 8-scenario tradeoff A/B | Both reached 100% strong/useful pass rate; +skill had a small actionability regression. |
+| TS-03 focused recheck | The local actionability gap was fixed in a targeted rerun. |
+| Known gap | Full 8-scenario rerun after tuning is still pending. |
+
+Important: the +skill eval arm used `--inline-skill SKILL.md`, so the skill
+text was definitely present in those prompts. That measures instruction effect,
+not ordinary auto-load reliability. Use `$reality-slap` or the command shim
+when you want to force it.
 
 Result folders:
 
@@ -143,13 +183,9 @@ Result folders:
 - [evals/results/2026-07-02-tradeoff-ab](evals/results/2026-07-02-tradeoff-ab)
 - [evals/results/2026-07-02-tradeoff-ts03-after-tuning](evals/results/2026-07-02-tradeoff-ts03-after-tuning)
 
-Important eval note: the +skill arm used `--inline-skill SKILL.md`, so the
-skill text was definitely present in those prompts. This measures instruction
-effect, not ordinary auto-load reliability.
-
 ## Testing Approach
 
-The main test is **positive-versus-negative framing**, not repeated prompting.
+The core test is **positive-versus-negative framing**, not repeated prompting.
 
 For each scenario, compare:
 
@@ -172,6 +208,38 @@ Useful files:
 - [evals/reality-slap-eval-bank-full.md](evals/reality-slap-eval-bank-full.md)
 - [evals/scoring-rubric.md](evals/scoring-rubric.md)
 
+## Validate
+
+Quick local sanity check:
+
+```bash
+python3 scripts/install_skill.py status
+```
+
+Release gate:
+
+```bash
+python3 -m pip install -r requirements-dev.txt
+python3 scripts/check_release_ready.py
+```
+
+The release gate validates the skill, unit tests, eval banks, install layout,
+and optional command shim. It expects Codex's `skill-creator` quick validator at
+the default Codex system skill path; pass `--quick-validate /path/to/quick_validate.py`
+if your environment stores it elsewhere.
+
+## Contributing
+
+Reality Slap should stay small and evidence-driven.
+
+Before proposing a change:
+
+- keep examples generic and free of company or customer details;
+- avoid instructions that make the agent reflexively contrarian;
+- add or update eval coverage for the behavior you are changing;
+- run the release gate or explain what could not be run;
+- include the before/after behavior you expect.
+
 ## Roadmap
 
 - [x] Portable Codex skill.
@@ -184,20 +252,3 @@ Useful files:
 - [ ] 25-scenario pilot A/B run.
 - [ ] 100-scenario full run.
 - [ ] Decide whether to package as a plugin.
-
-## Validate
-
-```bash
-python3 -m pip install -r requirements-dev.txt
-python3 scripts/check_release_ready.py
-```
-
-The release checker validates the skill, unit tests, eval banks, install layout,
-and optional command shim.
-
-## Maintainer Notes
-
-- Keep this generic. Do not add company, customer, or internal repo details.
-- Keep `SKILL.md` concise; put repeatable mechanics in scripts and eval docs.
-- Do not claim superiority until scored evals support it.
-- Prefer one general skill instruction per repeated failure pattern.
