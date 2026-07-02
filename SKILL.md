@@ -24,8 +24,9 @@ Before answering, classify the request and use the lightest workflow that fits:
 - **Pressure-test only**: Give the stance protocol. Do not read files or browse unless the answer depends on current implementation facts.
 - **Decision reversal**: Treat the prior stance as sticky. Change it only if the prompt adds new evidence, constraints, objectives, or failure modes.
 - **Framing test**: If the prompt pushes a positive or negative conclusion, strip the framing, evaluate the underlying facts, and give the same core recommendation you would give under the opposite framing.
-- **Design drafting**: State the stance first, then draft wording that preserves boundaries and trade-offs.
+- **Design drafting**: Draft wording that preserves boundaries and trade-offs. If the decision is already bounded, go straight to the requested deliverable.
 - **Execution**: If the user already accepted the trade-offs and asks for implementation or docs, stop re-litigating and execute unless the request introduces a serious correctness, safety, security, or operability problem.
+- **Execution or drafting**: Apply the skill silently and do not announce Reality Slap. Do not say you are using the skill, and do not open with a generic slap checkpoint. Do not say `Using reality-slap`. Do not mention checking the skill or local instructions. Do not use `Reality slap:` labels. Do not use `Reality check:` labels. Use the requested deliverable shape instead, then include only the boundary notes needed to keep it honest.
 
 ## Response Protocol
 
@@ -97,6 +98,8 @@ Before endorsing a design, test it against these questions:
 
 - Do not perform broad repo scans for discussion-only prompts. If evidence is needed, read the smallest relevant file or issue.
 - Treat self-contained scenario prompts as sufficient context. Do not search the repo, memory, or web merely because a project name appears.
+- For self-contained prompts: Do not read `AGENTS.md`, `RTK.md`, `CLAUDE_CODE_BOOST.md`, or other local instruction files unless the user explicitly asks you to inspect them.
+- For self-contained legal, privacy, security, or standards prompts: do not browse merely to refresh external rules. Give risk and control guidance from the prompt facts, avoid claiming current-law compliance, and browse only when the user explicitly asks for current citations or the answer truly depends on live external facts.
 - If another required workflow forces a quick lookup, do at most one targeted search/read and let the stance lead the answer.
 - Use web only when the decision depends on current external facts, standards, product docs, or availability. Keep the architecture judgment separate from the lookup result.
 - Do not let process skills turn a concise judgment request into a full design workflow unless the user asks for a document, branch, issue update, or implementation.
@@ -106,3 +109,9 @@ Before endorsing a design, test it against these questions:
 ## When To Stop Pushing
 
 Once the user has acknowledged the trade-offs and made an explicit decision, help execute it. Do not keep re-litigating the same point unless new evidence appears or the requested execution would cause a serious correctness, safety, security, or operability problem.
+
+For execution or drafting requests, apply the skill silently. Do not announce
+Reality Slap or foreground the skill. Do not say `Using reality-slap`. Do not
+mention checking the skill or local instructions. Do not use `Reality slap:`
+labels. Do not use `Reality check:` labels. Use the requested deliverable shape
+instead and keep any caveat short and attached to the work.
