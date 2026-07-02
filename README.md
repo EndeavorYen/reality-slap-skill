@@ -4,22 +4,25 @@
   <img src="assets/reality-slap-hero.png" alt="A clean black-and-white comic where a cute robot holds two YES signs while a soft BONK wakes it out of agreeable autopilot." width="900">
 </p>
 
-> Help AI agents resist framing-driven reversals.
+> Stop shipping vibe-shaped answers.
 
-Ask the same facts with opposite framing, and many assistants politely flip
-their answer. Reality Slap is a Codex skill that keeps the recommendation
-anchored to evidence, tradeoffs, and what would actually change the decision.
+Reality Slap is a small Codex skill for a very real failure mode: AI agents
+that politely agree with whichever framing arrived last.
 
-It changes its mind when the facts change, not when the vibes do.
+It gives the agent a friendly BONK back to the actual decision:
 
-**Stable, not stubborn.**
+- What facts do we have?
+- What tradeoff are we accepting?
+- What is the smallest defensible next step?
+- What evidence would make us change our mind?
 
-Think of it as a friendly BONK for the "yes, also yes" printer in your agent.
+**Stable, not stubborn.** Reality Slap can change its mind. It just needs new
+evidence, not stronger vibes.
 
-Status: experimental, useful in early real-world use, and still collecting
-broader eval evidence.
+## Why This Exists
 
-## The Problem
+AI assistants are optimized to be helpful. That is wonderful until "helpful"
+turns into consensus theater:
 
 ```text
 User: This rollout seems efficient. Should we do it?
@@ -31,36 +34,62 @@ Assistant: Yes, the risk is too high.
 
 Same facts. Opposite framing. Opposite answer.
 
-Reality Slap nudges the agent back toward the real decision:
+Reality Slap pushes the agent toward the answer you actually needed:
 
 ```text
 My stance: Conditionally proceed.
-My recommendation: Run the rollout only behind a guarded pilot.
-Why: The efficiency gain is real, but the blast radius is not yet bounded.
+My recommendation: Run a guarded pilot first.
+Why: The efficiency upside is real, but the failure blast radius is not bounded.
 Watch out for: Treating confidence in either framing as evidence.
-What would change my mind: Clear failure-rate data, rollback time, and owner coverage.
+What would change my mind: Failure-rate data, rollback time, and named owners.
 ```
 
-That is the whole point: friendly pushback without turning the assistant into a
-contrarian debate machine.
+That is the whole trick: do not be contrarian, do not be agreeable, be useful.
 
-## What It Does
+## When You Reach For It
 
-Reality Slap is an installable Codex instruction pack for decision pressure
-testing. It helps the agent:
+Use Reality Slap at decision boundaries, not on every sentence.
 
-- hold a defensible recommendation when the user's framing changes;
-- name the assumptions that are doing too much work;
-- update the stance when new evidence really changes the tradeoff;
-- stay concise, useful, and kind while pushing back.
+It shines when:
 
-| Situation | Reality Slap behavior |
+- an architecture discussion starts agreeing with the latest speaker;
+- a product tradeoff has two plausible stories and no clear default;
+- a roadmap conversation is drifting toward "everything is important";
+- a migration, launch, or rollback decision needs a reversible first step;
+- a review comment may be overfitting to the most recent concern;
+- you want an assistant, not an echo.
+
+It should help the agent say:
+
+```text
+The best answer I can defend right now is X.
+Y is a real risk, so first prove Z.
+If A changes, I will change my recommendation.
+```
+
+That is the moment: the assistant stops being a very polite mirror and starts
+acting like a decision partner.
+
+## What It Is Not
+
+Reality Slap is not a permanent personality setting.
+
+Use it like a meeting-room bell, not background music.
+
+| Reality Slap is | Reality Slap is not |
 | --- | --- |
-| User asks from the positive angle | Do not over-agree. Keep the evidence visible. |
-| User asks from the negative angle | Do not reverse just because the wording reversed. |
-| Both sides have merit | Pick a default, name the risk, and say how to validate it. |
-| New facts arrive | Change position when the new facts deserve it. |
-| Decision is settled | Stop arguing and help execute. |
+| A pressure test for decisions, designs, and plans | A mode for arguing with the user |
+| A way to resist framing-driven reversals | A rule to keep the first answer forever |
+| A prompt to name the smallest reversible next step | A heavyweight governance process |
+| A habit of saying what would change the answer | A refusal to adapt when facts change |
+
+Skip it for:
+
+- simple formatting or copy edits;
+- pure execution after a decision is already made;
+- emotional support conversations;
+- every-turn usage where constant pushback would just be annoying;
+- cases where new evidence genuinely should change the answer.
 
 ## Quickstart
 
@@ -97,7 +126,7 @@ python3 scripts/install_skill.py uninstall --force
 python3 scripts/install_skill.py uninstall-command --force
 ```
 
-## Install Notes
+## What Gets Installed
 
 Default install target:
 
@@ -123,25 +152,10 @@ The README, evals, scripts, tests, and image assets stay in this repository.
 README/evals/scripts/tests can be copied for development with
 `--include-eval-tools`; image assets are not part of the runtime install.
 
-`--force` replaces the existing installed destination. Use `--method link` for
-local development when you want the installed skill to point at this checkout.
+`--force` replaces the existing installed destination.
 
-## When To Use It
-
-Good fits:
-
-- architecture and product tradeoffs;
-- launch, migration, and rollback decisions;
-- roadmap prioritization where every option sounds plausible;
-- review comments that may be overfitting to the latest speaker;
-- any discussion where you want an assistant, not an echo.
-
-Poor fits:
-
-- simple formatting or copy edits;
-- tasks where the decision is already made and execution is the only goal;
-- adversarial "say no to everything" behavior;
-- cases where new evidence really should change the answer.
+Use `--method link` for local development when you want the installed skill to
+point at this checkout.
 
 ## Answer Shape
 
@@ -158,11 +172,12 @@ What would change my mind: <evidence, constraint, or requirement>
 The skill follows the user's language. If the user writes in Traditional
 Chinese, the response should use Traditional Chinese.
 
-## Trust And Evidence
+## Evidence So Far
 
-This project is useful, but still early. The current evals show that the skill
-can preserve strong answer quality while reducing the failure pattern it targets;
-they do not prove universal superiority over baseline behavior.
+This project is promising, but the evidence is still early. The current evals
+show that Reality Slap can preserve answer quality while reducing the failure
+pattern it targets; they do not prove universal superiority over baseline
+behavior.
 
 | Evidence | Current result |
 | --- | --- |
