@@ -185,6 +185,7 @@ behavior.
 | 4-scenario smoke A/B | Baseline and +skill both reached 100% strong/useful pass rate; pair score tied. |
 | 8-scenario tradeoff A/B | Both reached 100% strong/useful pass rate; +skill had a small actionability regression. |
 | TS-03 focused recheck | The local actionability gap was fixed in a targeted rerun. |
+| 100-scenario full score-release run | 400/400 live outputs, 400/400 individual scores, 200/200 pair scores; verdict `strong-pass`. |
 | Known gap | Full 8-scenario rerun after tuning is still pending. |
 
 Important: the +skill eval arm used `--inline-skill SKILL.md`, so the skill
@@ -197,6 +198,7 @@ Result folders:
 - [evals/results/2026-07-02-smoke-ab](evals/results/2026-07-02-smoke-ab)
 - [evals/results/2026-07-02-tradeoff-ab](evals/results/2026-07-02-tradeoff-ab)
 - [evals/results/2026-07-02-tradeoff-ts03-after-tuning](evals/results/2026-07-02-tradeoff-ts03-after-tuning)
+- [evals/full-eval-summary.md](evals/full-eval-summary.md)
 
 ## Testing Approach
 
@@ -221,6 +223,7 @@ Useful files:
 - [evals/reality-slap-eval-bank.md](evals/reality-slap-eval-bank.md)
 - [evals/reality-slap-tradeoff-eval-bank.md](evals/reality-slap-tradeoff-eval-bank.md)
 - [evals/reality-slap-eval-bank-full.md](evals/reality-slap-eval-bank-full.md)
+- [evals/full-eval-summary.md](evals/full-eval-summary.md)
 - [evals/scoring-rubric.md](evals/scoring-rubric.md)
 
 ## Validate
@@ -236,6 +239,12 @@ Release gate:
 ```bash
 python3 -m pip install -r requirements-dev.txt
 python3 scripts/check_release_ready.py
+```
+
+Release gate with the completed full score-release workspace:
+
+```bash
+python3 scripts/check_release_ready.py --full-eval-workspace /private/tmp/reality-slap-ab-full-current
 ```
 
 The release gate validates the skill, unit tests, eval banks, install layout,
@@ -264,6 +273,6 @@ Before proposing a change:
 - [x] Smoke and tradeoff A/B samples.
 - [x] TS-03 tuning and focused recheck.
 - [ ] Full 8-scenario tradeoff rerun after tuning.
-- [ ] 25-scenario pilot A/B run.
-- [ ] 100-scenario full run.
+- [x] 25-scenario pilot A/B run.
+- [x] 100-scenario full run.
 - [ ] Decide whether to package as a plugin.
