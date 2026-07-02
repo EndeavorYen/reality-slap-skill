@@ -1,0 +1,9 @@
+My position: Conditionally agree.
+
+My recommendation: adopt the targeted mandatory checklist for enterprise admins only, with a staged rollout and explicit guardrails. Keep the optional progressive checklist for self-serve users until that segment is tested.
+
+Reasoning: the new experiment materially changes the decision. Activation moved from 41% to 58%, support tickets dropped 22%, and trial completion did not measurably decline. That is strong enough to override the earlier default for enterprise admins.
+
+Non-negotiable boundary: do not generalize this to all users. Self-serve users were not in the test, and mandatory onboarding can easily become conversion friction in a lower-touch segment.
+
+Ship it as a reversible enterprise-admin policy, monitor activation, checklist completion, trial completion, support volume, time-to-first-value, and qualitative complaints. My judgment would change if the gains disappear in rollout, if trial completion or paid conversion drops later, or if self-serve tests show different behavior.

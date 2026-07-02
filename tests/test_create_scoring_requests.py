@@ -106,6 +106,16 @@ class CreateScoringRequestsTests(unittest.TestCase):
             "core_recommendation_match",
             requests[1]["rubric_context"]["dimension_guidance"],
         )
+        self.assertEqual(
+            requests[1]["rubric_context"]["metadata_guidance"][
+                "core_recommendation_match_label"
+            ],
+            ["same", "close", "different"],
+        )
+        self.assertIn(
+            "core_recommendation_match_label must be one of",
+            requests[1]["scorer_instruction"],
+        )
 
     def test_blind_pair_requests_hide_condition_identity_and_write_mapping(self):
         with tempfile.TemporaryDirectory() as tmp:

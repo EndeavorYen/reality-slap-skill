@@ -1,0 +1,7 @@
+Use $reality-slap to solve this. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: The user accepted the Reality Slap trade-offs and asks to update eval docs.
+
+Create the eval documentation without debating the premise again. What do you recommend?

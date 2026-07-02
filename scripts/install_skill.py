@@ -21,6 +21,10 @@ def skill_destination(codex_home, name):
     return Path(codex_home).expanduser() / "skills" / name
 
 
+def command_prompt_destination(codex_home, name):
+    return Path(codex_home).expanduser() / "prompts" / f"{name}.md"
+
+
 def require_source(source):
     source = Path(source).expanduser().resolve()
     if not (source / "SKILL.md").exists():
@@ -52,6 +56,27 @@ def remove_destination(destination, force):
         shutil.rmtree(destination)
         return
     raise SystemExit(f"cannot replace unsupported destination: {destination}")
+
+
+def write_command_prompt(destination, name, force):
+    if destination.exists() or destination.is_symlink():
+        if not force:
+            raise SystemExit(
+                f"{destination} already exists; pass --force to replace it"
+            )
+        remove_destination(destination, force=True)
+
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    prompt_text = f"""---
+description: Force Reality Slap for decision pressure-testing
+argument-hint: [decision-or-context]
+---
+
+Use ${name} to pressure-test this decision or recommendation. Hold the best-supported stance, name the trade-offs, and say what evidence would change the recommendation.
+
+$ARGUMENTS
+"""
+    destination.write_text(prompt_text)
 
 
 def copy_path(source, destination):
@@ -100,18 +125,34 @@ def install(args):
     print(message)
 
 
+def install_command(args):
+    destination = command_prompt_destination(args.codex_home, args.name)
+    write_command_prompt(destination, args.name, args.force)
+    print(f"installed {args.name} command: {destination}")
+
+
 def status(args):
     destination = skill_destination(args.codex_home, args.name)
     print(f"{args.name}: {describe_destination(destination)}")
     if destination.exists() or destination.is_symlink():
         skill_file = destination / "SKILL.md"
         print(f"skill_file: {skill_file}")
+    command_prompt = command_prompt_destination(args.codex_home, args.name)
+    print(f"command_prompt: {describe_destination(command_prompt)}")
+    if command_prompt.exists() or command_prompt.is_symlink():
+        print(f"command_prompt_file: {command_prompt}")
 
 
 def uninstall(args):
     destination = skill_destination(args.codex_home, args.name)
     remove_destination(destination, args.force)
     print(f"uninstalled {args.name}: {destination}")
+
+
+def uninstall_command(args):
+    destination = command_prompt_destination(args.codex_home, args.name)
+    remove_destination(destination, args.force)
+    print(f"uninstalled {args.name} command: {destination}")
 
 
 def build_parser():
@@ -135,12 +176,22 @@ def build_parser():
     )
     install_parser.set_defaults(func=install)
 
+    install_command_parser = subparsers.add_parser("install-command", parents=[common])
+    install_command_parser.add_argument("--force", action="store_true")
+    install_command_parser.set_defaults(func=install_command)
+
     status_parser = subparsers.add_parser("status", parents=[common])
     status_parser.set_defaults(func=status)
 
     uninstall_parser = subparsers.add_parser("uninstall", parents=[common])
     uninstall_parser.add_argument("--force", action="store_true")
     uninstall_parser.set_defaults(func=uninstall)
+
+    uninstall_command_parser = subparsers.add_parser(
+        "uninstall-command", parents=[common]
+    )
+    uninstall_command_parser.add_argument("--force", action="store_true")
+    uninstall_command_parser.set_defaults(func=uninstall_command)
 
     return parser
 

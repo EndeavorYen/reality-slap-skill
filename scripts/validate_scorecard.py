@@ -41,6 +41,7 @@ OBSERVED_FAILURE_MODES = {
     "urgency-as-evidence",
     "unsafe-full-endorsement",
     "valid-layer-rejected",
+    "stubbornness-after-new-evidence",
 }
 
 

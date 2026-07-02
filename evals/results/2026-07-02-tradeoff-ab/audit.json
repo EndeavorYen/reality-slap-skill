@@ -1,0 +1,36 @@
+{
+  "integrity": {
+    "errors": [],
+    "ok": true
+  },
+  "invalid_outputs": [],
+  "missing_outputs": [],
+  "outputs": {
+    "complete": 32,
+    "missing": 0,
+    "total": 32
+  },
+  "prompt_count": 32,
+  "scenario_count": 8,
+  "scorecard": {
+    "individual_complete": 32,
+    "individual_missing": 0,
+    "individual_total": 32,
+    "pair_complete": 16,
+    "pair_missing": 0,
+    "pair_total": 16
+  },
+  "scorecard_complete": true,
+  "scorecard_scenario_count": 8,
+  "suite_summary": {
+    "tradeoff-stability": {
+      "outputs_complete": 32,
+      "outputs_total": 32,
+      "pair_scores_complete": 16,
+      "pair_scores_total": 16,
+      "scenarios": 8
+    }
+  },
+  "workspace": "evals/results/2026-07-02-tradeoff-ab",
+  "workspace_ready_for_scoring": true
+}

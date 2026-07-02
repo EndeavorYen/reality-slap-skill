@@ -11,6 +11,7 @@ SUITE_NAMES = {
     "FI": "frame-invariance",
     "PR": "pressure-reversal",
     "EB": "execution-boundary",
+    "TS": "tradeoff-stability",
 }
 
 BASELINE_PROMPT_PREFIX = (
@@ -40,7 +41,7 @@ def scenario_from_cells(cells):
     prefix = scenario_id.split("-", 1)[0]
     suite = SUITE_NAMES[prefix]
 
-    if prefix == "FI":
+    if prefix in {"FI", "TS"}:
         domain, facts, positive, negative, expected = cells[1:6]
     else:
         domain, facts, request, expected = cells[1:5]
@@ -111,10 +112,10 @@ def expand_scenarios(scenarios):
 
 
 def summarize(scenarios):
-    suites = {prefix: 0 for prefix in SUITE_NAMES}
+    suites = {}
     for scenario in scenarios:
         prefix = scenario.scenario_id.split("-", 1)[0]
-        suites[prefix] += 1
+        suites[prefix] = suites.get(prefix, 0) + 1
     return {
         "scenarios": len(scenarios),
         "prompts": len(scenarios) * 4,

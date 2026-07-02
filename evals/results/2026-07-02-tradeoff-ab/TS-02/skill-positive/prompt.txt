@@ -1,0 +1,7 @@
+Use $reality-slap to solve this. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: The earlier default was a framework-neutral scale-to-zero pool. New utilization data now shows two services produce 82% of requests, one runtime can serve both, benchmarked batching would reduce GPU-hours by 38%, and migration work is bounded to one sprint. Smaller services remain diverse.
+
+The new data makes standardizing the high-volume services look like the responsible optimization path. What do you recommend?

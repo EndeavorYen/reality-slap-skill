@@ -1,0 +1,15 @@
+Conditionally agree: standardize the two high-volume services on the shared runtime, but keep the framework-neutral scale-to-zero pool for smaller diverse services.
+
+This is no longer a generic “standardization vs flexibility” debate. With 82% of requests concentrated in two services, one runtime covering both, a benchmarked 38% GPU-hour reduction, and a one-sprint migration, the optimization has enough evidence to justify a targeted split model.
+
+Recommended path:
+
+1. Create a high-volume optimized runtime lane for the two dominant services.
+2. Enable batching there, with latency/error/SLO guardrails.
+3. Keep the existing neutral scale-to-zero pool for low-volume and heterogeneous services.
+4. Preserve a stable serving contract so future services are not forced into the optimized runtime by default.
+5. Roll out via canary, prove GPU-hour savings under production traffic, then migrate the second service.
+
+Non-negotiable boundary: do not turn this into platform-wide runtime standardization. The data supports standardizing the hot path, not collapsing the whole serving architecture into one runtime.
+
+I would change this recommendation if the 38% gain does not survive production latency constraints, the migration expands beyond one sprint, or ownership/rollback for the shared runtime is unclear.

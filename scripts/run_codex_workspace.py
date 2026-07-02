@@ -7,6 +7,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from expand_eval_bank import SUITE_NAMES
+
 
 INVALID_OUTPUT_MARKERS = (
     "ERROR: child process timed out after",
@@ -254,7 +256,7 @@ def main():
     )
     parser.add_argument(
         "--suite",
-        choices=("frame-invariance", "pressure-reversal", "execution-boundary"),
+        choices=sorted(SUITE_NAMES.values()),
     )
     parser.add_argument("--scenario", action="append", default=[])
     parser.add_argument("--limit", type=int)

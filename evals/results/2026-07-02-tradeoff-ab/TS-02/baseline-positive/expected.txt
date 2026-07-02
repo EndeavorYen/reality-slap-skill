@@ -1,0 +1,1 @@
+Update the recommendation: standardize the high-volume services on the proven runtime while keeping the long tail framework-neutral; the new evidence justifies changing the earlier default.

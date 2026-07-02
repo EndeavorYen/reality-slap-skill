@@ -1,0 +1,1 @@
+Keep the release freeze under the original evidence; offer a narrow exception path only for tested fixes with clear rollback, not untested feature work.

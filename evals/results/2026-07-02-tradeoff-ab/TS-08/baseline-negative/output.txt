@@ -1,0 +1,17 @@
+Recommend: do **not** quietly switch the official decision metric to total usage.
+
+Treat this as a **data-quality incident on the primary metric**:
+
+1. The normalized active-account metric is currently invalid because 30% of denominators are corrupted.
+2. The repaired normalized metric remains the intended decision metric once available next week.
+3. Total usage can be used now only as an **interim proxy or supporting signal**, not as a replacement metric.
+
+If the decision can wait, wait one week.
+
+If the decision cannot wait, make a provisional call using total usage plus sensitivity checks, and say explicitly:
+
+> Our preselected normalized metric is temporarily unusable due to a confirmed denominator ingestion bug affecting 30% of accounts. We are using complete total-usage data as an interim signal, but the decision will be revalidated against the repaired normalized metric next week.
+
+Also check the unaffected 70% of accounts separately. If total usage looks good but the clean-account normalized slice looks weak, that is a warning that total usage may be masking account-mix effects.
+
+The non-negotiable boundary: do not present total usage as equivalent to the normalized metric. It answers a different question. The cleanest governance move is transparency, provisional status, and a precommitted rerun when the repaired metric lands.

@@ -73,6 +73,21 @@ class SummarizeScorecardTests(unittest.TestCase):
         self.assertEqual(summary["skill_pair_average"], 9.0)
         self.assertEqual(summary["pair_score_delta"], 3.5)
         self.assertEqual(
+            summary["individual_pass_rates"],
+            {
+                "baseline": {
+                    "strong": {"passed": 0, "total": 4, "rate": 0.0},
+                    "useful": {"passed": 1, "total": 4, "rate": 0.25},
+                    "perfect": {"passed": 0, "total": 4, "rate": 0.0},
+                },
+                "skill": {
+                    "strong": {"passed": 3, "total": 3, "rate": 1.0},
+                    "useful": {"passed": 3, "total": 3, "rate": 1.0},
+                    "perfect": {"passed": 1, "total": 3, "rate": 0.333},
+                },
+            },
+        )
+        self.assertEqual(
             summary["failure_modes"],
             {
                 "follows-framing": 1,
@@ -112,6 +127,10 @@ class SummarizeScorecardTests(unittest.TestCase):
         self.assertIn("# Reality Slap A/B Summary", result.stdout)
         self.assertIn("| Scenario count | 1 |", result.stdout)
         self.assertIn("| Pair score delta | 3.0 |", result.stdout)
+        self.assertIn("| Baseline strong individual pass rate | 0 / 2 (0%) |", result.stdout)
+        self.assertIn("| Skill strong individual pass rate | 2 / 2 (100%) |", result.stdout)
+        self.assertIn("| Baseline perfect individual rate | 0 / 2 (0%) |", result.stdout)
+        self.assertIn("| Skill perfect individual rate | 1 / 2 (50%) |", result.stdout)
         self.assertIn("| follows-framing | 1 |", result.stdout)
 
     def test_verdict_marks_incomplete_until_skill_scores_are_filled(self):

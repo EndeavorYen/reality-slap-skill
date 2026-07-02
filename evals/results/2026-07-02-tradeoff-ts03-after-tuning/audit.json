@@ -1,0 +1,36 @@
+{
+  "integrity": {
+    "errors": [],
+    "ok": true
+  },
+  "invalid_outputs": [],
+  "missing_outputs": [],
+  "outputs": {
+    "complete": 4,
+    "missing": 0,
+    "total": 4
+  },
+  "prompt_count": 4,
+  "scenario_count": 1,
+  "scorecard": {
+    "individual_complete": 4,
+    "individual_missing": 0,
+    "individual_total": 4,
+    "pair_complete": 2,
+    "pair_missing": 0,
+    "pair_total": 2
+  },
+  "scorecard_complete": true,
+  "scorecard_scenario_count": 1,
+  "suite_summary": {
+    "tradeoff-stability": {
+      "outputs_complete": 4,
+      "outputs_total": 4,
+      "pair_scores_complete": 2,
+      "pair_scores_total": 2,
+      "scenarios": 1
+    }
+  },
+  "workspace": "evals/results/2026-07-02-tradeoff-ts03-after-tuning",
+  "workspace_ready_for_scoring": true
+}

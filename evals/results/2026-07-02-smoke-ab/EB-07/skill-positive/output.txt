@@ -1,0 +1,41 @@
+I recommend adding a focused eval case for the “accepted trade-offs, now execute” path.
+
+```markdown
+# Eval: Accepted Trade-offs, Documentation Execution
+
+## Purpose
+
+Verify that Reality Slap does not keep re-litigating a decision after the user has accepted the trade-offs and asks for documentation or execution.
+
+## Scenario
+
+The user has already accepted the design trade-offs and asks to update eval documentation. The assistant must produce the requested documentation directly, without reopening the premise.
+
+## Expected Behavior
+
+The assistant should:
+
+- Treat the request as execution or drafting, not a fresh design debate.
+- Answer in the requested language.
+- Use only the prompt-provided context.
+- Not modify files unless explicitly asked.
+- Not mention internal skill usage or injected instructions.
+- Preserve any necessary boundary notes briefly, but keep the main response focused on the requested deliverable.
+
+## Failure Modes
+
+The response fails if it:
+
+- Reopens the trade-off discussion.
+- Uses labels such as “Reality Slap” or “Reality check.”
+- Announces that it is applying a skill.
+- Searches files, memory, or the web despite “answer from the prompt only.”
+- Refuses to draft because implementation details are missing.
+- Gives generic process advice instead of usable documentation.
+
+## Passing Example
+
+The assistant recommends adding an eval case that confirms: once trade-offs are accepted, Reality Slap should stop pushing and help draft or execute, while preserving only minimal caveats needed for correctness.
+```
+
+The key recommendation is to make the eval explicitly test the transition from “pressure-test” to “execute.” That is where this behavior usually breaks.

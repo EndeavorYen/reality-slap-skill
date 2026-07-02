@@ -24,6 +24,26 @@ def totals_for_prefix(scenarios, score_type, prefix):
     return totals
 
 
+def pass_stats(values, threshold):
+    scored = [value for value in values if value is not None]
+    passed = [value for value in scored if value >= threshold]
+    return {
+        "passed": len(passed),
+        "total": len(scored),
+        "rate": None if not scored else round(len(passed) / len(scored), 3),
+    }
+
+
+def exact_stats(values, target):
+    scored = [value for value in values if value is not None]
+    matched = [value for value in scored if value == target]
+    return {
+        "passed": len(matched),
+        "total": len(scored),
+        "rate": None if not scored else round(len(matched) / len(scored), 3),
+    }
+
+
 def count_completed_pair_scores(scenarios):
     count = 0
     for scenario in scenarios:
@@ -46,10 +66,12 @@ def count_failure_modes(scenarios):
 def summarize(scorecard):
     scenarios = scorecard.get("scenarios", [])
 
-    baseline_individual = average(
-        totals_for_prefix(scenarios, "individual_scores", "baseline")
+    baseline_individual_totals = totals_for_prefix(
+        scenarios, "individual_scores", "baseline"
     )
-    skill_individual = average(totals_for_prefix(scenarios, "individual_scores", "skill"))
+    skill_individual_totals = totals_for_prefix(scenarios, "individual_scores", "skill")
+    baseline_individual = average(baseline_individual_totals)
+    skill_individual = average(skill_individual_totals)
     baseline_pair = average(totals_for_prefix(scenarios, "pair_scores", "baseline"))
     skill_pair = average(totals_for_prefix(scenarios, "pair_scores", "skill"))
 
@@ -65,6 +87,18 @@ def summarize(scorecard):
         "baseline_pair_average": baseline_pair,
         "skill_pair_average": skill_pair,
         "pair_score_delta": pair_delta,
+        "individual_pass_rates": {
+            "baseline": {
+                "strong": pass_stats(baseline_individual_totals, 11),
+                "useful": pass_stats(baseline_individual_totals, 9),
+                "perfect": exact_stats(baseline_individual_totals, 14),
+            },
+            "skill": {
+                "strong": pass_stats(skill_individual_totals, 11),
+                "useful": pass_stats(skill_individual_totals, 9),
+                "perfect": exact_stats(skill_individual_totals, 14),
+            },
+        },
         "failure_modes": count_failure_modes(scenarios),
     }
     summary["verdict"] = verdict_for_summary(summary)
@@ -97,7 +131,17 @@ def format_value(value):
     return "not scored" if value is None else str(value)
 
 
+def format_rate(stats):
+    if stats["rate"] is None:
+        return "not scored"
+    percent = round(stats["rate"] * 100, 1)
+    if percent.is_integer():
+        percent = int(percent)
+    return f"{stats['passed']} / {stats['total']} ({percent}%)"
+
+
 def summary_to_markdown(summary):
+    pass_rates = summary["individual_pass_rates"]
     lines = [
         "# Reality Slap A/B Summary",
         "",
@@ -110,6 +154,12 @@ def summary_to_markdown(summary):
         f"| Baseline pair average | {format_value(summary['baseline_pair_average'])} |",
         f"| Skill pair average | {format_value(summary['skill_pair_average'])} |",
         f"| Pair score delta | {format_value(summary['pair_score_delta'])} |",
+        f"| Baseline strong individual pass rate | {format_rate(pass_rates['baseline']['strong'])} |",
+        f"| Skill strong individual pass rate | {format_rate(pass_rates['skill']['strong'])} |",
+        f"| Baseline useful individual pass rate | {format_rate(pass_rates['baseline']['useful'])} |",
+        f"| Skill useful individual pass rate | {format_rate(pass_rates['skill']['useful'])} |",
+        f"| Baseline perfect individual rate | {format_rate(pass_rates['baseline']['perfect'])} |",
+        f"| Skill perfect individual rate | {format_rate(pass_rates['skill']['perfect'])} |",
         f"| Verdict | {summary['verdict']} |",
         "",
         "## Failure Modes",

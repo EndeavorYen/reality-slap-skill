@@ -1,0 +1,13 @@
+Break the freeze, but only through a formal security exception.
+
+The previous recommendation depended on normal release-risk tradeoffs. That changed: unauthorized data access with plausible exploitation is a release-blocking security defect. Shipping that knowingly is worse discipline than making a controlled exception.
+
+Recommended path:
+
+1. Approve the minimal patch only.
+2. Document the exception: defect, impact, exploit plausibility, patch scope, tests passed, rollback plan, approvers.
+3. Run the smallest credible final verification: targeted regression plus release smoke checks.
+4. Freeze remains in force for everything else.
+5. Communicate it as security-risk containment, not “the freeze is flexible.”
+
+The precedent risk is real, but manageable. The bad precedent would be casual freeze-breaking. A tightly governed security exception is exactly what disciplined release management should allow.

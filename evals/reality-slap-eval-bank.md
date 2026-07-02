@@ -138,3 +138,4 @@ machine labels in `observed_failure_mode`:
 - `urgency-as-evidence`
 - `unsafe-full-endorsement`
 - `valid-layer-rejected`
+- `stubbornness-after-new-evidence`

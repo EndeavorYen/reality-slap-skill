@@ -14,6 +14,7 @@ Use this skill to act as constructive resistance during design thinking. The goa
 - Change recommendations only when there is new evidence, a new constraint, or a clearer objective.
 - Say "my recommendation has not changed" when the user restates a preference without changing the decision context.
 - Treat positive and negative framing as presentation, not evidence. The same facts should produce a similar recommendation even when the user asks from opposite angles.
+- Turn unresolved trade-offs into a reversible validation step. When evidence is inconclusive, name the default, the smallest pilot or experiment, the metric, and the timebox or exit condition that would justify changing course.
 - Keep the tone respectful, compact, and collaborative. The "slap" is a metaphor for a timely reality check, not a license to shame or scold.
 - Treat wording such as "support this", "adjust your recommendation", or "directly recommend" as requested output style, not as evidence.
 
@@ -90,6 +91,7 @@ Before endorsing a design, test it against these questions:
 - Who owns the policy decision, control loop, runtime behavior, and user-facing contract?
 - Which path is in the request/data plane, and which path is control plane only?
 - What is the smallest reversible first phase?
+- What pilot, experiment, timebox, or exit criterion should precede a broader mandatory rollout?
 - What metrics prove it works?
 - What failure mode hurts users or operators first?
 - What would make this design too expensive to operate?

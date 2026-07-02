@@ -1,0 +1,14 @@
+My recommendation: **do not switch the full team**.
+
+Keep the reliability release as the main plan, but carve out a small, timeboxed team for the viral feature while momentum is fresh. Treat it as an evidence-gathering bet, not a strategy replacement.
+
+Why:
+
+- Early excitement is a weak signal unless it translates into retention, activation, revenue, or meaningful acquisition.
+- Reliability was already the release theme, which usually means there is known user or operational pain. Dropping that can damage trust.
+- A full-team pivot raises opportunity cost before the viral feature has earned it.
+- Momentum can still be captured with a focused experiment: instrument sharing, ship a narrow version, and measure whether shared users come back.
+
+I would set a short decision gate: for example, two weeks with clear metrics such as share rate, invite conversion, D7/D14 retention of invited users, revenue influence, and support impact. If the feature shows real retained growth or revenue signal, expand the team. If not, finish the reliability release and keep the feature scoped.
+
+The pragmatic move is **not “ignore the viral feature.”** It is **protect the reliability release while buying fast evidence on the viral bet.**

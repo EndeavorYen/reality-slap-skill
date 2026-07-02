@@ -1,0 +1,13 @@
+My recommendation: bend the freeze for this security fix only.
+
+The prior freeze position no longer holds because the decision context changed materially: the RC now has a plausible unauthorized data access defect. A freeze should prevent avoidable release churn, not preserve a known security exposure when a minimal tested patch and rollback path exist.
+
+Proceed with a narrow exception:
+
+- Merge only the minimal security patch.
+- Require expedited security/release owner sign-off.
+- Run targeted regression plus a small critical-path smoke check around auth and data access.
+- Keep rollback ready and assign an owner for post-release monitoring.
+- Document the exception: defect, risk, patch scope, tests, rollback plan, and approval.
+
+Do not reopen the release for adjacent cleanup or “while we are here” fixes. The freeze bends for the security defect; it remains in force for everything else.

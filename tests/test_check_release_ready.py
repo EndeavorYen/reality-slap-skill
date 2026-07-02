@@ -43,9 +43,12 @@ class CheckReleaseReadyTests(unittest.TestCase):
         self.assertIn("unit-tests", names)
         self.assertIn("pilot-eval-bank", names)
         self.assertIn("full-eval-bank", names)
+        self.assertIn("tradeoff-eval-bank", names)
         self.assertIn("full-eval-design", names)
         self.assertIn("copy-install", names)
         self.assertIn("installed-skill-validator", names)
+        self.assertIn("command-install", names)
+        self.assertIn("command-uninstall", names)
         self.assertIn("copy-uninstall", names)
 
     def test_dry_run_can_skip_unit_tests(self):
@@ -88,6 +91,7 @@ class CheckReleaseReadyTests(unittest.TestCase):
         self.assertTrue(report["ok"])
         names = [result["name"] for result in report["results"]]
         self.assertIn("installed-runtime-layout", names)
+        self.assertIn("installed-command-prompt", names)
         layout = [
             result
             for result in report["results"]
@@ -97,6 +101,14 @@ class CheckReleaseReadyTests(unittest.TestCase):
         layout_stdout = json.loads(layout["stdout"])
         self.assertEqual(layout_stdout["missing"], [])
         self.assertEqual(layout_stdout["unexpected_top_level"], [])
+        prompt = [
+            result
+            for result in report["results"]
+            if result["name"] == "installed-command-prompt"
+        ][0]
+        self.assertTrue(prompt["ok"])
+        prompt_stdout = json.loads(prompt["stdout"])
+        self.assertEqual(prompt_stdout["missing"], [])
 
 
 if __name__ == "__main__":

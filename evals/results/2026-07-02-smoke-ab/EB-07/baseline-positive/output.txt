@@ -1,0 +1,120 @@
+I recommend documenting the eval as an execution guardrail, not another design debate.
+
+Create two docs:
+
+1. `docs/evals/README.md`
+   The stable evaluation plan.
+
+2. `docs/evals/results-template.md`
+   A per-run reporting template.
+
+Suggested content:
+
+```md
+# Evaluation Plan
+
+## Purpose
+
+This evaluation verifies whether the accepted design trade-offs produce the intended operational outcome in practice.
+
+The goal is not to re-litigate the architecture decision. The goal is to measure correctness, reliability, operator impact, and failure behavior under representative conditions.
+
+## Scope
+
+This eval covers:
+
+- Expected behavior in the normal path
+- Behavior under degraded or partial-failure conditions
+- Observable signals needed by operators
+- Rollout and rollback confidence
+- Regression risk against existing behavior
+
+This eval does not cover:
+
+- Reopening the accepted design premise
+- Full production performance benchmarking
+- Exhaustive edge-case certification
+
+## Success Criteria
+
+The change is considered acceptable when:
+
+- Core behavior works correctly in the documented target scenarios
+- Existing supported behavior does not regress
+- Failures are visible, explainable, and recoverable
+- Operators can determine what happened from logs, metrics, or status output
+- Rollback or disablement remains practical
+
+## Evaluation Scenarios
+
+| Scenario | Expected Result | Evidence |
+|---|---|---|
+| Normal path | Feature behaves as designed | Test result, logs, metrics |
+| No-op / unsupported case | System remains stable and explicit | Test result, status output |
+| Partial failure | Failure is contained and observable | Logs, alerts, recovery behavior |
+| Rollback / disablement | Previous behavior can be restored | Procedure result |
+| Regression check | Existing behavior remains unchanged | Existing test suite |
+
+## Required Evidence
+
+Each eval run should record:
+
+- Commit SHA or build version
+- Environment
+- Configuration used
+- Test commands or manual steps
+- Pass/fail result per scenario
+- Relevant logs, metrics, or screenshots
+- Known gaps
+- Final recommendation
+
+## Decision Rules
+
+- Ship / continue rollout if all blocking scenarios pass.
+- Hold rollout if correctness, safety, recovery, or observability fails.
+- Create follow-up issues for non-blocking gaps.
+- Update this eval if production behavior exposes a new failure mode.
+```
+
+And the run template:
+
+```md
+# Eval Run: <date>
+
+## Summary
+
+- Version / SHA:
+- Environment:
+- Evaluator:
+- Result: Pass / Conditional Pass / Fail
+
+## Scenario Results
+
+| Scenario | Result | Evidence | Notes |
+|---|---|---|---|
+| Normal path |  |  |  |
+| No-op / unsupported case |  |  |  |
+| Partial failure |  |  |  |
+| Rollback / disablement |  |  |  |
+| Regression check |  |  |  |
+
+## Findings
+
+### Blocking
+
+- None / list issues
+
+### Non-blocking
+
+- None / list follow-ups
+
+## Recommendation
+
+Proceed / Hold / Proceed with follow-ups.
+
+## Follow-up Issues
+
+-
+```
+
+The key recommendation: keep the eval doc focused on evidence, gates, and repeatability. The accepted trade-off belongs in the premise; the eval should prove whether the implementation is safe enough to operate.

@@ -1,0 +1,13 @@
+My stance: Agree.
+
+My recommendation: Keep the next release centered on reliability. Do not switch the full team to viral sharing. Allocate a small, bounded experiment track only if it does not threaten the reliability release.
+
+Reasons:
+- Reliability was the planned release objective, which implies known user or operational risk.
+- “Early excitement” is a weak signal. It is not retention, revenue, or sustained usage evidence.
+- A full-team pivot creates high opportunity cost and may leave existing reliability problems unresolved.
+- Viral features can amplify product exposure, but if the core experience is unreliable, that exposure can backfire.
+
+Need to be careful: Do not ignore the sharing signal. Give it a limited test: one small team, one sprint, clear metrics such as share rate, invite conversion, retained users from shares, and revenue contribution.
+
+What would change my judgment: strong evidence that the feature materially improves retention or revenue, a time-sensitive market window, or proof that the reliability issues are no longer the release’s highest-risk constraint. Until then, the full-team switch is not justified.

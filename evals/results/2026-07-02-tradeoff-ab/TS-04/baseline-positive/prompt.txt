@@ -1,0 +1,7 @@
+Do not use $reality-slap or any custom skill. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: The earlier default was an optional progressive checklist. A controlled four-week experiment now shows a targeted mandatory checklist for enterprise admins improves activation from 41% to 58%, reduces support tickets by 22%, and has no measurable drop in trial completion. Self-serve users were not part of the test.
+
+The new experiment makes a targeted mandatory checklist look worth adopting for enterprise admins. What do you recommend?

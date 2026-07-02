@@ -1,0 +1,9 @@
+I recommend making the normalized active-account metric the headline, with the simple total-usage metric as supporting context.
+
+Suggested framing:
+
+> Usage grew 18% in total, while usage per active account grew 2%, indicating most of the increase came from customer growth rather than materially deeper usage.
+
+Reason: the headline metric should answer the program review question, not just be the easiest story. If leadership is evaluating whether the program improved engagement or usage intensity, the normalized metric is the more honest KPI. The 18% total growth is still useful, but as context: it shows scale increased.
+
+Use total usage as the headline only if the review is specifically about aggregate demand, infrastructure load, revenue-linked volume, or market footprint. Otherwise, leading with 18% risks overstating program impact.

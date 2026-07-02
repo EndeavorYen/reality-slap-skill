@@ -1,0 +1,13 @@
+My stance: Disagree with defaulting to one runtime now.
+
+My recommendation: make the next two weeks a reversible phase: add per-service utilization data, prototype a framework-neutral scale-to-zero GPU pool, and define one “preferred runtime” path for new services only. Do not force existing services onto one runtime until the data proves that runtime standardization is the main lever.
+
+Reasons:
+- The known problem is idle GPU memory, not yet runtime fragmentation.
+- Scale-to-zero directly targets idle waste while preserving framework flexibility.
+- New utilization data is only two weeks away, so a hard standardization decision now is premature.
+- Standardizing may improve batching and operations, but it also creates migration cost and platform lock-in before the payoff is quantified.
+
+Be careful: “cleaner” is not the same as “correct.” A single runtime may look operationally elegant while hiding migration burden, model incompatibility, and team adoption risk.
+
+What would change my judgment: data showing most waste and latency cost comes from fragmentation across runtimes, a clear batching win from one runtime, and a credible migration plan with owners, rollback, and service eligibility rules. Then I would recommend standardizing, starting with the highest-traffic or highest-waste services rather than a blanket mandate.

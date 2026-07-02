@@ -1,0 +1,13 @@
+I recommend a lightweight optional checklist, with mandatory gates only for setup steps that are truly required for the product to work safely or correctly.
+
+A fully mandatory checklist is not justified by the evidence you have. “Completeness” sounds disciplined, but if activation data is inconclusive and the risk is mostly anecdotal, forcing every user through setup may just convert uncertainty into guaranteed friction.
+
+Use this approach:
+
+- Make the checklist visible, persistent, and easy to resume.
+- Preselect or auto-configure safe defaults where possible.
+- Block only critical items: security, billing, required integrations, data import prerequisites, or anything that would cause broken usage.
+- Add contextual prompts when users hit features that depend on missing setup.
+- Run an experiment measuring activation, time-to-value, completion rate, support tickets, and downstream retention.
+
+What would change my recommendation: evidence that underconfigured accounts materially harm retention, support load, compliance, or customer outcomes more than the mandatory flow harms activation. Until then, optional plus targeted enforcement is the better default.

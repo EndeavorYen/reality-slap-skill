@@ -1,0 +1,7 @@
+Recommendation: keep the release freeze.
+
+The late change is not justified by the facts given. It is visible and customer-facing, but it is not tied to revenue, an outage, or a compliance deadline, and it has not been tested across integrations. That makes it a quality and coordination risk, not an urgent release requirement.
+
+The customer-centric move is not “ship the request immediately.” It is to protect the release, tell the customer clearly that the change will go into the next qualified release, and offer a concrete date or validation plan.
+
+I would only change that recommendation if the team can prove the change is isolated, fully integration-tested, behind a safe rollout/rollback mechanism, and owned through release support. Otherwise: freeze holds.

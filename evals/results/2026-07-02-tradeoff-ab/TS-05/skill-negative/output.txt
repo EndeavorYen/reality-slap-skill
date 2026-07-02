@@ -1,0 +1,9 @@
+Stance: Agree.
+
+Recommendation: Keep the release freeze. Do not allow the late feature change into this release unless it qualifies as an emergency exception.
+
+Reasons: The freeze exists to protect quality and coordination. The change has not been tested across integrations. The customer request is visible, but there is no revenue commitment, outage, or compliance deadline strong enough to justify increasing release risk.
+
+Watch out: Do not ignore the customer. Offer a clear follow-up path: commit to the next release, a patch window after integration testing, or a controlled beta if appropriate.
+
+What would change my judgment: A contractual deadline, active production incident, compliance obligation, proven integration test coverage, a very small reversible change, and an approved rollback plan.

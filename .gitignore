@@ -1,2 +1,6 @@
 __pycache__/
 *.py[cod]
+evals/results/**/child-logs/
+evals/results/**/scoring-child-logs/
+evals/results/**/run-events.jsonl
+evals/results/**/scoring-run-events.jsonl

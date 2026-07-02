@@ -1,0 +1,59 @@
+I recommend a **parallel discovery track**, not a release-track handoff. Keep release ownership exactly where it is. The viral feature should earn its way into the roadmap through evidence, not bypass reliability priorities.
+
+**Two-Week Discovery Plan**
+
+**Owner model**
+- Release owner remains accountable for release scope, timing, stability, and go/no-go.
+- Discovery has a separate DRI, ideally Product/Growth, accountable only for learning.
+- Engineering support is capped and explicitly time-boxed.
+- No production commitment unless the release owner accepts it through normal criteria.
+
+**Week 1: Define And Validate**
+1. Clarify the viral hypothesis:
+   - What user behavior should spread?
+   - Who invites whom?
+   - What value does the recipient get immediately?
+   - Why would the inviter care?
+
+2. Map the viral loop:
+   - Trigger
+   - Sharing action
+   - Recipient landing experience
+   - Activation moment
+   - Repeat/share-back path
+
+3. Define evidence thresholds:
+   - Target invite/share rate
+   - Recipient conversion rate
+   - Activation rate
+   - Abuse/spam risk signals
+   - Support or reliability risks
+
+4. Run lightweight validation:
+   - User interviews or sales/support review
+   - Competitor/reference teardown
+   - Copy and flow mockups
+   - Clickable prototype if useful
+
+**Week 2: Prototype And Decision**
+1. Build only a low-risk prototype:
+   - Figma, sandbox, internal-only demo, or feature-flagged non-production path
+   - No dependency on the active release unless already planned capacity exists
+
+2. Test the loop:
+   - 5-8 target users or internal/customer proxies
+   - Measure whether people understand the value and would actually share
+   - Identify friction, trust issues, and abuse concerns
+
+3. Produce a decision memo:
+   - Problem statement
+   - Viral loop design
+   - Evidence collected
+   - Expected upside
+   - Reliability/release risks
+   - Required engineering scope
+   - Recommendation: kill, iterate, backlog, or propose for a future release
+
+**Non-Negotiable Boundary**
+
+The discovery track must not become a backdoor delivery track. At the end of two weeks, the output is a decision and evidence package, not a shipped feature. If the feature looks promising, it enters normal planning with the release owner still controlling whether and when it ships.

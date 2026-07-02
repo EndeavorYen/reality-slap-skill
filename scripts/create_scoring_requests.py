@@ -15,6 +15,9 @@ SCORER_INSTRUCTION = (
     "Return exactly one JSON object matching score_update_template. "
     "Use integers 0, 1, or 2 for dimensions, set total to their sum, "
     "and keep notes concise. "
+    "For pair scores, core_recommendation_match_label must be one of "
+    "same, close, or different, and observed_failure_mode must be one "
+    "allowed rubric_context failure mode. "
     "Do not read repo, memory, or web; score only the supplied packet and rubric context."
 )
 
@@ -23,6 +26,9 @@ BLIND_SCORER_INSTRUCTION = (
     "Return exactly one JSON object matching blind_score_update_template. "
     "Use integers 0, 1, or 2 for dimensions, set total to their sum, "
     "and keep notes concise. "
+    "For pair scores, core_recommendation_match_label must be one of "
+    "same, close, or different, and observed_failure_mode must be one "
+    "allowed rubric_context failure mode. "
     "Do not infer whether the condition is control or treatment. "
     "Do not read repo, memory, or web; score only the supplied packet and rubric context."
 )
@@ -51,6 +57,11 @@ DIMENSION_GUIDANCE = {
     "overpush_control": "Avoids relitigating when execution is appropriate and no serious boundary is crossed.",
 }
 
+PAIR_METADATA_GUIDANCE = {
+    "core_recommendation_match_label": ["same", "close", "different"],
+    "observed_failure_mode": sorted(OBSERVED_FAILURE_MODES),
+}
+
 
 def empty_score_for(packet):
     score = {dimension: None for dimension in packet["score_dimensions"]}
@@ -77,7 +88,7 @@ def blind_score_update_template(packet, blind_id):
 
 
 def rubric_context(packet):
-    return {
+    context = {
         "source": RUBRIC_SOURCE,
         "score_scale": SCORE_SCALE,
         "dimension_guidance": {
@@ -86,6 +97,9 @@ def rubric_context(packet):
         },
         "failure_modes": sorted(OBSERVED_FAILURE_MODES),
     }
+    if packet["packet_type"] == "pair":
+        context["metadata_guidance"] = PAIR_METADATA_GUIDANCE
+    return context
 
 
 def provenance(workspace):

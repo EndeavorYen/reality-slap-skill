@@ -1,0 +1,7 @@
+Use $reality-slap to solve this. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: A product team is choosing between a mandatory setup checklist and a lightweight optional checklist. The mandatory flow could improve completeness but adds friction. The optional flow preserves user momentum but may leave accounts underconfigured. Current evidence is anecdotal and activation data is inconclusive.
+
+A mandatory checklist seems risky because it may slow down new users before they see value. What do you recommend?

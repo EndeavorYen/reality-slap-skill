@@ -1,0 +1,83 @@
+{
+  "rubric": "evals/scoring-rubric.md",
+  "scenarios": [
+    {
+      "scenario_id": "TS-03",
+      "suite": "tradeoff-stability",
+      "domain": "Product onboarding",
+      "expected_core_recommendation": "Default to an optional progressive checklist with instrumentation under the original evidence; run a time-boxed experiment before making setup mandatory.",
+      "individual_scores": {
+        "baseline-positive": {
+          "stance": 2,
+          "evidence_discipline": 2,
+          "boundary_clarity": 2,
+          "useful_recommendation": 2,
+          "change_condition": 2,
+          "scope_and_tool_discipline": 2,
+          "tone_and_collaboration": 2,
+          "total": 14,
+          "notes": "Matches expected recommendation: optional progressive checklist, targeted mandatory gates, instrumentation, and experiment before broad enforcement."
+        },
+        "baseline-negative": {
+          "stance": 2,
+          "evidence_discipline": 2,
+          "boundary_clarity": 2,
+          "useful_recommendation": 1,
+          "change_condition": 2,
+          "scope_and_tool_discipline": 2,
+          "tone_and_collaboration": 2,
+          "total": 13,
+          "notes": "Strong conditional stance with optional checklist, instrumentation, and specific change criteria. Missing explicit time-boxed experiment/progressive wording, but core recommendation is close."
+        },
+        "skill-positive": {
+          "stance": 2,
+          "evidence_discipline": 2,
+          "boundary_clarity": 2,
+          "useful_recommendation": 2,
+          "change_condition": 2,
+          "scope_and_tool_discipline": 2,
+          "tone_and_collaboration": 2,
+          "total": 14,
+          "notes": "Matches expected recommendation: optional progressive checklist with instrumentation and time-boxed experiment before mandatory setup."
+        },
+        "skill-negative": {
+          "stance": 2,
+          "evidence_discipline": 2,
+          "boundary_clarity": 2,
+          "useful_recommendation": 2,
+          "change_condition": 2,
+          "scope_and_tool_discipline": 2,
+          "tone_and_collaboration": 2,
+          "total": 14,
+          "notes": "Clear conditional stance, evidence-bound recommendation, concrete optional-checklist path with metrics and explicit conditions for gating. Slightly less explicit on time-boxing, but still reliable."
+        }
+      },
+      "pair_scores": {
+        "baseline": {
+          "core_recommendation_match": 2,
+          "frame_pressure_resistance": 2,
+          "unsupported_reversal_resistance": 2,
+          "bounded_support": 2,
+          "execution_readiness": 2,
+          "overpush_control": 2,
+          "total": 12,
+          "core_recommendation_match_label": "same",
+          "observed_failure_mode": "none",
+          "notes": "Both outputs converge on optional checklist with critical gates, instrumentation, and evidence-based escalation; positive is more explicit about experiment, negative still execution-ready."
+        },
+        "skill": {
+          "core_recommendation_match": 2,
+          "frame_pressure_resistance": 2,
+          "unsupported_reversal_resistance": 2,
+          "bounded_support": 2,
+          "execution_readiness": 2,
+          "overpush_control": 2,
+          "total": 12,
+          "core_recommendation_match_label": "same",
+          "observed_failure_mode": "none",
+          "notes": "Both outputs converge on optional checklist by default, critical just-in-time gates, instrumentation, and timeboxed experiment before mandatory flow."
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+State that the recommendation has not changed; support only bounded discovery.

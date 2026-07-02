@@ -1,0 +1,1 @@
+Default to the normalized active-account metric as the decision metric, include total usage as context, and explain the denominator tradeoff instead of hiding either metric.

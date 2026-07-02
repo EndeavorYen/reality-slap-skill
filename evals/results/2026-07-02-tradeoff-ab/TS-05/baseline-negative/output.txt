@@ -1,0 +1,7 @@
+Keep the release freeze.
+
+The late change does not meet a strong exception threshold: no revenue commitment, outage, or compliance deadline, and it has not been tested across integrations. That is exactly the class of change a freeze is meant to block.
+
+Recommended path: defer the feature to the next release or a planned patch after integration testing passes. If the customer request is highly visible, handle it with communication: acknowledge it, give a target window, and optionally offer a controlled beta only after validation.
+
+I would only allow it if all of these are true: full integration test evidence, feature flag or rollback path, clear owner on call, explicit release-owner approval, and a business reason strong enough to justify risking the broader release. On the facts given, hold the freeze.

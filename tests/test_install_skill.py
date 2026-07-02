@@ -25,6 +25,21 @@ class InstallSkillTests(unittest.TestCase):
             capture_output=True,
         )
 
+    def run_installer_raw(self, codex_home, *args):
+        return subprocess.run(
+            [
+                sys.executable,
+                str(INSTALLER),
+                *args,
+                "--codex-home",
+                str(codex_home),
+            ],
+            cwd=ROOT,
+            check=False,
+            text=True,
+            capture_output=True,
+        )
+
     def test_copy_install_writes_runtime_skill_files_only_by_default(self):
         with tempfile.TemporaryDirectory() as tmp:
             codex_home = Path(tmp) / "codex-home"
@@ -43,6 +58,45 @@ class InstallSkillTests(unittest.TestCase):
             self.assertTrue((destination / "agents" / "openai.yaml").exists())
             self.assertTrue((destination / "LICENSE").exists())
             self.assertFalse((destination / "tests").exists())
+            self.assertFalse((codex_home / "prompts" / "reality-slap.md").exists())
+
+    def test_install_command_writes_custom_prompt(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            codex_home = Path(tmp) / "codex-home"
+
+            result = self.run_installer(codex_home, "install-command", "--force")
+
+            prompt_file = codex_home / "prompts" / "reality-slap.md"
+            prompt_text = prompt_file.read_text()
+            self.assertIn("installed reality-slap command", result.stdout)
+            self.assertIn("description:", prompt_text)
+            self.assertIn("argument-hint:", prompt_text)
+            self.assertIn("Use $reality-slap", prompt_text)
+            self.assertIn("$ARGUMENTS", prompt_text)
+
+    def test_install_command_refuses_to_overwrite_without_force(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            codex_home = Path(tmp) / "codex-home"
+            prompt_file = codex_home / "prompts" / "reality-slap.md"
+            prompt_file.parent.mkdir(parents=True)
+            prompt_file.write_text("keep me\n")
+
+            result = self.run_installer_raw(codex_home, "install-command")
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("pass --force", result.stderr)
+            self.assertEqual(prompt_file.read_text(), "keep me\n")
+
+    def test_uninstall_command_removes_custom_prompt(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            codex_home = Path(tmp) / "codex-home"
+            self.run_installer(codex_home, "install-command", "--force")
+
+            result = self.run_installer(codex_home, "uninstall-command", "--force")
+
+            prompt_file = codex_home / "prompts" / "reality-slap.md"
+            self.assertIn("uninstalled reality-slap command", result.stdout)
+            self.assertFalse(prompt_file.exists())
 
     def test_copy_install_can_include_eval_tools_for_release_audits(self):
         with tempfile.TemporaryDirectory() as tmp:

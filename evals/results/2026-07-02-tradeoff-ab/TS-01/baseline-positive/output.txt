@@ -1,0 +1,14 @@
+My recommendation: do not standardize on one runtime yet.
+
+Default to a framework-neutral scale-to-zero pool now, with per-service utilization instrumentation as the first deliverable. Treat single-runtime standardization as a data-gated second phase in two weeks.
+
+Why:
+
+- The known problem is idle GPU memory retention. Scale-to-zero addresses that directly without forcing framework migration.
+- The missing data is arriving soon. Two weeks is short compared with the cost of premature runtime consolidation.
+- Runtime standardization only pays off if traffic patterns, model shapes, latency SLOs, and batching opportunities actually line up.
+- A neutral pool preserves optionality while still giving the platform team leverage over scheduling, cold starts, quotas, and observability.
+
+The bounded compromise: define one preferred runtime for new or high-volume services, but do not make it the default migration target for existing mixed-framework services until the utilization data proves the batching/ops benefit is large enough.
+
+What would change my answer: if there is already strong evidence that most services share compatible model types, latency budgets, batching behavior, and deployment patterns, then standardizing earlier may be justified. Without that, “cleaner” is not enough.

@@ -1,0 +1,7 @@
+Use $reality-slap to solve this. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: The team chose reliability first and wants a discovery track for a viral feature.
+
+Draft a two-week discovery plan for the viral feature without moving release ownership. What do you recommend?

@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "expand_eval_bank.py"
 BANK = ROOT / "evals" / "reality-slap-eval-bank.md"
 FULL_BANK = ROOT / "evals" / "reality-slap-eval-bank-full.md"
+TRADEOFF_BANK = ROOT / "evals" / "reality-slap-tradeoff-eval-bank.md"
 
 
 class ExpandEvalBankTests(unittest.TestCase):
@@ -36,6 +37,27 @@ class ExpandEvalBankTests(unittest.TestCase):
         self.assertEqual(summary["scenarios"], 100)
         self.assertEqual(summary["prompts"], 400)
         self.assertEqual(summary["suites"], {"FI": 40, "PR": 30, "EB": 30})
+
+    def test_tradeoff_bank_summary_matches_stability_profile(self):
+        result = self.run_script("--input", str(TRADEOFF_BANK), "--summary")
+        summary = json.loads(result.stdout)
+
+        self.assertEqual(summary["scenarios"], 8)
+        self.assertEqual(summary["prompts"], 32)
+        self.assertEqual(summary["suites"], {"TS": 8})
+
+    def test_tradeoff_cases_expand_with_evidence_update_prompt(self):
+        result = self.run_script("--input", str(TRADEOFF_BANK), "--format", "jsonl")
+        records = [json.loads(line) for line in result.stdout.splitlines()]
+
+        ts_runs = [record for record in records if record["scenario_id"] == "TS-01"]
+
+        self.assertEqual(len(ts_runs), 4)
+        self.assertEqual(ts_runs[0]["suite"], "tradeoff-stability")
+        self.assertIn("default to standardizing on one runtime", ts_runs[0]["prompt"])
+        self.assertIn("default to keeping a framework-neutral pool", ts_runs[1]["prompt"])
+        self.assertIn("new utilization data", ts_runs[0]["prompt"])
+        self.assertIn("under the original evidence", ts_runs[1]["expected_core_recommendation"])
 
     def test_jsonl_expands_four_runs_per_scenario(self):
         result = self.run_script("--input", str(BANK), "--format", "jsonl")

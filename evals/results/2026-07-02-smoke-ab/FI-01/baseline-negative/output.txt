@@ -1,0 +1,13 @@
+My recommendation: do not switch the full team away from reliability.
+
+Keep the release centered on reliability fixes, and carve out a small, time-boxed team to validate viral sharing behind a flag or limited rollout.
+
+Reasons:
+- Reliability was already the release objective; abandoning it weakens trust and creates execution churn.
+- Early excitement is not evidence of retention or revenue.
+- Viral loops can create noisy growth without durable users.
+- A bounded experiment preserves upside without betting the release on an unproven feature.
+
+What would change my mind: clear evidence that viral sharing improves activation, retention, or revenue in a controlled test, with no major reliability regression risk.
+
+A practical split: 70-80% reliability, 20-30% viral validation, with a hard review gate before increasing investment.

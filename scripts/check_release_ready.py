@@ -15,6 +15,12 @@ DEFAULT_QUICK_VALIDATE = (
 )
 RUNTIME_TOP_LEVEL = {"SKILL.md", "agents", "LICENSE"}
 RUNTIME_REQUIRED_FILES = ("SKILL.md", "agents/openai.yaml", "LICENSE")
+COMMAND_PROMPT_REQUIRED_SNIPPETS = (
+    "description:",
+    "argument-hint:",
+    "Use $reality-slap",
+    "$ARGUMENTS",
+)
 
 
 def command_record(name, command):
@@ -57,6 +63,17 @@ def release_commands(
             ],
         ),
         command_record(
+            "tradeoff-eval-bank",
+            [
+                python,
+                root / "scripts" / "validate_eval_bank.py",
+                "--input",
+                root / "evals" / "reality-slap-tradeoff-eval-bank.md",
+                "--profile",
+                "tradeoff",
+            ],
+        ),
+        command_record(
             "full-eval-design",
             [
                 python,
@@ -96,6 +113,28 @@ def release_commands(
                 python,
                 quick_validate,
                 Path(codex_home) / "skills" / "reality-slap",
+            ],
+        ),
+        command_record(
+            "command-install",
+            [
+                python,
+                root / "scripts" / "install_skill.py",
+                "install-command",
+                "--codex-home",
+                codex_home,
+                "--force",
+            ],
+        ),
+        command_record(
+            "command-uninstall",
+            [
+                python,
+                root / "scripts" / "install_skill.py",
+                "uninstall-command",
+                "--codex-home",
+                codex_home,
+                "--force",
             ],
         ),
         command_record(
@@ -190,6 +229,35 @@ def inspect_runtime_layout(codex_home):
     }
 
 
+def inspect_command_prompt(codex_home):
+    prompt_file = Path(codex_home) / "prompts" / "reality-slap.md"
+    if prompt_file.exists():
+        prompt_text = prompt_file.read_text()
+        missing = [
+            snippet
+            for snippet in COMMAND_PROMPT_REQUIRED_SNIPPETS
+            if snippet not in prompt_text
+        ]
+    else:
+        missing = ["prompts/reality-slap.md"]
+
+    return {
+        "name": "installed-command-prompt",
+        "command": ["inspect", str(prompt_file)],
+        "returncode": 0 if not missing else 1,
+        "stdout": json.dumps(
+            {
+                "required_snippets": list(COMMAND_PROMPT_REQUIRED_SNIPPETS),
+                "missing": missing,
+            },
+            sort_keys=True,
+        )
+        + "\n",
+        "stderr": "",
+        "ok": not missing,
+    }
+
+
 def run_release_gate(args):
     root = Path(args.root).expanduser().resolve()
     quick_validate = Path(args.quick_validate).expanduser().resolve()
@@ -225,6 +293,8 @@ def run_release_gate(args):
             results.append(run_command(record, root))
             if record["name"] == "installed-status":
                 results.append(inspect_runtime_layout(codex_home))
+            if record["name"] == "command-install":
+                results.append(inspect_command_prompt(codex_home))
         failed = [result for result in results if not result["ok"]]
         return {
             "ok": not failed,

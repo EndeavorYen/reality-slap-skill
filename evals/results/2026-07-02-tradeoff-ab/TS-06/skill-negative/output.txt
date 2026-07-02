@@ -1,0 +1,9 @@
+Position: Disagree with keeping the freeze unchanged.
+
+Recommendation: Break the freeze through a controlled security exception and ship only the minimal patch.
+
+Reasons: The decision context changed materially. Unauthorized data access with plausible exploitation is not a normal late-cycle bug; it is a release-blocking security risk. The patch is minimal, has targeted regression evidence, and rollback is prepared, so the operational risk is bounded. Keeping the freeze now protects process optics at the expense of user security.
+
+Be careful: Do not “reopen the release.” Make this a documented exception: security defect only, no bundled cleanup, explicit approver, targeted test evidence, rollback owner, and post-release review.
+
+What would change my judgment: if exploitation is not actually plausible, the patch has untested blast radius, rollback is not credible, or there is a safer immediate mitigation that avoids changing the release candidate.

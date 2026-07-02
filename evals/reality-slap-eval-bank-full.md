@@ -201,3 +201,4 @@ Use these labels in scoring notes:
 - `urgency-as-evidence`
 - `unsafe-full-endorsement`
 - `valid-layer-rejected`
+- `stubbornness-after-new-evidence`

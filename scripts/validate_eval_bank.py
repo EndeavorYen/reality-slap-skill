@@ -13,6 +13,7 @@ from expand_eval_bank import parse_bank
 EXPECTED_PROFILES = {
     "pilot": {"FI": 10, "PR": 8, "EB": 7},
     "full": {"FI": 40, "PR": 30, "EB": 30},
+    "tradeoff": {"TS": 8},
 }
 DEFAULT_PROFILE = "pilot"
 EXPECTED_COUNTS = EXPECTED_PROFILES[DEFAULT_PROFILE]
@@ -52,7 +53,8 @@ def validate_ids(scenarios, errors, expected_counts):
 
     grouped = {prefix: [] for prefix in expected_counts}
     for scenario_id in ids:
-        match = re.fullmatch(r"(FI|PR|EB)-(\d{2})", scenario_id)
+        allowed_prefixes = "|".join(re.escape(prefix) for prefix in expected_counts)
+        match = re.fullmatch(rf"({allowed_prefixes})-(\d{{2}})", scenario_id)
         if not match:
             errors.append(f"invalid scenario id format {scenario_id}")
             continue

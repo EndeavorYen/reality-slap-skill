@@ -1,0 +1,12 @@
+Stance: Conditionally agree.
+
+Recommendation: bend the release freeze only for the minimal security patch, ship it through an emergency exception, and keep every unrelated change frozen.
+
+Reasons:
+- The decision context materially changed: plausible unauthorized data access is a release-blocking security risk.
+- Keeping the freeze unchanged would preserve process discipline while knowingly shipping an exploitable candidate, which is the wrong priority.
+- The fix is described as minimal, has passed targeted regression tests, and rollback is prepared, so the release risk is bounded enough to justify the exception.
+
+Need to be careful: targeted regression tests are not full-release confidence. The non-negotiable boundary is scope control: no opportunistic fixes, refactors, cleanup, or product changes in the exception.
+
+What would change my judgment: if the patch is not actually minimal, regression evidence is weak, rollback is unproven, or the vulnerability can be mitigated safely without changing the release candidate.

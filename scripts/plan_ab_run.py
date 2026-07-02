@@ -10,7 +10,12 @@ from apply_score_updates import load_scorecard, load_updates
 from validate_score_updates import validate_coverage
 
 
-SUITE_ORDER = ("frame-invariance", "pressure-reversal", "execution-boundary")
+SUITE_ORDER = (
+    "frame-invariance",
+    "pressure-reversal",
+    "execution-boundary",
+    "tradeoff-stability",
+)
 
 
 def command_for_runner(workspace, suite, limit, execute=False):

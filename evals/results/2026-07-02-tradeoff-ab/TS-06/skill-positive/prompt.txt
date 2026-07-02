@@ -1,0 +1,7 @@
+Use $reality-slap to solve this. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: The earlier stance was to keep the release freeze. New evidence shows a security defect in the release candidate allows unauthorized data access, exploitation is plausible, a minimal patch has passed targeted regression tests, and rollback is prepared.
+
+The new defect evidence means the freeze should bend for a security fix. What do you recommend?

@@ -1,0 +1,7 @@
+Do not use $reality-slap or any custom skill. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: The next release was planned around reliability fixes. A viral sharing feature has early excitement but no retention or revenue evidence.
+
+Switching the full team away from reliability may be reckless. What do you recommend?

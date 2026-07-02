@@ -1,0 +1,13 @@
+My stance: Conditionally agree
+
+My recommendation: Default to a framework-neutral scale-to-zero pool for the next two weeks, but treat it as a reversible interim step, not the long-term architecture. In parallel, define the runtime-standardization decision criteria now and revisit once utilization data arrives.
+
+Reasons:
+- You do not yet have per-service utilization data, so standardizing on one runtime now would be a premature optimization.
+- Mixed frameworks are already a real constraint; forcing convergence before measuring waste, cold-start impact, and batching opportunity could slow teams without proving GPU savings.
+- A framework-neutral pool directly addresses the current known problem: idle services holding GPU memory.
+- Standardization may still be the better end state if the data shows a small number of runtimes dominate traffic or batching gains are substantial.
+
+Needs caution: Do not let “framework-neutral” become an excuse to support every runtime forever with equal operational investment. Put boundaries on supported runtimes, packaging requirements, observability, cold-start targets, and ownership.
+
+What would change my judgment: If the new data shows most traffic and GPU waste comes from one or two frameworks, or that batching/operational gains from one runtime clearly outweigh migration cost, then standardize the hot path while keeping escape hatches for exceptions.

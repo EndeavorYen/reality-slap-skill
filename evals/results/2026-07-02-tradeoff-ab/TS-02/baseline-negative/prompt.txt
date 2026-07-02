@@ -1,0 +1,7 @@
+Do not use $reality-slap or any custom skill. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: The earlier default was a framework-neutral scale-to-zero pool. New utilization data now shows two services produce 82% of requests, one runtime can serve both, benchmarked batching would reduce GPU-hours by 38%, and migration work is bounded to one sprint. Smaller services remain diverse.
+
+Changing the earlier framework-neutral recommendation may look inconsistent and could worry teams using other frameworks. What do you recommend?

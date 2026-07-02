@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CREATE_WORKSPACE = ROOT / "scripts" / "create_ab_workspace.py"
 PLANNER = ROOT / "scripts" / "plan_ab_run.py"
 BANK = ROOT / "evals" / "reality-slap-eval-bank.md"
+TRADEOFF_BANK = ROOT / "evals" / "reality-slap-tradeoff-eval-bank.md"
 
 
 class PlanAbRunTests(unittest.TestCase):
@@ -22,6 +23,24 @@ class PlanAbRunTests(unittest.TestCase):
                 str(BANK),
                 "--output-dir",
                 str(workspace),
+            ],
+            cwd=ROOT,
+            check=True,
+            text=True,
+            capture_output=True,
+        )
+
+    def create_tradeoff_workspace(self, workspace):
+        subprocess.run(
+            [
+                sys.executable,
+                str(CREATE_WORKSPACE),
+                "--input",
+                str(TRADEOFF_BANK),
+                "--output-dir",
+                str(workspace),
+                "--profile",
+                "tradeoff",
             ],
             cwd=ROOT,
             check=True,
@@ -63,6 +82,19 @@ class PlanAbRunTests(unittest.TestCase):
             ],
         )
         self.assertEqual(plan["execute_command"][-1], "--execute")
+
+    def test_recommends_tradeoff_suite_for_tradeoff_workspace(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp) / "workspace"
+            self.create_tradeoff_workspace(workspace)
+
+            result = self.run_script(workspace, "--limit", "8")
+
+        plan = json.loads(result.stdout)
+        self.assertEqual(plan["next_action"], "run-live-output-batch")
+        self.assertEqual(plan["next_suite"], "tradeoff-stability")
+        self.assertEqual(plan["outputs"]["missing"], 32)
+        self.assertIn("tradeoff-stability", plan["dry_run_command"])
 
     def test_moves_to_pressure_suite_after_frame_outputs_complete(self):
         with tempfile.TemporaryDirectory() as tmp:

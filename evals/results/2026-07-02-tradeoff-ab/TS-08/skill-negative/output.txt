@@ -1,0 +1,17 @@
+Position: Conditionally agree with pausing the normalized metric, but not with replacing it as the final decision metric.
+
+Recommendation: Treat the current normalized active-account metric as invalid, use total usage only as an interim contextual signal, and defer the final decision until the repaired normalized metric is available next week unless there is a hard deadline.
+
+Reasoning:
+- A metric with a corrupted denominator for 30% of accounts is not decision-grade.
+- Total usage answers a different question than normalized active-account usage; switching to it because it looks better would be hard to defend.
+- Waiting one week is low-cost compared with damaging metric credibility.
+- The defensible move is transparency: disclose the defect, preserve the original metric intent, and rerun with the repaired version.
+
+Boundary: Do not present total usage as the new primary decision metric unless the decision question has genuinely changed from “usage per active account” to “aggregate usage.”
+
+Suggested wording:
+
+> The predefined normalized active-account metric is temporarily invalid because audit evidence shows a denominator defect affecting roughly 30% of accounts. We will not use the corrupted version for the decision, and we will not replace it with total usage as the primary metric because that changes the decision question. Until the repaired normalized metric is available next week, total usage may be shown only as a complete directional/contextual indicator. The final decision should be made or confirmed against the repaired normalized metric.
+
+What would change my judgment: a non-deferrable decision deadline, proof that the denominator corruption does not change the normalized conclusion, or a formal decision that aggregate usage is now the actual business objective.

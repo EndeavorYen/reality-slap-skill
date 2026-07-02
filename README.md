@@ -1,6 +1,6 @@
 # Reality Slap Skill
 
-> **TL;DR** — Reality Slap is a Codex skill for constructive pushback: it helps Codex keep the same good recommendation under pressure, loaded framing, or unsupported reversals. Install it with `python3 scripts/install_skill.py install --method copy --force`, then start a new Codex session and ask: `Use $reality-slap to pressure-test this decision.`
+> **TL;DR** — Reality Slap is a Codex skill for constructive pushback: it helps Codex keep the same good recommendation under pressure, loaded framing, or unsupported reversals. Install it with `python3 scripts/install_skill.py install --method copy --force`, then start a new Codex session and ask: `Use $reality-slap to pressure-test this decision.` For an optional force command, run `python3 scripts/install_skill.py install-command --force` and use `/prompts:reality-slap <decision>`.
 
 Reality Slap is a Codex skill for constructive pushback during architecture, product, planning, and technical decision discussions. It is designed for moments where the assistant might otherwise over-agree, follow the latest preference too quickly, or turn weak assumptions into polished consensus.
 
@@ -50,6 +50,7 @@ The skill should be useful across environments and teams, so the prompts, tests,
 
 - Treat the user's wording as framing, not evidence.
 - Prefer frame-invariant answers: positive and negative descriptions of the same facts should converge on the same core recommendation.
+- Practice best-reason stubbornness: hold the best-supported default under unchanged evidence, but change course when better evidence or constraints make another option stronger.
 - Use direct stance language, but keep the tone collaborative.
 - Require a concrete recommendation, key reasons, main risk, and change condition.
 - Use repeated-question tests only as a secondary check; they are weaker than framing tests.
@@ -64,10 +65,113 @@ The skill should be useful across environments and teams, so the prompts, tests,
 - [x] Design a 25-scenario pilot eval bank for frame invariance, pressure, and execution-boundary testing.
 - [x] Add an expanded scoring rubric with pair scoring and pass thresholds.
 - [x] Add a release-ready installer and validation checklist.
-- [x] Run and score the 25-scenario pilot A/B sample.
-- [x] Tighten `SKILL.md` from pilot and tool-discipline findings.
+- [x] Run and score a 4-scenario smoke A/B sample.
+- [x] Tighten scorer metadata guidance from smoke scoring findings.
+- [x] Add a balanced tradeoff-stability eval bank for "best-reason stubbornness".
+- [x] Run and score the 8-scenario tradeoff-stability A/B sample.
+- [x] Tighten `SKILL.md` from the TS-03 tradeoff actionability finding.
+- [x] Run and score a focused TS-03 recheck after the tradeoff tuning.
+- [x] Add an optional `/prompts:reality-slap` command shim for force-enabling the skill.
+- [ ] Re-run the full 8-scenario tradeoff-stability sample after the TS-03 tuning.
+- [ ] Run and score the 25-scenario pilot A/B sample.
+- [ ] Tighten `SKILL.md` from pilot and tool-discipline findings.
 - [ ] Complete the 100-scenario full live run when Codex live quota is available.
 - [ ] Decide whether this should later be packaged as a plugin after the skill proves useful.
+
+## Latest Eval Data
+
+The smoke live eval result is
+[evals/results/2026-07-02-smoke-ab](evals/results/2026-07-02-smoke-ab).
+It is a 4-scenario smoke run, not a full benchmark:
+
+| Metric | Value |
+| --- | --- |
+| Outputs complete | 16 / 16 |
+| Individual scores complete | 16 / 16 |
+| Pair scores complete | 8 / 8 |
+| Baseline individual average | 13.75 |
+| Skill individual average | 13.625 |
+| Baseline pair average | 12.0 |
+| Skill pair average | 12.0 |
+| Pair score delta | 0.0 |
+| Baseline strong individual pass rate | 8 / 8 (100%) |
+| Skill strong individual pass rate | 8 / 8 (100%) |
+| Baseline useful individual pass rate | 8 / 8 (100%) |
+| Skill useful individual pass rate | 8 / 8 (100%) |
+| Baseline perfect individual rate | 6 / 8 (75%) |
+| Skill perfect individual rate | 6 / 8 (75%) |
+| Verdict | strong-pass |
+
+Interpretation: this smoke run shows parity, not superiority. Both baseline and
+skill outputs passed the expected-answer threshold on every sampled prompt, and
+both had the same perfect-score rate. It gives enough evidence that the eval
+workflow works and that the skill did not degrade frame-invariance or
+execution-boundary behavior in the sampled scenarios. It does not justify a
+broad claim that Reality Slap outperforms baseline behavior until the
+25-scenario pilot and 100-scenario full run are completed.
+
+The latest balanced tradeoff run is
+[evals/results/2026-07-02-tradeoff-ab](evals/results/2026-07-02-tradeoff-ab).
+It tests "best-reason stubbornness": hold the best-supported default when the
+evidence is unchanged, but update when new evidence makes another option
+stronger.
+
+| Metric | Value |
+| --- | --- |
+| Outputs complete | 32 / 32 |
+| Individual scores complete | 32 / 32 |
+| Pair scores complete | 16 / 16 |
+| Baseline individual average | 14.0 |
+| Skill individual average | 13.875 |
+| Baseline pair average | 12.0 |
+| Skill pair average | 11.875 |
+| Pair score delta | -0.125 |
+| Baseline strong individual pass rate | 16 / 16 (100%) |
+| Skill strong individual pass rate | 16 / 16 (100%) |
+| Baseline useful individual pass rate | 16 / 16 (100%) |
+| Skill useful individual pass rate | 16 / 16 (100%) |
+| Baseline perfect individual rate | 16 / 16 (100%) |
+| Skill perfect individual rate | 14 / 16 (87.5%) |
+| Verdict | regression |
+
+Interpretation: the tradeoff run shows pass-rate parity, not skill
+superiority. Both baseline and skill passed every prompt at the strong and
+useful thresholds. The skill arm regressed slightly on perfect score because
+both TS-03 skill outputs missed or under-specified the time-boxed experiment
+step for an onboarding-checklist tradeoff. No `unsupported-reversal`,
+`stubbornness-after-new-evidence`, or other observed failure mode was recorded.
+
+After that finding, `SKILL.md` was tightened to require a reversible validation
+step when evidence is inconclusive: default, pilot or experiment, metric, and
+timebox or exit condition. The focused recheck is
+[evals/results/2026-07-02-tradeoff-ts03-after-tuning](evals/results/2026-07-02-tradeoff-ts03-after-tuning):
+
+| Metric | Value |
+| --- | --- |
+| Outputs complete | 4 / 4 |
+| Individual scores complete | 4 / 4 |
+| Pair scores complete | 2 / 2 |
+| Baseline individual average | 13.5 |
+| Skill individual average | 14.0 |
+| Baseline pair average | 12.0 |
+| Skill pair average | 12.0 |
+| Baseline strong individual pass rate | 2 / 2 (100%) |
+| Skill strong individual pass rate | 2 / 2 (100%) |
+| Baseline useful individual pass rate | 2 / 2 (100%) |
+| Skill useful individual pass rate | 2 / 2 (100%) |
+| Baseline perfect individual rate | 1 / 2 (50%) |
+| Skill perfect individual rate | 2 / 2 (100%) |
+| Verdict | strong-pass |
+
+Interpretation: the focused recheck confirms the TS-03 actionability gap was
+fixed locally. It is not a replacement for re-running the full 8-scenario
+tradeoff sample after the tuning.
+
+Eval loading note: the live A/B runs used `--inline-skill SKILL.md` for the
+skill arm, so the skill body was definitely present in the +skill prompts.
+This measures the effect of the skill instructions in context. It does not
+prove that Codex would auto-load the skill in an ordinary conversation without
+explicit invocation or a matching trigger.
 
 ## Install
 
@@ -106,12 +210,38 @@ python3 scripts/install_skill.py install --method copy --codex-home /tmp/codex-h
 
 Start a new Codex session after installing so the skill index reloads.
 
+Optional force command:
+
+```bash
+python3 scripts/install_skill.py install-command --force
+```
+
+This writes one custom prompt file:
+
+```text
+prompts/reality-slap.md
+```
+
+The command is intentionally separate from the default skill install. Use it
+when you want a manual trigger for the skill in environments where implicit
+skill selection is uncertain:
+
+```text
+/prompts:reality-slap Decide whether we should require this rollout for every team.
+```
+
 ## Uninstall
 
 Remove the installed skill entry:
 
 ```bash
 python3 scripts/install_skill.py uninstall --force
+```
+
+Remove the optional force command:
+
+```bash
+python3 scripts/install_skill.py uninstall-command --force
 ```
 
 If you installed by symlink, uninstalling removes only the skill entry, not this
@@ -124,6 +254,16 @@ Explicit invocation:
 ```text
 Use $reality-slap to pressure-test this product decision.
 ```
+
+Command invocation after `install-command`:
+
+```text
+/prompts:reality-slap Pressure-test this architecture decision.
+```
+
+The command prompt expands to an explicit `$reality-slap` request. It is a
+convenience shim for forcing the skill, not a replacement for `/skills` or
+direct `$reality-slap` invocation.
 
 Natural prompts that should trigger the skill:
 
@@ -169,13 +309,21 @@ Use [evals/ab-test-suite.md](evals/ab-test-suite.md) to compare normal responses
 For pilot iteration, use [evals/reality-slap-eval-bank.md](evals/reality-slap-eval-bank.md)
 for 25 reusable scenarios and [evals/scoring-rubric.md](evals/scoring-rubric.md)
 for pair scoring, pressure resistance, execution-boundary checks, and pass
-thresholds. Use [evals/reality-slap-eval-bank-full.md](evals/reality-slap-eval-bank-full.md)
+thresholds. Use [evals/reality-slap-tradeoff-eval-bank.md](evals/reality-slap-tradeoff-eval-bank.md)
+for the 8-scenario balanced tradeoff suite that tests stable defaults under
+unchanged evidence and evidence-responsive updates when another option becomes
+better supported. Use [evals/reality-slap-eval-bank-full.md](evals/reality-slap-eval-bank-full.md)
 for the 100-scenario target once the pilot path is useful. Use
 [evals/evals.json](evals/evals.json) as a small smoke manifest for tool-driven
 skill evaluation. Follow [evals/ab-test-runbook.md](evals/ab-test-runbook.md)
 when running live A/B samples.
 
 The primary test is **frame invariance**: the same facts are asked once with positive framing and once with negative framing. A good response should converge on the same core recommendation in both directions instead of following the user's framing.
+
+The tradeoff-stability test adds a second requirement: the assistant should not
+be stubborn for its own sake. If the prompt includes material new evidence, a
+good response should update the recommendation and explain why the tradeoff
+changed.
 
 For each scenario, compare four outputs:
 
@@ -211,6 +359,30 @@ Expected pilot-bank count:
 ```text
 25 scenarios
 100 prompt records
+```
+
+Run the balanced tradeoff suite with:
+
+```bash
+python3 scripts/validate_eval_bank.py \
+  --input evals/reality-slap-tradeoff-eval-bank.md \
+  --profile tradeoff
+
+python3 scripts/expand_eval_bank.py \
+  --input evals/reality-slap-tradeoff-eval-bank.md \
+  --summary
+
+python3 scripts/create_ab_workspace.py \
+  --input evals/reality-slap-tradeoff-eval-bank.md \
+  --output-dir /private/tmp/reality-slap-ab-tradeoff \
+  --profile tradeoff
+```
+
+Expected tradeoff-bank count:
+
+```text
+8 scenarios
+32 prompt records
 ```
 
 Audit the eval design against the project goal:
@@ -531,11 +703,15 @@ python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py "$PWD"
 python3 -m unittest discover -s tests
 python3 scripts/validate_eval_bank.py --input evals/reality-slap-eval-bank.md --profile pilot
 python3 scripts/validate_eval_bank.py --input evals/reality-slap-eval-bank-full.md --profile full
+python3 scripts/validate_eval_bank.py --input evals/reality-slap-tradeoff-eval-bank.md --profile tradeoff
 python3 scripts/audit_eval_design.py --bank evals/reality-slap-eval-bank-full.md --profile full
 python3 scripts/install_skill.py install --method copy --codex-home <temp-codex-home> --force
 python3 scripts/install_skill.py status --codex-home <temp-codex-home>
 inspect <temp-codex-home>/skills/reality-slap runtime layout
 python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py <temp-codex-home>/skills/reality-slap
+python3 scripts/install_skill.py install-command --codex-home <temp-codex-home> --force
+inspect <temp-codex-home>/prompts/reality-slap.md command prompt
+python3 scripts/install_skill.py uninstall-command --codex-home <temp-codex-home> --force
 python3 scripts/install_skill.py uninstall --codex-home <temp-codex-home> --force
 ```
 
@@ -552,12 +728,15 @@ Before tagging or publishing:
 - `SKILL.md` passes the official skill validator.
 - The test suite passes with `python3 -m unittest discover -s tests`.
 - Pilot and full eval banks validate at 25 and 100 scenarios.
+- Tradeoff eval bank validates at 8 scenarios.
 - The full eval design audit reports 40 frame-invariance, 30 pressure/reversal,
   and 30 execution-boundary scenarios.
 - A copy install into a temporary `CODEX_HOME` creates
   `skills/reality-slap/SKILL.md` and `agents/openai.yaml`.
 - The default copy install contains only runtime files: `SKILL.md`,
   `agents/openai.yaml`, and `LICENSE`.
+- The optional command install creates only
+  `prompts/reality-slap.md`, which invokes `$reality-slap`.
 - Any public score claim cites the matching workspace audit and scorecard.
   The 100-scenario live run requires `400 / 400` valid outputs before scoring;
   enforce this with `check_release_ready.py --full-eval-workspace <workspace>`.
@@ -575,6 +754,7 @@ Before tagging or publishing:
 │   ├── evals.json
 │   ├── reality-slap-eval-bank-full.md
 │   ├── reality-slap-eval-bank.md
+│   ├── reality-slap-tradeoff-eval-bank.md
 │   └── scoring-rubric.md
 ├── scripts/
 │   ├── analyze_failure_patterns.py

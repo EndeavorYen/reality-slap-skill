@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "create_ab_workspace.py"
 BANK = ROOT / "evals" / "reality-slap-eval-bank.md"
 FULL_BANK = ROOT / "evals" / "reality-slap-eval-bank-full.md"
+TRADEOFF_BANK = ROOT / "evals" / "reality-slap-tradeoff-eval-bank.md"
 
 
 class CreateAbWorkspaceTests(unittest.TestCase):
@@ -125,6 +126,34 @@ class CreateAbWorkspaceTests(unittest.TestCase):
             self.assertEqual(manifest["profile"], "full")
             self.assertEqual(len(records), 400)
             self.assertEqual(manifest["scenario_ids"][-1], "EB-30")
+
+    def test_tradeoff_profile_accepts_tradeoff_eval_bank(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out_dir = Path(tmp) / "ab-workspace"
+
+            self.run_script(
+                "--input",
+                str(TRADEOFF_BANK),
+                "--output-dir",
+                str(out_dir),
+                "--profile",
+                "tradeoff",
+            )
+
+            manifest = json.loads((out_dir / "manifest.json").read_text())
+            records = [
+                json.loads(line)
+                for line in (out_dir / "records.jsonl").read_text().splitlines()
+            ]
+            scorecard = json.loads((out_dir / "scorecard.json").read_text())
+
+            self.assertEqual(manifest["scenario_count"], 8)
+            self.assertEqual(manifest["prompt_count"], 32)
+            self.assertEqual(manifest["profile"], "tradeoff")
+            self.assertEqual(len(records), 32)
+            self.assertEqual(manifest["scenario_ids"][0], "TS-01")
+            self.assertEqual(manifest["scenario_ids"][-1], "TS-08")
+            self.assertEqual(scorecard["scenarios"][0]["suite"], "tradeoff-stability")
 
     def test_scorecard_contains_individual_and_pair_templates(self):
         with tempfile.TemporaryDirectory() as tmp:

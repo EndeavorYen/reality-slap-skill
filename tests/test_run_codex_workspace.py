@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CREATE_WORKSPACE = ROOT / "scripts" / "create_ab_workspace.py"
 RUNNER = ROOT / "scripts" / "run_codex_workspace.py"
 BANK = ROOT / "evals" / "reality-slap-eval-bank.md"
+TRADEOFF_BANK = ROOT / "evals" / "reality-slap-tradeoff-eval-bank.md"
 
 
 class RunCodexWorkspaceTests(unittest.TestCase):
@@ -22,6 +23,24 @@ class RunCodexWorkspaceTests(unittest.TestCase):
                 str(BANK),
                 "--output-dir",
                 str(root),
+            ],
+            cwd=ROOT,
+            check=True,
+            text=True,
+            capture_output=True,
+        )
+
+    def create_tradeoff_workspace(self, root):
+        subprocess.run(
+            [
+                sys.executable,
+                str(CREATE_WORKSPACE),
+                "--input",
+                str(TRADEOFF_BANK),
+                "--output-dir",
+                str(root),
+                "--profile",
+                "tradeoff",
             ],
             cwd=ROOT,
             check=True,
@@ -128,6 +147,19 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             self.assertTrue(all(record["suite"] == "pressure-reversal" for record in records))
             self.assertEqual(records[0]["scenario_id"], "PR-01")
             self.assertEqual(records[-1]["scenario_id"], "PR-08")
+
+    def test_dry_run_can_filter_by_tradeoff_suite(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp) / "workspace"
+            self.create_tradeoff_workspace(workspace)
+
+            result = self.run_runner(workspace, "--suite", "tradeoff-stability")
+
+            records = [json.loads(line) for line in result.stdout.splitlines()]
+            self.assertEqual(len(records), 32)
+            self.assertTrue(all(record["suite"] == "tradeoff-stability" for record in records))
+            self.assertEqual(records[0]["scenario_id"], "TS-01")
+            self.assertEqual(records[-1]["scenario_id"], "TS-08")
 
     def test_dry_run_can_filter_by_scenario(self):
         with tempfile.TemporaryDirectory() as tmp:
