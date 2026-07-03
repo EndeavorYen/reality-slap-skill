@@ -85,6 +85,17 @@ def release_commands(
             ],
         ),
         command_record(
+            "confusion-eval-bank",
+            [
+                python,
+                root / "scripts" / "validate_eval_bank.py",
+                "--input",
+                root / "evals" / "reality-slap-baseline-confusion-bank.md",
+                "--profile",
+                "confusion",
+            ],
+        ),
+        command_record(
             "full-eval-design",
             [
                 python,

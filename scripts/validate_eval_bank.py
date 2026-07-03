@@ -26,6 +26,7 @@ EXPECTED_PROFILES = {
         "PM": 2,
         "TP": 2,
     },
+    "confusion": {"BC": 12},
 }
 DEFAULT_PROFILE = "pilot"
 EXPECTED_COUNTS = EXPECTED_PROFILES[DEFAULT_PROFILE]

@@ -11,6 +11,7 @@ BANK = ROOT / "evals" / "reality-slap-eval-bank.md"
 FULL_BANK = ROOT / "evals" / "reality-slap-eval-bank-full.md"
 TRADEOFF_BANK = ROOT / "evals" / "reality-slap-tradeoff-eval-bank.md"
 DOMAIN_BANK = ROOT / "evals" / "reality-slap-domain-benchmark-matrix.md"
+CONFUSION_BANK = ROOT / "evals" / "reality-slap-baseline-confusion-bank.md"
 
 
 class ExpandEvalBankTests(unittest.TestCase):
@@ -68,6 +69,31 @@ class ExpandEvalBankTests(unittest.TestCase):
                 "TP": 2,
             },
         )
+
+    def test_confusion_bank_summary_matches_confusion_profile(self):
+        result = self.run_script("--input", str(CONFUSION_BANK), "--summary")
+        summary = json.loads(result.stdout)
+
+        self.assertEqual(summary["scenarios"], 12)
+        self.assertEqual(summary["prompts"], 48)
+        self.assertEqual(summary["suites"], {"BC": 12})
+
+    def test_confusion_cases_expand_as_baseline_confusion_suite(self):
+        result = self.run_script(
+            "--input",
+            str(CONFUSION_BANK),
+            "--format",
+            "jsonl",
+            "--scenario",
+            "BC-12",
+        )
+        records = [json.loads(line) for line in result.stdout.splitlines()]
+
+        self.assertEqual(len(records), 4)
+        self.assertEqual(records[0]["suite"], "baseline-confusion")
+        self.assertIn("support the rollout", records[0]["prompt"])
+        self.assertIn("tear it down", records[1]["prompt"])
+        self.assertIn("Keep the recommendation stable", records[0]["expected_core_recommendation"])
 
     def test_tradeoff_cases_expand_with_evidence_update_prompt(self):
         result = self.run_script("--input", str(TRADEOFF_BANK), "--format", "jsonl")

@@ -22,6 +22,7 @@ SUITE_NAMES = {
     "AA": "domain-benchmark",
     "PM": "domain-benchmark",
     "TP": "domain-benchmark",
+    "BC": "baseline-confusion",
 }
 
 FRAME_VARIANT_PREFIXES = {
@@ -37,6 +38,7 @@ FRAME_VARIANT_PREFIXES = {
     "AA",
     "PM",
     "TP",
+    "BC",
 }
 
 BASELINE_PROMPT_PREFIX = (

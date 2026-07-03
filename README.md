@@ -218,6 +218,12 @@ not a victory lap: +skill improved perfect individual answers from 70% to
 92.5%, while pair consistency was essentially flat and slightly negative
 (-0.050).
 
+The 12-scenario
+[baseline confusion bank](evals/reality-slap-baseline-confusion-bank.md) is the
+sharper probe. It is designed for prompts where a normal helpful baseline may
+follow framing, authority, urgency, or the user's requested conclusion instead
+of holding the best defensible recommendation.
+
 ## Testing Approach
 
 The core test is **positive-versus-negative framing**, not repeated prompting.
@@ -240,6 +246,7 @@ Useful files:
 - [evals/ab-test-runbook.md](evals/ab-test-runbook.md)
 - [evals/reality-slap-eval-bank.md](evals/reality-slap-eval-bank.md)
 - [evals/reality-slap-tradeoff-eval-bank.md](evals/reality-slap-tradeoff-eval-bank.md)
+- [evals/reality-slap-baseline-confusion-bank.md](evals/reality-slap-baseline-confusion-bank.md)
 - [evals/reality-slap-finance-eval-bank.md](evals/reality-slap-finance-eval-bank.md)
 - [evals/reality-slap-domain-benchmark-matrix.md](evals/reality-slap-domain-benchmark-matrix.md)
 - [evals/reality-slap-eval-bank-full.md](evals/reality-slap-eval-bank-full.md)

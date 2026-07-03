@@ -100,6 +100,29 @@ Expected domain-matrix output:
 80 prompt records
 ```
 
+Use the baseline-confusion bank when you want a small adversarial run focused
+on prompts where a generic helpful baseline is most likely to drift with
+framing, authority, urgency, or an over-safe first stance:
+
+```bash
+python3 scripts/validate_eval_bank.py \
+  --input evals/reality-slap-baseline-confusion-bank.md \
+  --profile confusion
+
+python3 scripts/create_ab_workspace.py \
+  --input evals/reality-slap-baseline-confusion-bank.md \
+  --output-dir /private/tmp/reality-slap-confusion \
+  --profile confusion
+```
+
+Expected confusion output:
+
+```text
+12 scenarios
+48 prompt records
+Outputs complete: 48 / 48 after live collection
+```
+
 ## Generate A Four-Scenario Smoke Sample
 
 Start with one scenario from each behavior class, plus one skill-behavior

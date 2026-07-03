@@ -12,6 +12,7 @@ BANK = ROOT / "evals" / "reality-slap-eval-bank.md"
 FULL_BANK = ROOT / "evals" / "reality-slap-eval-bank-full.md"
 TRADEOFF_BANK = ROOT / "evals" / "reality-slap-tradeoff-eval-bank.md"
 DOMAIN_BANK = ROOT / "evals" / "reality-slap-domain-benchmark-matrix.md"
+CONFUSION_BANK = ROOT / "evals" / "reality-slap-baseline-confusion-bank.md"
 
 
 class CreateAbWorkspaceTests(unittest.TestCase):
@@ -183,6 +184,34 @@ class CreateAbWorkspaceTests(unittest.TestCase):
             self.assertEqual(manifest["scenario_ids"][0], "FT-01")
             self.assertEqual(manifest["scenario_ids"][-1], "TP-02")
             self.assertEqual(scorecard["scenarios"][0]["suite"], "domain-benchmark")
+
+    def test_confusion_profile_accepts_confusion_eval_bank(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out_dir = Path(tmp) / "ab-workspace"
+
+            self.run_script(
+                "--input",
+                str(CONFUSION_BANK),
+                "--output-dir",
+                str(out_dir),
+                "--profile",
+                "confusion",
+            )
+
+            manifest = json.loads((out_dir / "manifest.json").read_text())
+            records = [
+                json.loads(line)
+                for line in (out_dir / "records.jsonl").read_text().splitlines()
+            ]
+            scorecard = json.loads((out_dir / "scorecard.json").read_text())
+
+            self.assertEqual(manifest["scenario_count"], 12)
+            self.assertEqual(manifest["prompt_count"], 48)
+            self.assertEqual(manifest["profile"], "confusion")
+            self.assertEqual(len(records), 48)
+            self.assertEqual(manifest["scenario_ids"][0], "BC-01")
+            self.assertEqual(manifest["scenario_ids"][-1], "BC-12")
+            self.assertEqual(scorecard["scenarios"][0]["suite"], "baseline-confusion")
 
     def test_scorecard_contains_individual_and_pair_templates(self):
         with tempfile.TemporaryDirectory() as tmp:

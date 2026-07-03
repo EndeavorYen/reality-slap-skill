@@ -45,6 +45,7 @@ class CheckReleaseReadyTests(unittest.TestCase):
         self.assertIn("full-eval-bank", names)
         self.assertIn("tradeoff-eval-bank", names)
         self.assertIn("domain-matrix-eval-bank", names)
+        self.assertIn("confusion-eval-bank", names)
         self.assertIn("full-eval-design", names)
         self.assertIn("copy-install", names)
         self.assertIn("installed-skill-validator", names)
