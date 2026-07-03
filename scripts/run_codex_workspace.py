@@ -66,7 +66,7 @@ class ChildRunTimeout(RuntimeError):
 
 
 def build_command(codex_bin, cwd, output_path, prompt, skip_git_repo_check=False):
-    output_path = Path(output_path).resolve()
+    output_path = Path(output_path).absolute()
     command = [
         codex_bin,
         "exec",
