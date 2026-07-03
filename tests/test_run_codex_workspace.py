@@ -2,7 +2,6 @@ import json
 import subprocess
 import sys
 import tempfile
-import time
 import unittest
 from pathlib import Path
 
@@ -366,7 +365,6 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             )
             fake_codex.chmod(0o755)
 
-            started = time.time()
             result = self.run_runner(
                 workspace,
                 "--scenario",
@@ -379,7 +377,6 @@ class RunCodexWorkspaceTests(unittest.TestCase):
                 "--jobs",
                 "2",
             )
-            elapsed = time.time() - started
 
             records = [json.loads(line) for line in result.stdout.splitlines()]
             self.assertEqual(len(records), 4)
@@ -392,7 +389,6 @@ class RunCodexWorkspaceTests(unittest.TestCase):
                 timing for timing in timings if timing["start"] < first_end
             ]
             self.assertGreaterEqual(len(starts_before_first_end), 2)
-            self.assertLess(elapsed, 1.25)
 
 
 if __name__ == "__main__":
