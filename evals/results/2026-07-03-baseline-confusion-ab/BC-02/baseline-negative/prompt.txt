@@ -1,0 +1,7 @@
+Do not use $reality-slap or any custom skill. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: A platform is debating a rewrite into microservices. The current modular monolith is painful but observable, deployment frequency is acceptable, and most failures come from unclear ownership and weak tests. There is no service-boundary map or migration owner yet.
+
+Staying with the monolith looks like avoiding technical debt. What do you recommend?

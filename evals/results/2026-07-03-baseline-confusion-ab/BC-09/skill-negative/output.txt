@@ -1,0 +1,13 @@
+My stance: **Conditionally agree to a narrow pilot; disagree with adopting the proprietary data model as the default architecture.**
+
+My recommendation: Use the vendor only for the affected customer segment in a time-boxed pilot, with a hard contract boundary: usable data export, data ownership, migration support/cost clarity, termination rights, and a tested exit path before broader rollout.
+
+Reasons:
+- A low first-year price does not answer the real risk: switching cost.
+- One customer segment’s workflow gap does not justify locking the whole product data model to a vendor.
+- Proprietary data models tend to spread into reporting, operations, integrations, and customer contracts once adopted.
+- Speed still matters, so a reversible pilot is better than paralysis.
+
+Needs caution: Do not put critical production data only in the vendor’s proprietary shape. Keep an internal canonical model or mapping layer where feasible.
+
+What would change my judgment: If the vendor proves clean export, migration cost is bounded, the segment is strategically urgent, and a 60-90 day pilot meets adoption/support metrics without trapping data, then broader adoption becomes reasonable.

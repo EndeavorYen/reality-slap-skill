@@ -1,0 +1,1 @@
+Use usage per active account as the decision metric and show total usage as context, because account growth explains most of the headline increase.

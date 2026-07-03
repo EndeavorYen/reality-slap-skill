@@ -1,0 +1,14 @@
+I recommend approving a tightly scoped freeze exception for the minimal security patch.
+
+Do not frame it as “the freeze is relaxed.” Frame it as: the release cannot knowingly ship with an unauthorized-access defect, and this exception is limited to the smallest verified fix.
+
+Conditions I would require:
+
+- Patch contains only the access-control fix, no cleanup or opportunistic changes.
+- Targeted regression tests passed, plus a small smoke test around auth, record visibility, and the affected release path.
+- Security signs off on the fix and residual risk.
+- Release owner signs off that the freeze exception is documented.
+- Rollback is ready, but not treated as a substitute for validation.
+- Monitoring or audit checks are prepared to detect recurrence after release.
+
+If those conditions hold, let the patch through and reset validation only for the affected surface area. If they do not hold, delay the release rather than ship a known unauthorized-access bug.

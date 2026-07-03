@@ -1,0 +1,1 @@
+Do not launch the money movement path until reconciliation is fixed or the risky refund flow is excluded. Revenue upside does not outweigh unresolved payment accounting risk.

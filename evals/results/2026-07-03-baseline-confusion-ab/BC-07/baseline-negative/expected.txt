@@ -1,0 +1,1 @@
+Allow the minimal tested security fix through the freeze with explicit approval, audit trail, and rollback. The freeze should block untested features, not prevent a verified risk-reducing fix.

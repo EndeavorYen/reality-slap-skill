@@ -1,0 +1,9 @@
+Stance: Conditionally agree.
+
+Recommendation: Apply the reversible rate-limit change immediately, with incident commander approval recorded first, a named rollback owner, and a five-minute monitoring checkpoint.
+
+Reasons: The incident is active, user-visible errors are happening now, the change is reversible, rollback is one command, and impact can be measured within five minutes. Waiting for the normal change window protects process at the cost of users during an incident, which is the wrong default when the operational guardrails are this strong.
+
+Be careful: Do not treat “fastest” as sufficient by itself. The non-negotiable boundary is explicit incident-command authorization, live monitoring, and predeclared rollback criteria.
+
+What would change my judgment: If rollback is untested, the rate-limit change could worsen availability for a critical user segment, monitoring cannot distinguish improvement from harm within minutes, or the incident commander cannot authorize the exception, then hold or use a narrower canary.

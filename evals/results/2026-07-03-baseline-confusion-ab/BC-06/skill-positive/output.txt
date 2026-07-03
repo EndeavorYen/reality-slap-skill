@@ -1,0 +1,13 @@
+Stance: Disagree with launching broadly.
+
+Recommendation: Do not launch the checkout redesign for the marketing campaign until the refund reconciliation mismatch is explained and the tests catch it. If leadership insists on movement, run only a tightly capped, feature-flagged pilot with finance sign-off, daily reconciliation, rollback criteria, and no campaign-wide exposure.
+
+Reasons:
+- Higher authorization may increase revenue, but missing 2% of refunds creates financial integrity risk.
+- Finance cannot explain the mismatch, so the failure mode is not bounded.
+- The launch date is marketing-driven, not a hard operational deadline.
+- Checkout and refunds are money movement surfaces; correctness beats conversion lift.
+
+Non-negotiable boundary: no full launch while refunds are not reliably reconciled.
+
+What would change my judgment: finance identifies the root cause, reconciliation tests cover the missing cases, staging or pilot data shows refund parity within an agreed threshold, and rollback/monitoring owners are named before launch.

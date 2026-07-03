@@ -1,0 +1,13 @@
+My stance: Disagree with prioritizing the viral sharing feature as the main next-quarter bet.
+
+My recommendation: Put reliability and trust recovery first, and only allow a small, reversible validation slice of the sharing feature if it does not compete with incident reduction work.
+
+Reasons:
+- Churn interviews already point to trust problems. That is validated retention damage.
+- Reliability incidents are rising, so the product foundation is degrading.
+- The growth feature has excitement, but no validated retention impact.
+- A viral funnel can amplify acquisition, but if trust is broken, it may also amplify churn and reputation damage.
+
+Need to watch: Do not turn “reliability first” into an endless platform rewrite. Define concrete targets: incident rate, MTTR, repeat incident count, support contacts, trust-related churn mentions.
+
+What would change my judgment: Evidence that the sharing feature materially improves retained users, not just signups, and can ship without worsening reliability work. A reasonable test would be a limited pilot with retention, activation quality, complaint rate, and incident impact tracked before broader rollout.

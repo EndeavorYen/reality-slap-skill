@@ -1,0 +1,37 @@
+Do not allow automatic deletion of production resources yet.
+
+Recommended path: start with **dry-run plus human-approved remediation**, then earn automation by evidence.
+
+Use this rollout:
+
+1. **Read-only detection first**
+   - Agent only reports candidates.
+   - Record why each resource is considered unused.
+   - Track owner, service, environment, last activity, cost, dependencies, and IaC references.
+
+2. **Dry-run history**
+   - Run for at least 30-60 days.
+   - Measure false positives, missed dependencies, estimated savings, and owner override rate.
+   - No production deletion until the system has a proven precision record.
+
+3. **Human approval for production**
+   - Approval should be batched and lightweight: Slack/Jira/GitLab ticket, one-click approve, owner SLA.
+   - Humans approve the action or policy class, not every trivial implementation detail.
+   - If approval latency kills all savings, that is evidence the workflow needs better batching, ownership, and thresholds, not evidence that uncontrolled deletion is safe.
+
+4. **Automate safer actions before deletion**
+   - Prefer notify -> tag -> quarantine -> stop/disable -> snapshot -> delete.
+   - For production, deletion should come only after a rollback window and backup/snapshot where applicable.
+
+5. **Only later allow limited auto-remediation**
+   - Non-production first.
+   - Low-risk resource classes only.
+   - Strong confidence threshold.
+   - Explicit allowlist of resource types.
+   - Blast-radius limits per day/service/account.
+   - Exemptions for critical services.
+   - Kill switch and audit log.
+
+The key point: cloud savings are usually incremental; a production outage is concentrated damage. Until you have dry-run accuracy, thresholds, rollback mechanics, and ownership, automatic production deletion is optimizing the wrong risk.
+
+I would frame the policy as: **the agent may recommend production deletions immediately, but it may not execute them automatically until it has proven accuracy and the organization has approved bounded automation rules.**

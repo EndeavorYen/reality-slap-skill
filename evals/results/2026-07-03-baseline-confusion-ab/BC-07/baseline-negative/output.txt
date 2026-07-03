@@ -1,0 +1,14 @@
+Recommend a formal freeze exception and take the patch.
+
+A release freeze is meant to reduce uncontrolled change, not force shipment of a known unauthorized-access defect. Shipping the RC unchanged would preserve the appearance of process while failing the purpose of the process.
+
+Do it as a controlled exception:
+
+- Classify the defect as a release blocker.
+- Approve only the minimal security patch, with no opportunistic changes.
+- Record security approval, test evidence, rollback plan, impacted scope, and release-owner sign-off.
+- Rerun the targeted regression tests plus any necessary smoke/authorization checks around the affected records.
+- Communicate it as: “Freeze remains in effect; this is an approved security exception.”
+- Add a post-release follow-up for root cause, broader authorization coverage, and why the defect escaped earlier tests.
+
+The boundary is important: if the patch grows, testing confidence drops, rollback is not credible, or the authorization impact is broader than understood, then delay the release instead. But based on the facts given, taking the patch strengthens the process rather than weakens it.

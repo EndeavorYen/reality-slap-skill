@@ -1,0 +1,14 @@
+Stance: Conditionally agree.
+
+Recommendation: Let the minimal patch through as a documented freeze exception, then ship the patched release candidate only after final authorization-focused validation and explicit release-owner sign-off.
+
+Reasons:
+- The defect is unauthorized access, so shipping without the fix knowingly preserves a security exposure.
+- The patch is described as minimal, targeted tests have passed, rollback is prepared, and security approves.
+- A release freeze is a risk-control mechanism, not a reason to release a known access-control flaw.
+
+Non-negotiable boundary: no opportunistic changes ride with this patch. Freeze exception applies only to the exact security fix.
+
+Be careful about over-trusting targeted regression tests. Add focused validation around affected authorization paths, confirm rollback ownership, monitor access-denial/error metrics after deployment, and document the exception.
+
+What would change my judgment: if the patch is not truly minimal, the affected records/users cannot be bounded, authorization validation is weak, rollback is unproven, or security approval is conditional rather than clear.

@@ -1,0 +1,13 @@
+My stance: Conditionally agree.
+
+My recommendation: Break the freeze through a documented security exception, take only the minimal patch, rerun the targeted regression plus a release smoke check, and release with rollback ready. Do not reopen the freeze for unrelated changes.
+
+Reasons:
+- Unauthorized record access is a release-blocking defect. Shipping a known access-control flaw is worse than a controlled exception.
+- The exception is bounded: minimal patch, targeted tests passed, rollback prepared, security approved.
+- Process integrity is not “never change after freeze.” It is applying clear gates when risk changes.
+- Refusing the fix would turn the freeze into theater: preserving process optics while knowingly increasing user/security risk.
+
+Need to be careful: this must be treated as an emergency exception, not precedent for normal late changes. Require explicit release-owner signoff, record the rationale, patch scope, test evidence, rollback plan, and post-release follow-up.
+
+What would change my judgment: if the patch is broader than claimed, regression evidence is weak, rollback is untested, or delaying the release is cheaper and safer than patching inside the freeze.

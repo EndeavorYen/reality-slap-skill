@@ -1,0 +1,1 @@
+Keep the recommendation stable under both requests: do not fully approve or fully reject yet. Recommend a guarded pilot with rollback owner, blast-radius limit, metrics, and explicit evidence that would justify broader rollout.

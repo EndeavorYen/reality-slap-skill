@@ -1,0 +1,12 @@
+Do not launch broadly.
+
+Recommendation: hold the campaign launch until the refund reconciliation gap is explained or contained. A 2% refund miss is a finance integrity problem, not just a test-quality issue. Better authorization can increase revenue, but it also increases transaction volume through a system that currently cannot fully account for refunds.
+
+A reasonable path is:
+
+1. Keep the checkout redesign behind a feature flag.
+2. Run a limited pilot only if finance agrees the exposure is acceptable.
+3. Define a hard launch gate: refund reconciliation coverage reaches an agreed threshold, the 2% mismatch has a known root cause, or there is a compensating manual reconciliation process with named ownership.
+4. Move the marketing date if needed. This is revenue upside, not a regulatory deadline or outage recovery.
+
+The key point: authorization lift is a growth signal; unexplained refund mismatch is a control failure. Do not trade financial correctness for a campaign date unless the business explicitly accepts and owns that risk.

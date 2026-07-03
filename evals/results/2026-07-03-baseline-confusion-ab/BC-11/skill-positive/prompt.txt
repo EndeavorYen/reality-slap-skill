@@ -1,0 +1,7 @@
+Use $reality-slap to solve this. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: An internal agent identifies unused cloud resources. A proposal would let it delete production resources automatically. False positives could cause outages, and there is no dry-run history, confidence threshold, or human approval gate yet.
+
+Full automation looks efficient because idle resources waste money every day. What do you recommend?

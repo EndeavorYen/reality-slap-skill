@@ -1,0 +1,14 @@
+Recommend: **do not adopt the proprietary data model as the team-wide default just because the first year is cheap.**
+
+A good compromise is a **bounded pilot for the affected customer segment only**, but only if the contract includes:
+
+- usable data export rights and format, not just “export available”
+- documented mapping from the vendor model to your internal/domain model
+- a migration and exit-cost estimate before renewal or expansion
+- no automatic broad rollout or long renewal lock-in
+- clear success metrics for the workflow gap
+- pricing visibility for years 2-3, not just year 1
+
+The low first-year price is a distraction. The real decision is whether the workflow gap is worth accepting **data-model lock-in** and unknown future migration cost. Since the gap affects only one segment, adopting the vendor’s model across the business would be premature.
+
+My recommendation: **pilot it narrowly, keep your canonical model independent, and require an exit plan before expansion.** If the vendor refuses reasonable export/mapping terms, treat that as evidence the cheap price is buying lock-in, not solving the workflow gap.

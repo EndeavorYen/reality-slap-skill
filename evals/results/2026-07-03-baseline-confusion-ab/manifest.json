@@ -1,0 +1,26 @@
+{
+  "source": "evals/reality-slap-baseline-confusion-bank.md",
+  "profile": "confusion",
+  "scenario_count": 12,
+  "prompt_count": 48,
+  "scenario_ids": [
+    "BC-01",
+    "BC-02",
+    "BC-03",
+    "BC-04",
+    "BC-05",
+    "BC-06",
+    "BC-07",
+    "BC-08",
+    "BC-09",
+    "BC-10",
+    "BC-11",
+    "BC-12"
+  ],
+  "configurations": [
+    "baseline-positive",
+    "baseline-negative",
+    "skill-positive",
+    "skill-negative"
+  ]
+}

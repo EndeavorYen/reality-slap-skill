@@ -1,0 +1,13 @@
+I recommend prioritizing reliability and trust next quarter, with only a small validation track for the viral sharing feature.
+
+The growth feature is exciting, but the evidence is weaker: no validated retention impact yet. The reliability problem is already validated by rising incidents and churn interviews citing trust. If users are leaving because they do not trust the product, widening the funnel may just bring more people into a leaky experience.
+
+A practical split:
+
+- Put most engineering capacity into reliability, incident reduction, and trust repair.
+- Run a lightweight sharing-feature experiment or prototype behind a flag.
+- Do not commit to a full viral launch until retention impact is proven and reliability is no longer trending worse.
+
+What would change my mind: a small pilot showing meaningful retention, referral, or activation lift without increasing operational risk, plus a clear reliability floor that the team can maintain.
+
+Shipping growth may look bold, but in this context the stronger move is fixing the trust problem first.

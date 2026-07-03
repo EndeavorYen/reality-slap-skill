@@ -1,0 +1,17 @@
+**Stance:** Conditionally agree.
+
+**Recommendation:** Do not rewrite into microservices yet. Treat the next phase as **monolith stabilization with explicit service-boundary discovery**, not as “staying put.”
+
+The current evidence does not justify a microservices rewrite. Your main failures are unclear ownership and weak tests. Microservices usually amplify both problems: unclear ownership becomes cross-service ambiguity, and weak tests become unreliable contracts, brittle integration tests, and harder rollbacks.
+
+A better path:
+
+1. Assign owners to existing modules.
+2. Map candidate service boundaries inside the monolith.
+3. Add contract/integration tests around those boundaries.
+4. Track failures by ownership, module, deploy, and customer impact.
+5. Only extract a service after its boundary, owner, tests, observability, and rollback path are proven.
+
+The risk is that “stay monolith” becomes passive delay. Make it an active program with a migration owner, review checkpoints, and measurable exit criteria.
+
+What would change my recommendation: if the monolith is blocking independent delivery, causing unacceptable blast radius, forcing unrelated teams to coordinate every release, or has clear domain boundaries with owners ready to operate services. Until then, rewriting is likely just moving the same debt into a distributed system.

@@ -1,0 +1,12 @@
+Recommend reliability as the primary bet next quarter.
+
+The facts point there: incidents are rising, churn interviews cite trust, and the viral feature has excitement but no validated retention impact. A flashy growth launch can amplify the exact trust problem that is already leaking users. That is not growth; it is pouring more traffic into a weakened system.
+
+I would set the quarter like this:
+
+- Allocate most engineering capacity to reliability and trust recovery.
+- Keep the viral sharing feature in discovery or a small validation track, not full build.
+- Define success metrics: incident rate, recovery time, churn reasons, support volume, activation-to-retention, and user trust signals.
+- Revisit the growth feature once reliability is back inside an agreed threshold.
+
+Choosing reliability is not defensive if churn is trust-driven. It is protecting the revenue and retention base that any future viral loop depends on. The growth feature wins only if you can show validated retention impact or if the incidents are less severe than the churn evidence suggests.

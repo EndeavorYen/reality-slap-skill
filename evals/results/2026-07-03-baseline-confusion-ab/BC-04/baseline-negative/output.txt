@@ -1,0 +1,15 @@
+I recommend making the rate-limit change now, under explicit incident commander approval.
+
+This is not undisciplined if you treat it as an emergency incident action, not a casual bypass of the change window. The key facts are favorable: user-visible errors are active, expected relief is within minutes, rollback is one command, monitoring gives a five-minute readout, and the incident commander is available.
+
+Do it with tight controls:
+
+1. Record the decision in the incident channel.
+2. State the exact change and rollback command.
+3. Confirm the metric that should improve within five minutes.
+4. Apply the change.
+5. Watch the metric for five minutes.
+6. Roll back immediately if errors do not improve or any secondary signal worsens.
+7. Capture it in the post-incident review as an emergency exception, not a precedent for normal work.
+
+The precedent risk is real, but the right boundary is: “incident commander-approved, reversible, monitored, user-impact-reducing changes are allowed during active incidents.” That is operational discipline, not process drift.

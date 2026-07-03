@@ -1,0 +1,1 @@
+Do not expose the unauthenticated admin endpoint. Use a safer demo path such as a seeded environment, authenticated temporary access, or reduced-scope mock that cannot change real customer settings.

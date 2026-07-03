@@ -1,0 +1,20 @@
+**Stance: Disagree**
+
+**Recommendation:** Do not allow automatic deletion of production resources yet. Start with dry-run reporting plus human approval for production, and only consider automation after measured false-positive performance.
+
+**Reasons:**
+- A false positive can create an outage; the downside is much larger than the daily waste.
+- There is no dry-run history, so the agent’s accuracy is unproven.
+- There is no confidence threshold, approval gate, rollback plan, or ownership model.
+- “Idle” is often context-dependent: backups, failover capacity, reserved warm infrastructure, compliance retention, or low-traffic production paths can look unused.
+
+**Safer first phase:**
+- Run in dry-run mode for 30-60 days.
+- Require owner approval for production deletions.
+- Track proposed savings, false positives, missed resources, approval latency, and incident impact.
+- Add confidence scoring, resource tagging, audit logs, rollback/snapshot behavior, exclusion rules, and a kill switch.
+- Consider automatic action only for low-risk non-production resources first.
+
+**Non-negotiable boundary:** no direct production deletion until the agent has proven accuracy and there is a controlled approval or rollback mechanism.
+
+**What would change my judgment:** dry-run evidence showing near-zero false positives across meaningful production cases, clear owner mapping, reliable rollback, alerting, auditability, and an agreed confidence threshold for narrowly scoped resource classes.

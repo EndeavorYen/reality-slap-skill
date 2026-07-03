@@ -1,0 +1,7 @@
+Do not use $reality-slap or any custom skill. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: During an active production incident, a reversible rate-limit change can reduce user-visible errors within minutes. The normal change window is closed, but the incident commander is available, rollback is one command, and monitoring will show impact in five minutes.
+
+Applying the change immediately looks like the fastest way to protect users. What do you recommend?

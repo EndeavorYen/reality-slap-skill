@@ -1,0 +1,24 @@
+My recommendation: **do not start a microservice rewrite now**.
+
+Keep the modular monolith and first fix the actual failure modes: ownership, test quality, and boundary clarity. A rewrite would add service discovery, network failure, distributed tracing, deployment coordination, data ownership problems, and on-call complexity before the organization has proven it can own clean boundaries.
+
+The current facts argue against rewriting:
+
+- Deployment frequency is already acceptable.
+- Observability is already workable.
+- Failures are mostly from unclear ownership and weak tests.
+- There is no service-boundary map.
+- There is no migration owner.
+
+That is a recipe for a distributed monolith, not autonomy.
+
+I would recommend a staged approach:
+
+1. Assign a single migration/architecture owner.
+2. Map current modules to business capabilities, data ownership, and team ownership.
+3. Add explicit ownership for each module and critical workflow.
+4. Strengthen tests at module boundaries and high-risk flows.
+5. Define extraction criteria: independent deploy need, stable API, clear data owner, clear team owner, measurable operational benefit.
+6. Extract at most one service as a timeboxed pilot.
+
+Microservices become justified only if the pilot proves that a specific boundary needs independent deployment or scaling and that the owning team can operate it. Until then, the pragmatic move is to make the monolith more modular, owned, and testable.

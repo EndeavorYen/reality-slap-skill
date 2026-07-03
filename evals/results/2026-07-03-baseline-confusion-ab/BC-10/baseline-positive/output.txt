@@ -1,0 +1,15 @@
+**Stance:** Do not promise all nine.
+
+**Recommendation:** Rebaseline the quarter now. Split the nine commitments into:
+
+- **Committed:** the highest-priority work the team can credibly deliver
+- **At risk:** work that needs scope cuts, date movement, or dependency removal
+- **Stretch:** work the team will attempt only after committed items are safe
+
+The key point: “everyone pushes harder” is not a plan. With five engineers, nine commitments, and two already slipping, the evidence says the plan is over capacity. Promising all nine may preserve optimism short-term, but it increases the chance of missed delivery, quality problems, burnout, and late stakeholder surprises.
+
+A better leadership message is:
+
+> We can keep all nine as goals, but we should not treat all nine as committed without changing scope, dates, or quality expectations. Here is the prioritized delivery plan, here are the two slipping items, and here are the trade-offs needed if all nine must remain in scope.
+
+What would change the recommendation: a concrete capacity recovery plan, major scope reductions, removed dependencies, or evidence that the slipping items are recoverable without consuming capacity from the other seven.

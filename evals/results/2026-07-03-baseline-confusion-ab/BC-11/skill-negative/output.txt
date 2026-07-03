@@ -1,0 +1,13 @@
+My stance: Disagree.
+
+My recommendation: Do not allow automatic deletion of production resources yet. Start with dry-run only, require human approval for production deletes, and collect enough history to set confidence thresholds and rollback procedures.
+
+Reasons:
+- A false positive can create an outage; the cost of one bad delete can exceed the savings.
+- There is no evidence base yet: no dry-run history, no measured precision, no threshold, no blast-radius control.
+- “Human approval is slow” is not enough evidence to skip the safety gate. Optimize the approval path, not the risk model.
+- Production deletion is irreversible or costly to recover from unless rollback and ownership are proven.
+
+Be careful: approval should not become theater. Use batched reviews, owner routing, auto-expiry recommendations, and low-risk non-prod automation to reduce friction.
+
+What would change my judgment: at least several weeks of dry-run data showing very high precision, clear confidence scoring, owner attribution, deletion previews, tested rollback, blast-radius limits, and an emergency stop. Then allow staged automation only for low-risk classes first, not blanket production deletion.

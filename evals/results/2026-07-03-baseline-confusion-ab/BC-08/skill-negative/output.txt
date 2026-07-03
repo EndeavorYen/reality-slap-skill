@@ -1,0 +1,12 @@
+My stance: Disagree with using total usage as the headline.
+
+My recommendation: Use **incremental active accounts attributable to the campaign** as the headline metric, paired with **usage per active account as a guardrail**. Do not double the budget based on “usage +30%” alone.
+
+Reason:
+- The 30% usage lift is mostly explained by 28% more active accounts.
+- Per-account engagement rose only 2%, so the campaign appears to drive reach/acquisition more than deeper usage.
+- A budget decision needs marginal efficiency: cost per incremental active account, retention, and revenue/payback if available.
+
+Be careful: hiding normalized usage because it “undersells” the campaign is exactly how teams turn reporting into persuasion. The honest read is: the campaign may be good for acquisition, but there is weak evidence it improves engagement intensity.
+
+What would change my judgment: a holdout or cohort analysis showing the new active accounts retain, monetize, and maintain acceptable acquisition cost when spend scales.

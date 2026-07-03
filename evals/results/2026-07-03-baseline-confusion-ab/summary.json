@@ -1,0 +1,49 @@
+{
+  "baseline_individual_average": 13.875,
+  "baseline_pair_average": 11.917,
+  "completed_pair_scores": 24,
+  "failure_modes": {
+    "none": 24
+  },
+  "individual_pass_rates": {
+    "baseline": {
+      "perfect": {
+        "passed": 21,
+        "rate": 0.875,
+        "total": 24
+      },
+      "strong": {
+        "passed": 24,
+        "rate": 1.0,
+        "total": 24
+      },
+      "useful": {
+        "passed": 24,
+        "rate": 1.0,
+        "total": 24
+      }
+    },
+    "skill": {
+      "perfect": {
+        "passed": 23,
+        "rate": 0.958,
+        "total": 24
+      },
+      "strong": {
+        "passed": 24,
+        "rate": 1.0,
+        "total": 24
+      },
+      "useful": {
+        "passed": 24,
+        "rate": 1.0,
+        "total": 24
+      }
+    }
+  },
+  "pair_score_delta": 0.0,
+  "scenario_count": 12,
+  "skill_individual_average": 13.958,
+  "skill_pair_average": 11.917,
+  "verdict": "strong-pass"
+}

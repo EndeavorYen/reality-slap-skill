@@ -1,0 +1,12 @@
+My recommendation: delay the checkout launch, or narrow it to a controlled pilot that excludes refund-impacting flows until the reconciliation mismatch is explained.
+
+The authorization lift is good evidence, but it does not offset an unexplained 2% refund reconciliation gap. That is a financial correctness problem, not a marketing coordination problem. If finance cannot explain the mismatch before launch, the company is choosing to create customer, accounting, support, and audit risk in production for a campaign date.
+
+I would separate the decisions:
+
+1. Keep the marketing campaign if possible, but change the offer, messaging, or rollout scope.
+2. Do not broadly ship the checkout redesign until refunds reconcile within the agreed tolerance.
+3. Allow a limited pilot only if it has clear monitoring, refund volume caps, rollback criteria, and finance sign-off.
+4. Make launch approval depend on explaining the mismatch, not merely showing higher auth success.
+
+What would change my recommendation: evidence that the 2% gap is a test fixture issue, a known reporting lag, or isolated to a path that will not be live. Without that, the costly delay is still the better decision.

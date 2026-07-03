@@ -1,0 +1,19 @@
+Recommend a headline metric that matches the budget decision:
+
+**Primary headline:** `Cost per incremental retained active account` or `incremental retained active accounts per campaign dollar`.
+
+Do not headline the raw `+30% usage`. It is directionally true, but it overstates the story because almost all of the lift came from more active accounts, not deeper usage.
+
+The honest read is:
+
+- Total usage: `+30%`
+- Active accounts: `+28%`
+- Usage per active account: `+2%`
+
+So the campaign looks like an **activation/acquisition campaign**, not a strong engagement-depth campaign.
+
+For leadership, I’d frame it this way:
+
+> The campaign drove a 28% lift in active accounts, with total usage rising 30%. Most of the impact came from more accounts becoming active, while usage per active account was roughly flat at +2%. We should consider doubling budget only if incremental active accounts are retained and acquired at an acceptable cost.
+
+Use `usage per active account` as a guardrail, not the headline. The decision to double budget should depend on whether the 28% active-account lift is incremental, retained, and economically efficient.

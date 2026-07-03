@@ -79,6 +79,9 @@ class RunScoringRequestsTests(unittest.TestCase):
             [event] = [json.loads(line) for line in result.stdout.splitlines()]
             self.assertEqual(event["mode"], "dry-run")
             self.assertEqual(event["target"]["scenario_id"], "FI-01")
+            output_arg = event["command"][event["command"].index("--output-last-message") + 1]
+            self.assertTrue(Path(output_arg).is_absolute())
+            self.assertEqual(output_arg, event["response_path"])
             self.assertTrue(event["command"][-1].startswith("<prompt omitted:"))
 
     def test_execute_appends_update_and_resume_skips_existing_target(self):

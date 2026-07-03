@@ -201,6 +201,9 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             [record] = [json.loads(line) for line in result.stdout.splitlines()]
             self.assertIn("--skip-git-repo-check", record["command"])
             self.assertEqual(record["command"][record["command"].index("-C") + 1], "/private/tmp")
+            output_arg = record["command"][record["command"].index("--output-last-message") + 1]
+            self.assertTrue(Path(output_arg).is_absolute())
+            self.assertEqual(Path(output_arg), workspace / "EB-04" / "baseline-positive" / "output.txt")
 
     def test_dry_run_can_inline_skill_only_for_skill_prompts(self):
         with tempfile.TemporaryDirectory() as tmp:
