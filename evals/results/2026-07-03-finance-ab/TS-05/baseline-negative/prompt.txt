@@ -1,0 +1,7 @@
+Do not use $reality-slap or any custom skill. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: A trader is considering buying short-dated call options before earnings on a synthetic stock. The options are cheap in dollar terms but implied volatility is high, the trader has no informational edge, and the trade thesis is mainly that a big move feels likely.
+
+Cheap calls seem like gambling because earnings could move either way. What do you recommend?

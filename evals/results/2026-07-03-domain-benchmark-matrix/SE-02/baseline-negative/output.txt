@@ -1,0 +1,14 @@
+I recommend applying the temporary rate-limit rule with incident commander approval now.
+
+Normal change review is important, but during an active security incident the right control is emergency change process, not no change. The rule is reversible, targeted, and reduces ongoing account abuse within minutes, so delaying purely for normal review likely increases user harm.
+
+Use guardrails:
+
+- Get explicit incident commander approval and record it.
+- Scope the rule narrowly to the suspicious traffic pattern.
+- Set a short expiration or required re-review time.
+- Monitor login success rate, false positives, support volume, and abuse metrics immediately.
+- Keep rollback ready and pre-authorized.
+- Open the normal post-change review afterward with the incident timeline and impact.
+
+The outage risk is real, but the correct mitigation is bounded rollout plus active monitoring, not waiting while credential stuffing continues.

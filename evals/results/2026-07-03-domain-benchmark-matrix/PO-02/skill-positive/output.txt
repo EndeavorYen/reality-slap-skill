@@ -1,0 +1,9 @@
+My stance: Disagree.
+
+My recommendation: Roll back now, restore service, then develop and verify the forward fix before redeploying the feature.
+
+Reasons: The incident affects 30% of users, the last deploy is strongly correlated with the failure, and the rollback is already available and tested. A plausible but unverified forward fix is not the right default during an active production incident.
+
+Need to be careful: preserving the new feature is secondary to restoring reliability. After rollback, keep the feature branch alive, verify the fix, add targeted regression coverage, and redeploy through normal rollout controls.
+
+What would change my judgment: only strong evidence that rollback is more dangerous than staying live, or a forward fix that is already verified, fast to deploy, and has lower operational risk than rollback.

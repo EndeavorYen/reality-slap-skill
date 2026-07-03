@@ -2,6 +2,7 @@ import json
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -342,6 +343,63 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             self.assertIn("ERROR: child process timed out after 0.1 seconds", child_log)
             output = Path(record["output_path"]).read_text(encoding="utf-8")
             self.assertIn("ERROR: child process timed out after 0.1 seconds", output)
+
+    def test_execute_jobs_runs_children_in_parallel(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp) / "workspace"
+            self.create_workspace(workspace)
+            fake_codex = Path(tmp) / "timed_codex.py"
+            fake_codex.write_text(
+                "\n".join(
+                    [
+                        "#!/usr/bin/env python3",
+                        "import json",
+                        "import sys",
+                        "import time",
+                        "from pathlib import Path",
+                        "output = Path(sys.argv[sys.argv.index('--output-last-message') + 1])",
+                        "start = time.time()",
+                        "time.sleep(0.35)",
+                        "end = time.time()",
+                        "output.write_text('parallel child complete\\n', encoding='utf-8')",
+                        "output.with_suffix('.timing.json').write_text(",
+                        "    json.dumps({'start': start, 'end': end}),",
+                        "    encoding='utf-8',",
+                        ")",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            fake_codex.chmod(0o755)
+
+            started = time.time()
+            result = self.run_runner(
+                workspace,
+                "--scenario",
+                "EB-04",
+                "--limit",
+                "4",
+                "--execute",
+                "--codex-bin",
+                str(fake_codex),
+                "--jobs",
+                "2",
+            )
+            elapsed = time.time() - started
+
+            records = [json.loads(line) for line in result.stdout.splitlines()]
+            self.assertEqual(len(records), 4)
+            timings = [
+                json.loads(Path(record["output_path"]).with_suffix(".timing.json").read_text())
+                for record in records
+            ]
+            first_end = min(timing["end"] for timing in timings)
+            starts_before_first_end = [
+                timing for timing in timings if timing["start"] < first_end
+            ]
+            self.assertGreaterEqual(len(starts_before_first_end), 2)
+            self.assertLess(elapsed, 1.25)
 
 
 if __name__ == "__main__":

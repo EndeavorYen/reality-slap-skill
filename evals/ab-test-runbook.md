@@ -79,6 +79,27 @@ Expected full output:
 Outputs complete: 400 / 400 after live collection
 ```
 
+Use the broad-small domain matrix when you want coverage across high-stakes and
+strategy domains without committing to a large benchmark run:
+
+```bash
+python3 scripts/validate_eval_bank.py \
+  --input evals/reality-slap-domain-benchmark-matrix.md \
+  --profile domain-matrix
+
+python3 scripts/create_ab_workspace.py \
+  --input evals/reality-slap-domain-benchmark-matrix.md \
+  --output-dir /private/tmp/reality-slap-domain-matrix \
+  --profile domain-matrix
+```
+
+Expected domain-matrix output:
+
+```text
+20 scenarios
+80 prompt records
+```
+
 ## Generate A Four-Scenario Smoke Sample
 
 Start with one scenario from each behavior class, plus one skill-behavior
@@ -217,13 +238,19 @@ The workspace output layout is:
 Run live outputs only after explicit approval for model evaluation:
 
 ```bash
-python3 scripts/run_codex_workspace.py --workspace /private/tmp/reality-slap-ab --execute
+python3 scripts/run_codex_workspace.py \
+  --workspace /private/tmp/reality-slap-ab \
+  --jobs 2 \
+  --execute
 ```
 
 This calls `codex exec --ephemeral --sandbox read-only` for each missing
 `output.txt` and writes the final assistant message to that file.
 The same `--scenario`, `--suite`, and `--limit` flags work with `--execute`;
-prefer small batches so each run can be audited before continuing.
+prefer small batches so each run can be audited before continuing. The default
+runner parallelism is `--jobs 2`; use `--jobs 1` for strict sequential
+debugging, or a small higher value only when rate limits and local capacity are
+under control.
 
 For self-contained evals, prefer a neutral working directory to avoid local
 project instructions contaminating tool-discipline results:
@@ -238,6 +265,7 @@ python3 scripts/run_codex_workspace.py \
   --child-timeout-seconds 120 \
   --inline-skill SKILL.md \
   --compact-events \
+  --jobs 2 \
   --execute
 ```
 
@@ -309,6 +337,25 @@ wrong-workspace, or rubric-context-free request targets are caught before a
 human or model scorer spends time on the wrong batch. Scorer requests also
 instruct the scorer not to read repo, memory, or web while scoring the supplied
 packet.
+
+If using Codex as the scorer, run the scorer requests with bounded parallelism:
+
+```bash
+python3 scripts/run_scoring_requests.py \
+  --requests /private/tmp/reality-slap-ab/scoring-requests.jsonl \
+  --updates /private/tmp/reality-slap-ab/score-updates.jsonl \
+  --response-dir /private/tmp/reality-slap-ab/scoring-responses \
+  --child-log-dir /private/tmp/reality-slap-ab/scoring-logs \
+  --child-timeout-seconds 120 \
+  --compact-events \
+  --jobs 2 \
+  --execute
+```
+
+Scorer workers write only their own response JSON files. The parent process
+then validates those responses and rewrites `score-updates.jsonl` in the
+deterministic order of `scoring-requests.jsonl`, so parallel workers never
+append to the same JSONL file concurrently.
 
 Prefer blind requests when delegating scoring. Blind requests strip the
 baseline/skill condition label from the scorer packet and use a private mapping

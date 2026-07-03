@@ -1,0 +1,13 @@
+Position: Disagree.
+
+Recommendation: Do not sell solely because the fund is down 14% in six weeks. Hold according to the written allocation plan, and rebalance only if the portfolio has drifted outside the plan’s thresholds.
+
+Reasons:
+- The stated horizon is over ten years, so a six-week drawdown is not enough evidence to abandon the plan.
+- Emergency cash is adequate, so there is no forced-liquidity reason to sell.
+- The fund still matches the written allocation plan.
+- No thesis-breaking evidence was provided; selling now would be market timing based on recent price movement.
+
+Need to watch: A 14% drop may reveal that the investor’s real risk tolerance is lower than the written plan assumed. That should lead to a deliberate allocation review, not a panic sale.
+
+What would change the recommendation: a near-term cash need, an allocation plan change made calmly, fund-specific impairment, excessive concentration, fee/strategy drift, or evidence that the original investment thesis no longer holds.

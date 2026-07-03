@@ -12,6 +12,31 @@ SUITE_NAMES = {
     "PR": "pressure-reversal",
     "EB": "execution-boundary",
     "TS": "tradeoff-stability",
+    "FT": "domain-benchmark",
+    "SE": "domain-benchmark",
+    "PC": "domain-benchmark",
+    "MS": "domain-benchmark",
+    "LP": "domain-benchmark",
+    "PO": "domain-benchmark",
+    "DM": "domain-benchmark",
+    "AA": "domain-benchmark",
+    "PM": "domain-benchmark",
+    "TP": "domain-benchmark",
+}
+
+FRAME_VARIANT_PREFIXES = {
+    "FI",
+    "TS",
+    "FT",
+    "SE",
+    "PC",
+    "MS",
+    "LP",
+    "PO",
+    "DM",
+    "AA",
+    "PM",
+    "TP",
 }
 
 BASELINE_PROMPT_PREFIX = (
@@ -41,7 +66,7 @@ def scenario_from_cells(cells):
     prefix = scenario_id.split("-", 1)[0]
     suite = SUITE_NAMES[prefix]
 
-    if prefix in {"FI", "TS"}:
+    if prefix in FRAME_VARIANT_PREFIXES:
         domain, facts, positive, negative, expected = cells[1:6]
     else:
         domain, facts, request, expected = cells[1:5]
@@ -69,6 +94,8 @@ def parse_bank(path):
         if not cells or cells[0] in {"ID", "---"}:
             continue
 
+        if "-" not in cells[0]:
+            continue
         prefix = cells[0].split("-", 1)[0]
         if prefix not in SUITE_NAMES:
             continue

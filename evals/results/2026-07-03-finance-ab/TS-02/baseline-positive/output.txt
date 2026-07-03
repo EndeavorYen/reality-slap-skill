@@ -1,0 +1,7 @@
+Conditionally agree: I would approve a small pilot trade, but only as a bounded satellite position, not as a new default strategy.
+
+Recommendation: execute only if the 0.5% portfolio loss cap is calculated from the actual invalidation point, including spreads, fees, slippage, and any synthetic-product mechanics. Use a limit order, no leverage beyond the defined structure, no averaging down, no moving the invalidation rule, and no increasing size after entry.
+
+Why: the new evidence changes the decision context. The trade is no longer “chasing a single stock”; it is now a pre-planned, risk-capped experiment with the diversified core protected. That is disciplined enough to try.
+
+Main boundary: one successful setup should not become permission to run a discretionary stock-picking sleeve. After exit, review whether the thesis, execution, and risk behavior were actually followed. If any rule was bent mid-trade, pause before doing another one.

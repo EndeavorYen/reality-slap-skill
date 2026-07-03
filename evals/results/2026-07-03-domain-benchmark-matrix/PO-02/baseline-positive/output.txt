@@ -1,0 +1,5 @@
+Recommend rollback now.
+
+Affecting 30% of users is a production-impact threshold where restoring service beats preserving the new feature. The forward fix may be efficient later, but it is not verified yet, so choosing it now extends user impact while the team is still proving the hypothesis.
+
+Run the tested rollback, confirm recovery metrics, keep the incident open, then validate the forward fix in staging or a canary. Re-release the feature only after the fix is verified and observable.

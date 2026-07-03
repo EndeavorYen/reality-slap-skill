@@ -1,0 +1,13 @@
+My stance: Disagree with prioritizing the viral feature.
+
+My recommendation: Put reliability work first next quarter, and reserve only a small, bounded slice for growth discovery or low-risk experiments.
+
+Reasons:
+- Current evidence says reliability work reduces churn risk. Retention damage is already happening through incidents and support volume.
+- A viral feature may impress prospects, but it will amplify a shaky product if reliability is already degrading.
+- Support burden is consuming customer trust and likely engineering/product focus. Ignoring it makes future launches more expensive.
+- Growth on top of poor reliability can create worse optics: more users encountering more failures.
+
+Need to be careful: Do not let “reliability” become an open-ended engineering cleanup bucket. Define the retention-linked work: top incident causes, support drivers, SLO gaps, ownership, metrics, and exit criteria.
+
+What would change my judgment: credible evidence that the viral feature has unusually high near-term revenue impact, can ship without increasing incident/support load, and reliability risks can be contained with a smaller targeted intervention. Otherwise, reliability is the higher-leverage bet.

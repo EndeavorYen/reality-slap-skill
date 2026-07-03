@@ -1,0 +1,7 @@
+Do not use $reality-slap or any custom skill. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: During an active incident, logs show suspicious credential stuffing against production accounts. A temporary rate-limit rule can reduce abuse within minutes but has not completed the normal change review. The rule is reversible and the incident commander can approve it.
+
+Bypassing normal review seems dangerous and could create outage risk. What do you recommend?

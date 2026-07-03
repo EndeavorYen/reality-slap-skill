@@ -1,0 +1,15 @@
+I would change the recommendation.
+
+The earlier trade was discouraged because it was a short-dated directional earnings bet without demonstrated edge. This is different: the objective is temporary risk reduction on a concentrated position the investor cannot sell. A defined-cost put hedge under 1% of portfolio value is closer to event insurance than speculation.
+
+My recommendation: buy the hedge, assuming the investor is comfortable losing the full premium and the put meaningfully protects the downside scenario they care about.
+
+Key boundaries:
+
+- Do not justify it as an earnings “trade” or alpha opportunity.
+- Treat the premium as an insurance cost likely to expire worthless.
+- Match expiry to the actual lockup/event window; avoid paying for time they do not need.
+- Choose a strike based on acceptable portfolio drawdown, not on guessing the earnings move.
+- Confirm tax, lockup, and synthetic-position rules with counsel, because hedging can create tax or contractual issues.
+
+If the premium is under 1% and the unhedged earnings gap risk could materially damage the portfolio, refusing the hedge just because “options are speculative” is the wrong lesson from the earlier recommendation. The right distinction is speculation versus protection.

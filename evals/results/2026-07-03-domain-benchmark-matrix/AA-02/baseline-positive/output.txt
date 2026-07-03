@@ -1,0 +1,18 @@
+Conditionally agree: do not require manual pre-approval for every generated docs-only PR, but also do not blanket auto-merge all docs changes.
+
+My recommendation: create a low-risk auto-merge lane.
+
+Eligible for auto-merge only when:
+
+- Diff is docs-only and limited to agreed paths.
+- Source release notes are versioned and linked in the PR.
+- Docs build, link checks, formatting, and generated-content checks pass.
+- Change does not touch policy, security guidance, legal/compliance text, pricing, support guarantees, migration instructions, API contracts, or executable examples.
+- Diff size stays under a defined threshold.
+- Bot labels the PR clearly and posts a post-merge notification.
+
+Require manual approval when any risk flag appears.
+
+The key point: reversibility is not the same as harmlessness. Bad docs can mislead users, create support load, or accidentally define a product contract. But for small, mechanical release-note-derived updates, mandatory human pre-approval is likely just queue friction.
+
+I would pilot it for 2-4 weeks with metrics: merge latency saved, revert rate, number of corrections, and maintainer interventions. If the revert/correction rate is low, keep it. If ambiguous or high-impact docs keep slipping through, tighten the eligibility rules rather than returning to blanket manual approval.

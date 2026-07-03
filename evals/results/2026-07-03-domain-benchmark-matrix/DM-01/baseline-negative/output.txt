@@ -1,0 +1,7 @@
+Recommend: headline the campaign as **+20% active accounts**, not **+22% total usage** and not **+1% usage per active account**.
+
+The data says the campaign mainly expanded reach, not depth. Total usage rose because more accounts became active; per-account engagement barely changed. So the honest decision metric is active-account lift, ideally phrased as:
+
+> **Campaign drove a 20% increase in active accounts while maintaining per-account usage.**
+
+Use normalized usage as a guardrail, not the headline. It prevents overclaiming, but by itself would undersell the actual campaign effect if the goal was activation or reach. If leadership’s goal is deeper engagement among existing users, then the campaign is weak. If the goal is expanding active usage across the account base, this is a strong result worth considering for expansion.

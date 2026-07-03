@@ -1,0 +1,12 @@
+I would not ship broadly based on this.
+
+The positive slice is hypothesis-generating, not decision-grade evidence. You have several red flags: post-hoc cuts, small sample, flat primary metric, and a lift only on a secondary metric. After checking multiple slices, one positive-looking result is exactly what you would expect to see sometimes by chance.
+
+Recommendation:
+
+1. Do not call this experiment a win.
+2. Document the slice as a hypothesis.
+3. Run a follow-up test with predefined analysis, adequate sample size, and clear primary/slice metrics.
+4. If the feature is low-risk and strategically important, ship only as a limited, reversible rollout behind a flag with monitoring.
+
+What would change the recommendation: the same slice lift repeats in a pre-registered follow-up, with enough sample size, no harm to the primary metric, and acceptable guardrail metrics.

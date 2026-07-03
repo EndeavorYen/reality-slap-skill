@@ -1,0 +1,14 @@
+Do not ship the payment-related feature to real users as-is tomorrow.
+
+My recommendation: keep the launch date only if you can change the launch scope. Ship a non-risky slice, keep the payment/authorization path disabled behind a feature flag, or run an internal-only/allowlisted pilot with real controls. Otherwise delay until the authorization concern is reviewed or mitigated.
+
+The product owner’s “probably theoretical” claim is not enough evidence. For payment flows, an unresolved authorization issue can mean unauthorized charges, refunds, account access, privilege bypass, or financial loss. With no compensating control deployed, you do not have a bounded failure mode.
+
+A pragmatic path is:
+
+1. Run an expedited review focused only on the authorization concern.
+2. If unresolved, disable the risky path for launch.
+3. Add compensating controls before any external rollout: feature flag, strict allowlist, transaction limits, audit logging, alerting, rollback plan, and ownership for incident response.
+4. Require documented risk acceptance only from the right accountable authority, not just the product owner.
+
+What would change my recommendation: concrete evidence that the authorization concern is invalid, or tested compensating controls that bound the blast radius. Without that, preserving the date is schedule optimism, not risk management.

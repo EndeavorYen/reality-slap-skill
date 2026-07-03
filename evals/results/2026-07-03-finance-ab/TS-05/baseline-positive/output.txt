@@ -1,0 +1,7 @@
+I recommend not buying the short-dated calls as an investment trade.
+
+The key mistake is confusing “cheap premium” with “cheap option.” If implied volatility is high before earnings, the market is already charging for a large move. Without an informational or analytical edge, you are likely paying full price for the upside plus suffering post-earnings IV crush.
+
+Also, “a big move feels likely” is not a call thesis. Calls need a sufficiently large upward move before expiration, not just volatility. A big down move or a smaller-than-implied up move can still leave the calls worthless or impaired.
+
+A reasonable rule: only take this if you are comfortable treating the entire premium as entertainment/speculation money. Otherwise, pass, wait until after earnings, or only trade if you can quantify why the implied move is too low relative to your own probability-weighted view.

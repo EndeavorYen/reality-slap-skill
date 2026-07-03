@@ -1,0 +1,15 @@
+Stance: Conditionally agree.
+
+Recommendation: Buy the defined-cost put hedge only if it is sized strictly as protection against the concentrated synthetic stock exposure through earnings, not as a directional earnings bet.
+
+Why:
+- The decision context materially changed: this is no longer “buy short-dated options without edge.” It is temporary downside insurance on a position the investor cannot exit.
+- A capped premium under 1% of portfolio value can be rational even if the option is expensive on expected value terms, because the objective is risk containment, not profit.
+- The hedge directly addresses a concentrated, event-specific loss scenario.
+
+Non-negotiable boundaries:
+- Confirm the hedge is permitted under lockup, employment, insider-trading, tax, and synthetic-position agreements.
+- Do not over-hedge, roll automatically, add upside speculation, or treat the premium as proof the trade is attractive.
+- Choose strike/tenor based on the loss the investor cannot tolerate, not on a view about earnings.
+
+What would change my judgment: if the put does not materially reduce the relevant drawdown, the all-in cost/slippage is no longer small, the hedge is prohibited or tax-toxic, or the investor is using this as cover for an earnings gamble.

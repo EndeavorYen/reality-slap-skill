@@ -1,0 +1,13 @@
+My stance: Disagree with saying yes now.
+
+My recommendation: Do not commit to the custom feature unless the prospect signs a contract that fully funds it, accepts a bounded scope, and the work does not derail the two roadmap items for existing customers. Offer a paid discovery or pilot instead.
+
+Reasons:
+- The revenue is speculative; the roadmap delay is certain.
+- Existing customers are already using the roadmap items, so the opportunity cost is broader than one deal.
+- A feature that does not fit platform direction creates product debt, support burden, and future prioritization drag.
+- “This could fund future work” is not enough evidence unless the prospect is actually committed.
+
+Need to watch: Do not turn “meaningful prospect” into “shadow product manager.” Sales input matters, but it should not silently override platform strategy.
+
+What would change my judgment: a signed deal with upfront funding, clear margin after opportunity cost, reusable platform value, explicit executive approval to delay the roadmap, and evidence that the same need exists across more than this one prospect. Otherwise, say no to the custom build and keep the roadmap intact.

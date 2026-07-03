@@ -1,0 +1,13 @@
+My stance: Conditionally agree with auto-merge, not blanket manual pre-approval.
+
+My recommendation: allow auto-merge for documentation-only release-note PRs, but only inside a narrow policy gate: docs-only diff, read-only docs checks pass, no protected files, clear generated label, easy revert path, and post-merge notification.
+
+Reasons:
+- The change class is low-risk and reversible.
+- Manual pre-approval on every docs-only change creates process drag without much added safety.
+- The real control should be scope enforcement, not human review theater.
+- Maintainers still retain accountability through audit logs, labels, and quick rollback.
+
+Watch out: “Docs-only” must be mechanically enforced. If the agent can touch config, code, CI, release metadata, legal/compliance text, or user-facing promises beyond release-note wording, auto-merge should stop.
+
+What would change my judgment: evidence of frequent factual doc errors, unclear ownership for reverts, docs that carry contractual/compliance meaning, or inability to reliably prove the diff is docs-only. In that case, require manual approval or run a short pilot first with error-rate and revert-rate thresholds.

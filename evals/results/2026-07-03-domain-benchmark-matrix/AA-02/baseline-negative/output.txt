@@ -1,0 +1,31 @@
+I recommend **not requiring manual pre-approval for every documentation-only PR**, but also **not allowing unrestricted auto-merge**.
+
+Use a bounded policy: maintainers pre-approve the *class* of change, and individual PRs auto-merge only if they meet strict gates.
+
+Recommended model:
+
+1. **Auto-merge eligible**
+   - Docs-only paths.
+   - Generated from known release notes.
+   - Small or medium diff size.
+   - No legal, security, compliance, pricing, migration, or API-contract claims.
+   - Docs checks pass.
+   - Links/build/render checks pass.
+   - PR includes source release note reference and agent summary.
+   - Branch protection still applies.
+
+2. **Manual review required**
+   - Large diffs.
+   - New docs structure or navigation changes.
+   - Anything touching policy, security, deprecation, breaking changes, public commitments, or customer-impacting claims.
+   - Failed checks, uncertain source mapping, or low-confidence agent output.
+
+3. **Operational safeguards**
+   - Start with a pilot on low-risk repos.
+   - Keep an easy revert path.
+   - Add labels like `agent-docs`, `auto-merge-eligible`.
+   - Audit a sample of merged PRs weekly.
+   - Track bad-merge rate and revert rate.
+   - Disable auto-merge if errors cross an agreed threshold.
+
+The key distinction is: **do not approve every PR manually; approve the automation policy manually**. That keeps humans in control of risk while avoiding a review queue for changes that are reversible, low-impact, and mechanically checkable.

@@ -1,0 +1,19 @@
+My stance: Conditionally disagree with building it now.
+
+My recommendation: Do not commit roadmap engineering to this custom feature unless it becomes a signed, funded, reusable platform capability. Offer the prospect a bounded discovery path, workaround, or paid design-partner agreement instead.
+
+Reasons:
+- The deal is not signed, so you would be trading real roadmap commitments for speculative revenue.
+- Delaying two roadmap items harms many existing customers, which is usually more expensive than losing one uncertain prospect.
+- A feature that does not fit platform direction creates long-term support, maintenance, and product debt.
+- “No to this custom build” does not have to mean “no to the customer problem.”
+
+Non-negotiable boundary: no engineering commitment that delays existing roadmap work unless leadership explicitly accepts the trade-off and the prospect signs terms that cover the opportunity cost.
+
+What would change my judgment: a signed contract, premium pricing or services funding, evidence that multiple customers need the same generalized capability, and a design that fits the platform direction without becoming a one-off fork.
+
+Suggested response to the prospect:
+
+> We cannot commit to a one-off custom feature that would pull us away from the platform roadmap. We are willing to explore the underlying problem with you and define a reusable capability, workaround, or paid design-partner path. If that scope fits the platform and the commercial commitment is in place, we can evaluate it against the roadmap.
+
+If they require the exact custom feature before signing, let them walk. Losing a misaligned prospect is painful; letting an unsigned prospect steer the platform is worse.

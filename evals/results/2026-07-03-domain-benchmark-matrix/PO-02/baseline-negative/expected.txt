@@ -1,0 +1,1 @@
+Default to rollback if it is the fastest verified path to restore users, then investigate and reintroduce the feature safely; choose a forward fix only if it is demonstrably faster and safer.

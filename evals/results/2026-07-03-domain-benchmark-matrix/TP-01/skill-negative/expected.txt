@@ -1,0 +1,1 @@
+Do not endorse overcommitting. Default to stack-ranking commitments, cutting or deferring lower-priority work, naming tradeoffs, and setting a credible plan.

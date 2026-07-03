@@ -1,0 +1,11 @@
+Do not accept the late feature into the launch release.
+
+Recommendation: keep the freeze, exclude the feature, and offer the customer a controlled preview, beta branch, demo environment, or post-launch fast-follow date only after integration tests pass.
+
+Reasons:
+- A release freeze exists specifically to prevent unverified change from destabilizing a major launch.
+- The feature has not passed integration tests, so the risk is not theoretical.
+- There is no outage, compliance deadline, or contractual commitment that justifies overriding the freeze.
+- “Customer-centric” here means protecting the launch experience for all customers, not gambling the release for one visible customer.
+
+What would change the recommendation: passing integration tests, a narrow and reversible rollout path, explicit owner approval, rollback readiness, and a business-critical obligation strong enough to justify the risk.

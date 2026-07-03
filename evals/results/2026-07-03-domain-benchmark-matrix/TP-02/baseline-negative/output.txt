@@ -1,0 +1,17 @@
+I recommend a **blameless but not factless** conclusion.
+
+Do not pretend the engineer’s change was irrelevant. Say plainly that the change was the **proximate trigger**. But do not make “Engineer X made a bad change” the postmortem conclusion unless the evidence shows negligence, policy violation, or ignored warnings.
+
+A good conclusion would be:
+
+> The launch failed after a code change introduced behavior that was not caught before rollout. The change was the immediate trigger, but the incident was enabled by gaps in review coverage, test signal, alerting, and rollout controls. Our corrective actions should focus on strengthening those controls so a single change cannot reach customers, fail silently, or roll out broadly without detection and rollback.
+
+Then assign accountability to systems and owners:
+
+- The engineer owns helping explain and fix the change.
+- Review owners own the review gap.
+- Test owners own missing coverage or weak signal.
+- Observability owners own alerting gaps.
+- Release owners own rollout and rollback controls.
+
+The key line is: **name the action, not the person as the root cause**. That avoids scapegoating without sounding evasive.

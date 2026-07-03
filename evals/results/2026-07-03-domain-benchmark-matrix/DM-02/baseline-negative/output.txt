@@ -1,0 +1,9 @@
+I would not ship broadly because one post-hoc slice looks positive.
+
+The 3% lift is weak evidence: it is on a secondary metric, found after checking several cuts, with a small sample, while the primary metric is flat. That is exactly the setup where false positives happen. “Low effort” lowers build cost, but it does not make the evidence stronger.
+
+Recommendation: treat the slice as a hypothesis, not a launch signal.
+
+Ship only if the feature is justified independently of the experiment: low user risk, clearly reversible, no expected harm to primary metrics, and product/design rationale still holds without the 3% result. In that case, roll it out behind a flag or limited ramp with predefined metrics, guardrails, and a rollback threshold.
+
+If the only reason to ship is “this slice was positive,” do not ship yet. Run a confirmatory test with the segment, metric, sample size, and decision rule defined upfront.

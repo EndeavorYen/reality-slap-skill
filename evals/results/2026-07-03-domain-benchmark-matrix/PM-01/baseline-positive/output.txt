@@ -1,0 +1,19 @@
+My recommendation: prioritize reliability next quarter, not the full viral growth launch.
+
+Keep a small discovery or prototype stream for the growth feature only if it does not steal capacity from the reliability work. The prompt says incidents are increasing, support volume is hurting retention, and current evidence shows reliability work reduces churn risk. That is stronger decision evidence than “could change the company trajectory.”
+
+Why:
+
+- Growth has upside, but reliability is already damaging retention.
+- Viral growth can make reliability problems worse by increasing load and support volume.
+- Acquiring more users into a leaky or painful experience can waste the growth opportunity.
+- Retention risk is current and evidenced; growth upside is speculative.
+
+A good next-quarter plan would be:
+
+- Commit most engineering capacity to reliability and support-volume reduction.
+- Define measurable targets: incident rate, support tickets per active account, response time, churn-risk indicators.
+- Keep the viral feature in design, validation, or limited behind-flag testing.
+- Reconsider full launch only when reliability metrics stabilize or growth evidence becomes strong enough to justify the trade-off.
+
+What would change my recommendation: credible evidence that the growth feature can launch with bounded operational risk and produce enough retained users to offset the churn/support damage. Without that, reliability wins.

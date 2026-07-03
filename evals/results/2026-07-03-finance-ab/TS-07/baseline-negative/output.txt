@@ -1,0 +1,13 @@
+I recommend **not using margin to buy more**.
+
+The position is already 42% of the portfolio, so the investor is not deciding whether to “back a winner”; they are deciding whether to add leverage to an already concentrated, single-stock risk. With cyclical income and only three months of emergency cash, margin makes the weakest part of the setup worse: a stock drawdown, income dip, and margin call could all arrive together.
+
+A more prudent plan:
+
+1. Do not add margin.
+2. Rebuild emergency cash first, likely beyond three months because income is cyclical.
+3. Update the valuation and downside case before making any new buy decision.
+4. Set a written concentration limit, trim plan, or rebalancing rule.
+5. Define in advance what would trigger selling, hedging, or reducing exposure.
+
+The only case for adding would require a current valuation, a quantified downside plan, stable liquidity outside the portfolio, and a clear ability to survive a large drawdown without forced selling. Those conditions are not present here.

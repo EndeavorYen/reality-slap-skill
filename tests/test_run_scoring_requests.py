@@ -10,11 +10,11 @@ ROOT = Path(__file__).resolve().parents[1]
 RUNNER = ROOT / "scripts" / "run_scoring_requests.py"
 
 
-def sample_request():
+def sample_request(scenario_id="FI-01", configuration="baseline-positive"):
     target = {
-        "scenario_id": "FI-01",
+        "scenario_id": scenario_id,
         "score_type": "individual",
-        "configuration": "baseline-positive",
+        "configuration": configuration,
     }
     return {
         "request_type": "score-update-request",
@@ -41,6 +41,17 @@ def sample_request():
 class RunScoringRequestsTests(unittest.TestCase):
     def write_requests(self, path):
         path.write_text(json.dumps(sample_request()) + "\n", encoding="utf-8")
+
+    def write_multiple_requests(self, path):
+        requests = [
+            sample_request("FI-01", "baseline-positive"),
+            sample_request("FI-02", "baseline-negative"),
+            sample_request("FI-03", "skill-positive"),
+        ]
+        path.write_text(
+            "".join(json.dumps(request) + "\n" for request in requests),
+            encoding="utf-8",
+        )
 
     def run_runner(self, *args, check=True):
         return subprocess.run(
@@ -131,6 +142,74 @@ class RunScoringRequestsTests(unittest.TestCase):
             )
 
             self.assertEqual(resume.stdout, "")
+
+    def test_execute_jobs_merges_score_updates_in_request_order(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            requests = tmp_path / "requests.jsonl"
+            updates = tmp_path / "updates.jsonl"
+            response_dir = tmp_path / "responses"
+            self.write_multiple_requests(requests)
+            fake_codex = tmp_path / "fake_scorer.py"
+            fake_codex.write_text(
+                "\n".join(
+                    [
+                        "#!/usr/bin/env python3",
+                        "import json",
+                        "import sys",
+                        "import time",
+                        "from pathlib import Path",
+                        "output = Path(sys.argv[sys.argv.index('--output-last-message') + 1])",
+                        "prompt = sys.argv[-1]",
+                        "request_json = prompt.split('Scoring request JSON:', 1)[1].strip()",
+                        "request = json.loads(request_json)",
+                        "target = request['score_update_template']",
+                        "delays = {'FI-01': 0.30, 'FI-02': 0.10, 'FI-03': 0.20}",
+                        "time.sleep(delays[target['scenario_id']])",
+                        "update = {",
+                        "  'scenario_id': target['scenario_id'],",
+                        "  'score_type': target['score_type'],",
+                        "  'configuration': target['configuration'],",
+                        "  'score': {",
+                        "    'stance': 2,",
+                        "    'evidence_discipline': 2,",
+                        "    'boundary_clarity': 2,",
+                        "    'useful_recommendation': 2,",
+                        "    'change_condition': 2,",
+                        "    'scope_and_tool_discipline': 2,",
+                        "    'tone_and_collaboration': 2,",
+                        "    'total': 14,",
+                        "    'notes': target['scenario_id']",
+                        "  }",
+                        "}",
+                        "output.write_text(json.dumps(update), encoding='utf-8')",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            fake_codex.chmod(0o755)
+
+            self.run_runner(
+                "--requests",
+                str(requests),
+                "--updates",
+                str(updates),
+                "--response-dir",
+                str(response_dir),
+                "--codex-bin",
+                str(fake_codex),
+                "--execute",
+                "--jobs",
+                "3",
+            )
+
+            written = [json.loads(line) for line in updates.read_text().splitlines()]
+            self.assertEqual(
+                [update["scenario_id"] for update in written],
+                ["FI-01", "FI-02", "FI-03"],
+            )
+            self.assertEqual(len(list(response_dir.glob("*.json"))), 3)
 
 
 if __name__ == "__main__":

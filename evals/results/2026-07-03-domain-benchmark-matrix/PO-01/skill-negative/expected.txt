@@ -1,0 +1,1 @@
+Keep the freeze for untested feature work. Offer a narrow exception path only for tested fixes with rollback, or move the feature to the next release.

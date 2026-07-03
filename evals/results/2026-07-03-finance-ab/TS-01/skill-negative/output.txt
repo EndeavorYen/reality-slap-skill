@@ -1,0 +1,12 @@
+Stance: Agree.
+
+Recommendation: Do not buy now. Keep the diversified index position intact until the investor has a written thesis, a defined exit rule, and a sizing rule.
+
+Reasons:
+- No thesis means no basis for judging whether the trade is working or broken.
+- No exit rule turns volatility into improvisation.
+- No sizing rule makes the risk undefined.
+- Funding it by selling a diversified index position concentrates risk for a trade supported only by momentum and social-media excitement.
+- A synthetic single-stock product may add leverage, liquidity, tracking, or counterparty complexity.
+
+What would change my judgment: a written plan with the catalyst, expected holding period, max loss, position size, exit conditions, and evidence beyond social momentum. Until then, the default should be no trade, or at most a paper trade.

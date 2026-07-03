@@ -1,0 +1,13 @@
+My stance: Conditionally agree.
+
+My recommendation: Use **active accounts +20%** as the headline metric, with **usage per active account +1%** as the required caveat.
+
+Reason: the campaign appears to have expanded participation, not materially increased depth of usage. Leading with **total usage +22%** overstates the campaign mechanism because almost all of that lift is explained by more active accounts. Leading only with normalized usage would undersell the acquisition effect if the campaign’s goal was growth.
+
+Suggested headline:
+
+> Campaign increased active accounts by 20%, while usage per active account stayed roughly flat (+1%).
+
+Be careful: this supports expanding the campaign only if leadership wants more active accounts. If the business case depends on deeper engagement, retention, revenue per account, or margin, the evidence is weak.
+
+What would change my judgment: proof that the new active accounts retain, convert, or generate profitable usage after the campaign window.

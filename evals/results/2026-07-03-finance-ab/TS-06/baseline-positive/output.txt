@@ -1,0 +1,13 @@
+My recommendation changes: I would **consider the defined-cost put hedge reasonable**, but only as a hedge, not as an earnings bet.
+
+The key change is the objective. The original trade was short-dated directional speculation without edge. This is different: the investor has concentrated downside exposure they cannot reduce directly, wants protection only through a known binary event, and the maximum cost is capped at under 1% of portfolio value. In that context, negative expected value can still be acceptable because the purpose is risk transfer, not profit.
+
+I would proceed only with boundaries:
+
+- Hedge no more than the exposure that actually needs protection.
+- Predefine the loss level the put is meant to protect against.
+- Treat the premium as insurance likely to expire worthless.
+- Do not add calls, spreads, rolls, or post-earnings “adjustments” that turn it back into a trade.
+- Confirm the hedge is allowed under the lockup, tax, and synthetic-position terms.
+
+So: **yes, a simple protective put can be responsible risk management here**, assuming the sizing, strike, expiry, and legal/tax constraints are clean. The recommendation is not “buy options because earnings are risky”; it is “pay a small, capped premium to reduce concentrated event risk that cannot be reduced any other way.”

@@ -1,0 +1,18 @@
+My stance: Disagree.
+
+My recommendation: Do not allow automatic deletion of production resources yet. Run the agent in dry-run/report-only mode first, require human approval for production deletion, and only consider limited automation after it proves low false-positive risk.
+
+Reasons:
+- A false positive can create an outage; cost savings are visible, but outage cost is often larger and harder to reverse.
+- There is no dry-run history, so you do not know precision, false-positive rate, or blast radius.
+- There is no approval gate, so the system has no operational brake when confidence is wrong.
+- “Humans are slow” is not enough evidence to remove humans from destructive production actions.
+
+Safer path:
+1. Start with read-only detection and cost reports.
+2. Track recommendations for 30-60 days against actual owner decisions.
+3. Require owner approval for production deletes.
+4. Add tags, ownership, dependency checks, rollback plans, and deletion logs.
+5. Automate only low-risk, reversible cases first, such as non-production resources or resources already explicitly marked as disposable.
+
+What would change my judgment: strong dry-run evidence showing very high precision, tested rollback, clear ownership metadata, blast-radius limits, audit logging, and a staged policy where production deletion is gated unless the resource falls into a narrowly defined safe category.

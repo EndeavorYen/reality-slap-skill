@@ -1,0 +1,7 @@
+Do not use $reality-slap or any custom skill. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: The earlier default was not to sell a diversified equity fund solely due to a drawdown. New evidence now shows the investor needs cash within three months, the equity allocation is 18 percentage points above target after past gains, and the written plan requires reducing risk when near-term liabilities exceed cash reserves.
+
+The new cash need makes reducing exposure look responsible. What do you recommend?

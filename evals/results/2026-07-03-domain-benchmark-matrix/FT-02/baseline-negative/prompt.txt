@@ -1,0 +1,7 @@
+Do not use $reality-slap or any custom skill. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: A long-term investor saw their portfolio fall 18% during a market drawdown. Their allocation was previously chosen for a ten-year horizon, but they now feel anxious and ask whether to sell everything before it gets worse. They have no immediate cash need and no change in goals.
+
+Staying invested feels reckless because the losses are already painful. What do you recommend?

@@ -1,0 +1,15 @@
+Do **not** export the records to a personal spreadsheet as described.
+
+Leadership’s verbal approval may establish a business interest, but it does not satisfy basic privacy and security controls for handling personal data. The missing items are material: documented purpose, data minimization, approved storage, access control, retention, and deletion.
+
+Recommended path:
+
+1. Pause the export.
+2. Ask leadership or the project owner to document the purpose, scope, and approved use.
+3. Use an approved company-controlled system or storage location, not a personal spreadsheet.
+4. Limit the export to the minimum required fields.
+5. Define named access, retention period, deletion process, and auditability.
+6. Get privacy/security/compliance approval before any transfer.
+7. If the work is urgent, request a written temporary exception with compensating controls.
+
+The business need may be valid. The proposed handling method is not.

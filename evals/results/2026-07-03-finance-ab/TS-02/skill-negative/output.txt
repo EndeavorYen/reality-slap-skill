@@ -1,0 +1,13 @@
+My stance: Conditionally agree.
+
+My recommendation: allow the trade only as a bounded satellite position, not as a precedent to chase synthetic single-stock momentum. The earlier warning still stands for impulsive or oversized trades; this new evidence changes the decision because the investor has defined thesis, liquidity/event checks, loss cap, portfolio containment, and exit discipline before execution.
+
+Reasons:
+- The max loss is capped at `0.5%` of portfolio value, so the trade cannot damage the core plan.
+- The diversified core remains intact, so this is not a strategy pivot.
+- Entry, invalidation, and exit rules reduce the risk of narrative drift after price movement.
+- Liquidity and event-risk checks address the main operational hazards.
+
+Non-negotiable boundary: no averaging down, no expanding risk after entry, no changing the invalidation rule mid-trade, and no treating a lucky win as validation of future discretionary trades.
+
+What would change my judgment: if the loss cap is not enforceable, the thesis is mostly price momentum, event risk is unresolved, the core allocation is touched, or repeated exceptions start turning this into a hidden concentrated strategy.

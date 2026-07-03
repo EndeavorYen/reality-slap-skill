@@ -2,6 +2,7 @@
 """Dry-run or execute Codex runs for a Reality Slap A/B workspace."""
 
 import argparse
+import concurrent.futures
 import json
 import subprocess
 import sys
@@ -60,6 +61,10 @@ def write_timeout_output(run, timeout_seconds):
     output_path.write_text(timeout_message(timeout_seconds) + "\n", encoding="utf-8")
 
 
+class ChildRunTimeout(RuntimeError):
+    pass
+
+
 def build_command(codex_bin, cwd, output_path, prompt, skip_git_repo_check=False):
     command = [
         codex_bin,
@@ -106,6 +111,65 @@ def compact_event(event):
     event["command"] = command
     event["prompt_chars"] = len(prompt)
     return event
+
+
+def positive_int(value):
+    parsed = int(value)
+    if parsed < 1:
+        raise argparse.ArgumentTypeError("--jobs must be at least 1")
+    return parsed
+
+
+def child_log_path_for(child_log_dir, run):
+    return Path(child_log_dir) / run["scenario_id"] / f"{run['configuration']}.log"
+
+
+def event_for_run(run, mode, child_log_dir):
+    event = dict(run)
+    event["mode"] = mode
+    if child_log_dir:
+        event["child_log_path"] = str(child_log_path_for(child_log_dir, run))
+    return event
+
+
+def execute_run(run, cwd, child_log_dir, child_timeout_seconds):
+    child_log_path = child_log_path_for(child_log_dir, run) if child_log_dir else None
+    if child_log_path:
+        child_log_path.parent.mkdir(parents=True, exist_ok=True)
+        with child_log_path.open("w", encoding="utf-8") as log_file:
+            try:
+                subprocess.run(
+                    run["command"],
+                    cwd=cwd,
+                    check=True,
+                    stdout=log_file,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    timeout=child_timeout_seconds,
+                )
+            except subprocess.TimeoutExpired as error:
+                write_timeout_output(run, child_timeout_seconds)
+                log_file.write(f"\n{timeout_message(child_timeout_seconds)}\n")
+                raise ChildRunTimeout(
+                    "child run timed out after "
+                    f"{child_timeout_seconds:g} seconds: "
+                    f"{run['scenario_id']} {run['configuration']}"
+                ) from error
+    else:
+        try:
+            subprocess.run(
+                run["command"],
+                cwd=cwd,
+                check=True,
+                timeout=child_timeout_seconds,
+            )
+        except subprocess.TimeoutExpired as error:
+            write_timeout_output(run, child_timeout_seconds)
+            raise ChildRunTimeout(
+                "child run timed out after "
+                f"{child_timeout_seconds:g} seconds: "
+                f"{run['scenario_id']} {run['configuration']}"
+            ) from error
 
 
 def iter_runs(
@@ -174,9 +238,10 @@ def run_workspace(
     child_timeout_seconds=None,
     inline_skill_path=None,
     compact_events=False,
+    jobs=2,
 ):
     mode = "execute" if execute else "dry-run"
-    for run in iter_runs(
+    runs = list(iter_runs(
         workspace,
         codex_bin,
         cwd,
@@ -186,60 +251,37 @@ def run_workspace(
         skip_git_repo_check,
         limit,
         inline_skill_path=inline_skill_path,
-    ):
-        event = dict(run)
-        event["mode"] = mode
-        child_log_path = None
-        if child_log_dir:
-            child_log_path = (
-                Path(child_log_dir)
-                / run["scenario_id"]
-                / f"{run['configuration']}.log"
-            )
-            event["child_log_path"] = str(child_log_path)
+    ))
+
+    for run in runs:
+        event = event_for_run(run, mode, child_log_dir)
         printed_event = compact_event(event) if compact_events else event
         print(json.dumps(printed_event, sort_keys=True))
-        if execute:
-            if child_log_path:
-                child_log_path.parent.mkdir(parents=True, exist_ok=True)
-                with child_log_path.open("w", encoding="utf-8") as log_file:
-                    try:
-                        subprocess.run(
-                            run["command"],
-                            cwd=cwd,
-                            check=True,
-                            stdout=log_file,
-                            stderr=subprocess.STDOUT,
-                            text=True,
-                            timeout=child_timeout_seconds,
-                        )
-                    except subprocess.TimeoutExpired:
-                        write_timeout_output(run, child_timeout_seconds)
-                        log_file.write(f"\n{timeout_message(child_timeout_seconds)}\n")
-                        print(
-                            "child run timed out after "
-                            f"{child_timeout_seconds:g} seconds: "
-                            f"{run['scenario_id']} {run['configuration']}",
-                            file=sys.stderr,
-                        )
-                        raise SystemExit(124)
-            else:
-                try:
-                    subprocess.run(
-                        run["command"],
-                        cwd=cwd,
-                        check=True,
-                        timeout=child_timeout_seconds,
+
+    if not execute:
+        return
+
+    try:
+        if jobs == 1 or len(runs) <= 1:
+            for run in runs:
+                execute_run(run, cwd, child_log_dir, child_timeout_seconds)
+        else:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as executor:
+                futures = [
+                    executor.submit(
+                        execute_run,
+                        run,
+                        cwd,
+                        child_log_dir,
+                        child_timeout_seconds,
                     )
-                except subprocess.TimeoutExpired:
-                    write_timeout_output(run, child_timeout_seconds)
-                    print(
-                        "child run timed out after "
-                        f"{child_timeout_seconds:g} seconds: "
-                        f"{run['scenario_id']} {run['configuration']}",
-                        file=sys.stderr,
-                    )
-                    raise SystemExit(124)
+                    for run in runs
+                ]
+                for future in concurrent.futures.as_completed(futures):
+                    future.result()
+    except ChildRunTimeout as error:
+        print(error, file=sys.stderr)
+        raise SystemExit(124)
 
 
 def main():
@@ -256,7 +298,7 @@ def main():
     )
     parser.add_argument(
         "--suite",
-        choices=sorted(SUITE_NAMES.values()),
+        choices=sorted(set(SUITE_NAMES.values())),
     )
     parser.add_argument("--scenario", action="append", default=[])
     parser.add_argument("--limit", type=int)
@@ -281,6 +323,12 @@ def main():
         action="store_true",
         help="Omit full prompts from emitted JSONL events while keeping execution unchanged.",
     )
+    parser.add_argument(
+        "--jobs",
+        type=positive_int,
+        default=2,
+        help="Maximum child codex runs to execute in parallel (default: 2).",
+    )
     args = parser.parse_args()
 
     run_workspace(
@@ -297,6 +345,7 @@ def main():
         child_timeout_seconds=args.child_timeout_seconds,
         inline_skill_path=args.inline_skill,
         compact_events=args.compact_events,
+        jobs=args.jobs,
     )
 
 

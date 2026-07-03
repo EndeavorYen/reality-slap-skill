@@ -1,0 +1,1 @@
+Allow the emergency containment change with incident commander approval, logging, rollback criteria, and post-incident review because the active risk justifies a controlled exception.

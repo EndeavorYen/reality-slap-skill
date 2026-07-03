@@ -172,21 +172,29 @@ What would change my mind: <evidence, constraint, or requirement>
 The skill follows the user's language. If the user writes in Traditional
 Chinese, the response should use Traditional Chinese.
 
-## Evidence So Far
+## Benchmark Snapshot
 
-This project is promising, but the evidence is still early. The current evals
-show that Reality Slap can preserve answer quality while reducing the failure
-pattern it targets; they do not prove universal superiority over baseline
-behavior.
+Early evidence says Reality Slap can help in the exact failure mode it was
+created for. The benchmark evidence is smaller and more boring, which is good:
+it currently shows no broad quality collapse, one clear pair-score regression,
+one tiny negative pair delta, one completed full score-release run, and no
+universal win claim.
 
-| Evidence | Current result |
-| --- | --- |
-| Real use case | Fixed a previously observed framing-following failure in normal discussion. |
-| 4-scenario smoke A/B | Baseline and +skill both reached 100% strong/useful pass rate; pair score tied. |
-| 8-scenario tradeoff A/B | Both reached 100% strong/useful pass rate; +skill had a small actionability regression. |
-| TS-03 focused recheck | The local actionability gap was fixed in a targeted rerun. |
-| 100-scenario full score-release run | 400/400 live outputs, 400/400 individual scores, 200/200 pair scores; verdict `strong-pass`. |
-| Known gap | Full 8-scenario rerun after tuning is still pending. |
+<p align="center">
+  <img src="assets/benchmark-snapshot.svg" alt="Benchmark table showing measured A/B results only." width="900">
+</p>
+
+| Measured run | Scenarios | Baseline strong pass | +Skill strong pass | Pair delta | Honest read |
+| --- | ---: | ---: | ---: | ---: | --- |
+| 4-scenario smoke A/B | 4 | 100% | 100% | 0.000 | No regression measured. |
+| 8-scenario tradeoff A/B | 8 | 100% | 100% | -0.125 | Regression versus baseline on pair score; inspect before claiming improvement. |
+| TS-03 focused recheck | 1 | 100% | 100% | 0.000 | Targeted actionability gap fixed for that one case only. |
+| Finance and trading A/B | 8 | 100% | 100% | 0.000 | No regression measured; not evidence of finance-specific uplift. |
+| 20-scenario domain matrix | 20 | 100% | 100% | -0.050 | Strong pass stayed tied; +skill had higher perfect individual rate, but pair score was slightly lower. |
+
+The separate [100-scenario full eval summary](evals/full-eval-summary.md)
+reports 400/400 live outputs, 400/400 individual scores, 200/200 pair scores,
+pair delta `0.000`, and verdict `strong-pass`.
 
 Important: the +skill eval arm used `--inline-skill SKILL.md`, so the skill
 text was definitely present in those prompts. That measures instruction effect,
@@ -199,6 +207,16 @@ Result folders:
 - [evals/results/2026-07-02-tradeoff-ab](evals/results/2026-07-02-tradeoff-ab)
 - [evals/results/2026-07-02-tradeoff-ts03-after-tuning](evals/results/2026-07-02-tradeoff-ts03-after-tuning)
 - [evals/full-eval-summary.md](evals/full-eval-summary.md)
+- [evals/results/2026-07-03-finance-ab](evals/results/2026-07-03-finance-ab)
+- [evals/results/2026-07-03-domain-benchmark-matrix](evals/results/2026-07-03-domain-benchmark-matrix)
+
+The 20-scenario
+[domain benchmark matrix](evals/reality-slap-domain-benchmark-matrix.md) covers
+finance, security, privacy, medical safety, legal, production ops, data,
+AI automation, product roadmap, and team planning. The result is useful but
+not a victory lap: +skill improved perfect individual answers from 70% to
+92.5%, while pair consistency was essentially flat and slightly negative
+(-0.050).
 
 ## Testing Approach
 
@@ -222,6 +240,8 @@ Useful files:
 - [evals/ab-test-runbook.md](evals/ab-test-runbook.md)
 - [evals/reality-slap-eval-bank.md](evals/reality-slap-eval-bank.md)
 - [evals/reality-slap-tradeoff-eval-bank.md](evals/reality-slap-tradeoff-eval-bank.md)
+- [evals/reality-slap-finance-eval-bank.md](evals/reality-slap-finance-eval-bank.md)
+- [evals/reality-slap-domain-benchmark-matrix.md](evals/reality-slap-domain-benchmark-matrix.md)
 - [evals/reality-slap-eval-bank-full.md](evals/reality-slap-eval-bank-full.md)
 - [evals/full-eval-summary.md](evals/full-eval-summary.md)
 - [evals/scoring-rubric.md](evals/scoring-rubric.md)
@@ -272,6 +292,9 @@ Before proposing a change:
 - [x] Balanced tradeoff-stability eval design.
 - [x] Smoke and tradeoff A/B samples.
 - [x] TS-03 tuning and focused recheck.
+- [x] Parallel eval runner/scorer with bounded `--jobs`.
+- [x] Broad-small 20-scenario domain benchmark matrix.
+- [x] Run and score the domain benchmark matrix.
 - [ ] Full 8-scenario tradeoff rerun after tuning.
 - [x] 25-scenario pilot A/B run.
 - [x] 100-scenario full run.

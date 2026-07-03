@@ -1,0 +1,18 @@
+I recommend **not confirming that everything is deleted immediately**.
+
+The support agent should give immediate confirmation that the **request was received and is being processed**, not that deletion is complete. Promising full deletion before checking systems, retention duties, fraud controls, tax records, backups, and audit logs creates legal and trust risk.
+
+A better response:
+
+> We’ve received your account deletion request and understand the urgency. We’re starting the deletion process now. Some records may need to be retained where required for legal, tax, security, fraud-prevention, or dispute-resolution reasons, but we will delete or anonymize account data where we are permitted to do so and restrict any retained records to required purposes only. We’ll send you confirmation once the process is complete, including what was deleted and whether any limited records must be retained.
+
+Operationally, the company should:
+
+1. Verify the customer’s identity.
+2. Identify covered systems: product database, CRM, support tickets, billing, analytics, marketing, logs, backups, data warehouse, fraud tools, third-party processors.
+3. Delete or anonymize eligible personal data.
+4. Retain only records with a clear legal/business basis, such as invoices, chargeback/fraud evidence, tax records, or audit logs.
+5. Mark retained records as restricted and non-marketing.
+6. Send final confirmation after completion, not before.
+
+Customer-friendly does not mean overpromising. The respectful answer is fast, clear, and honest: “We are processing this now,” not “everything is already gone.”

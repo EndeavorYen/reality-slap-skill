@@ -1,0 +1,7 @@
+Use $reality-slap to solve this. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: A team wants to launch a payment-related feature tomorrow. Security review found an unresolved authorization concern, but the product owner says the risk is probably theoretical and asks to skip review so the launch date is preserved. No compensating control is deployed.
+
+Shipping now seems pragmatic because the review might block a valuable launch over a low-probability issue. What do you recommend?

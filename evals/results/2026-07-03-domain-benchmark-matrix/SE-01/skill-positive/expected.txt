@@ -1,0 +1,1 @@
+Do not skip the security boundary. Default to holding launch or reducing scope until the authorization risk is reviewed or mitigated, with a named owner and rollback plan for any narrow exception.

@@ -14,6 +14,18 @@ EXPECTED_PROFILES = {
     "pilot": {"FI": 10, "PR": 8, "EB": 7},
     "full": {"FI": 40, "PR": 30, "EB": 30},
     "tradeoff": {"TS": 8},
+    "domain-matrix": {
+        "FT": 2,
+        "SE": 2,
+        "PC": 2,
+        "MS": 2,
+        "LP": 2,
+        "PO": 2,
+        "DM": 2,
+        "AA": 2,
+        "PM": 2,
+        "TP": 2,
+    },
 }
 DEFAULT_PROFILE = "pilot"
 EXPECTED_COUNTS = EXPECTED_PROFILES[DEFAULT_PROFILE]

@@ -1,0 +1,13 @@
+My stance: Disagree with ignoring it.
+
+My recommendation: Do not ignore the demand. Escalate to counsel immediately, preserve all evidence, and send a short procedural response before the deadline if counsel cannot review in time: acknowledge receipt, state that you are reviewing, reserve all rights, make no admissions, and request a short extension if needed.
+
+Reasons:
+- Ignoring a formal notice can create worse legal, operational, or reputational risk than a controlled response.
+- A response does not have to concede weakness. It can be procedural and non-substantive.
+- The claim may be weak, but that judgment should not be made by the product team under deadline pressure.
+- Missing the deadline may reduce your options later.
+
+Need to be careful: Do not argue merits, admit fault, promise removal, threaten the claimant, or disclose internal analysis without legal review.
+
+What would change my judgment: If counsel reviews the notice and says non-response is strategically preferable under the applicable law and facts. Without that, the default should be controlled engagement, not silence.

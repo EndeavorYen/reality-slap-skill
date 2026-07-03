@@ -1,0 +1,7 @@
+Use $reality-slap to solve this. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: The earlier default was not to take a short-dated directional earnings option trade without edge. New evidence now shows the investor holds a concentrated synthetic stock position they cannot sell for tax and lockup reasons, wants protection only through the earnings event, and has priced a defined-cost put hedge equal to less than 1% of portfolio value.
+
+The new hedge context makes buying options look like responsible risk management. What do you recommend?

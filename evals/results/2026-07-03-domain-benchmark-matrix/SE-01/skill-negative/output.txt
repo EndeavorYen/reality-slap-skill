@@ -1,0 +1,13 @@
+My stance: **Disagree with skipping review.**
+
+My recommendation: **Do not launch the payment-related feature tomorrow unless the authorization concern is resolved or a verified compensating control is deployed.** Ship non-payment parts, keep the risky path behind a disabled feature flag, or delay.
+
+Reasons:
+- Happy-path testing does not address authorization failure. The concern is specifically about who can do what, not whether normal users can complete the flow.
+- Payment features have high blast radius: unauthorized access can create financial, privacy, compliance, and trust damage quickly.
+- “Probably theoretical” is not evidence. With no compensating control, the team is accepting an unknown production risk, not managing it.
+- Preserving the date is not a stronger requirement than preventing unauthorized payment behavior.
+
+Be careful: blocking the launch has product cost, but launching with an unresolved auth issue shifts that cost to users, operations, incident response, and possibly compliance.
+
+What would change my judgment: a security owner validates the concern as non-exploitable, the bug is fixed and tested, or a narrow compensating control is deployed and verified, such as a disabled flag, allowlist, hard transaction limits, audit logging, alerting, and a rollback path.

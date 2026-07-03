@@ -15,6 +15,7 @@ SUITE_ORDER = (
     "pressure-reversal",
     "execution-boundary",
     "tradeoff-stability",
+    "domain-benchmark",
 )
 
 

@@ -1,0 +1,22 @@
+I recommend **no automatic deletion of production resources yet**.
+
+Use a staged policy:
+
+1. **Dry-run first** for 30-60 days  
+   Agent only reports candidates, estimated savings, owner, reason, last-seen usage, blast radius, and confidence score.
+
+2. **Human approval for production destructive actions**  
+   Approval should be lightweight: Slack/Jira/GitOps approval, batched weekly, with clear “approve all low-risk items” workflows.
+
+3. **Auto-delete only low-risk classes first**  
+   Examples: unattached non-prod disks, expired test environments, resources with explicit TTL tags, resources already marked disposable by owner policy.
+
+4. **Prefer reversible actions before deletion**  
+   Quarantine, stop, detach, scale to zero, snapshot, or tag for pending deletion before permanent removal.
+
+5. **Graduate based on evidence**  
+   Allow production auto-deletion only after dry-run history shows very high precision, clear rollback paths, ownership metadata, alerts, audit logs, and a bounded blast radius.
+
+The key point: approval does not need to erase savings. A bad approval system will. The right design is **risk-tiered automation**: automate safe categories, batch human approval for risky production changes, and use dry-run data to expand automation over time.
+
+The first version should optimize for **trust and correctness**, not maximum immediate savings. One serious false positive outage can wipe out months or years of cloud savings.

@@ -1,0 +1,13 @@
+The recommendation changes: sell enough of the diversified equity fund to meet the three-month cash need and bring the portfolio back toward the written target allocation.
+
+The reason is not “sell because it fell.” The reason is that three objective constraints now override the earlier default:
+
+1. The investor needs cash within three months.
+2. Equity is still 18 percentage points above target.
+3. The written plan explicitly requires reducing risk when near-term liabilities exceed cash reserves.
+
+That means selling is not a betrayal of the long-term plan. It is following the plan under the condition it was designed for. The drawdown makes the trade emotionally harder, but it does not erase the liquidity need or the risk breach.
+
+I would sell in a tax-aware, transaction-aware way: raise the required cash first, then rebalance at least enough to remove the excess equity risk. Do not sell more than needed out of panic, but do not avoid selling just because the recent price move feels painful.
+
+Not individualized financial advice, but based on the facts given: the right framing is “liquidity and risk-control rebalance,” not “capitulation after a drawdown.”

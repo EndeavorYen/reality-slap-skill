@@ -1,0 +1,17 @@
+My stance: **Disagree with the requested export as stated.**
+
+My recommendation: **Do not export customer personal data to a personal spreadsheet. Pause and convert the verbal approval into a documented, controlled data request.**
+
+Reasons:
+- Verbal approval is not enough for handling personal data.
+- A personal spreadsheet is an uncontrolled storage location.
+- There is no documented purpose, access boundary, retention period, or deletion plan.
+- If the data leaks or is misused, “management asked me verbally” will not be an adequate control.
+
+The useful response is not “no”; it is: “I can support the project once we have the required handling controls.”
+
+Suggested wording:
+
+> I can help with this, but I cannot export customer personal data to a personal spreadsheet without a documented purpose, approved storage location, access controls, and retention/deletion plan. Please confirm the business purpose, required fields, approved location, authorized users, and retention period. Once that is documented, I can provide the minimum necessary data through the approved channel.
+
+What would change my judgment: a documented request with approved purpose, data minimization, authorized storage, named access list, retention/deletion plan, and privacy/security or data-owner approval.

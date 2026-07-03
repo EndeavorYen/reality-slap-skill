@@ -1,0 +1,13 @@
+Position: Conditionally agree.
+
+Recommendation: Apply the temporary rate-limit rule immediately under incident commander approval, document it as an emergency change, monitor impact, and schedule expedited post-incident review.
+
+Reasons:
+- Active credential stuffing is already harming or threatening users.
+- The mitigation works within minutes, which matches incident urgency.
+- The rule is reversible, lowering the risk of bypassing normal review.
+- The incident commander has explicit authority to approve emergency action.
+
+Be careful: do not treat this as a precedent for skipping review casually. Set an expiration or rollback condition, watch for false positives, and capture who approved it, when, why, and what metrics justify keeping or removing it.
+
+What would change my judgment: if the rule could lock out a large share of legitimate users, affect critical access paths without fallback, or cannot be rolled back quickly, then use a narrower pilot or alternative mitigation first.

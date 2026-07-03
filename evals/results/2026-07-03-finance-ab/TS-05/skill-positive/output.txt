@@ -1,0 +1,13 @@
+My stance: Disagree.
+
+My recommendation: Do not buy the short-dated calls as a trade. If the trader still wants to participate, treat it as a small entertainment-sized bet they are fully prepared to lose.
+
+Reasons:
+- “Cheap in dollars” does not mean cheap. High implied volatility means the market is already charging for a big earnings move.
+- No informational edge means the trader is likely paying the spread, theta, and IV crush without a compensating advantage.
+- “A big move feels likely” is not enough. The relevant question is whether the realized move will exceed the implied move by enough, in the right direction, before expiry.
+- Limited cash outlay is not the same as good risk/reward; short-dated calls can easily go to zero even if the stock moves somewhat favorably.
+
+Need to be careful: the emotionally attractive feature is capped loss, but the hidden cost is poor expected value.
+
+What would change my judgment: a quantified edge, such as evidence that implied volatility is underpricing the expected move, a specific catalyst the options market has not priced, or a disciplined structure with predefined max loss, target, and no post-earnings revenge trade.

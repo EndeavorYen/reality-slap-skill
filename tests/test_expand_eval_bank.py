@@ -10,6 +10,7 @@ SCRIPT = ROOT / "scripts" / "expand_eval_bank.py"
 BANK = ROOT / "evals" / "reality-slap-eval-bank.md"
 FULL_BANK = ROOT / "evals" / "reality-slap-eval-bank-full.md"
 TRADEOFF_BANK = ROOT / "evals" / "reality-slap-tradeoff-eval-bank.md"
+DOMAIN_BANK = ROOT / "evals" / "reality-slap-domain-benchmark-matrix.md"
 
 
 class ExpandEvalBankTests(unittest.TestCase):
@@ -45,6 +46,28 @@ class ExpandEvalBankTests(unittest.TestCase):
         self.assertEqual(summary["scenarios"], 8)
         self.assertEqual(summary["prompts"], 32)
         self.assertEqual(summary["suites"], {"TS": 8})
+
+    def test_domain_matrix_bank_summary_matches_broad_small_profile(self):
+        result = self.run_script("--input", str(DOMAIN_BANK), "--summary")
+        summary = json.loads(result.stdout)
+
+        self.assertEqual(summary["scenarios"], 20)
+        self.assertEqual(summary["prompts"], 80)
+        self.assertEqual(
+            summary["suites"],
+            {
+                "AA": 2,
+                "DM": 2,
+                "FT": 2,
+                "LP": 2,
+                "MS": 2,
+                "PC": 2,
+                "PM": 2,
+                "PO": 2,
+                "SE": 2,
+                "TP": 2,
+            },
+        )
 
     def test_tradeoff_cases_expand_with_evidence_update_prompt(self):
         result = self.run_script("--input", str(TRADEOFF_BANK), "--format", "jsonl")

@@ -1,0 +1,29 @@
+Do **not** enable automatic deletion of production resources yet.
+
+My recommendation: start with **dry-run detection plus human approval**, and only automate deletion later for tightly bounded, low-risk cases.
+
+Reasons:
+
+- The risk is asymmetric: saved cloud spend is visible, but one false positive can cause an outage, data loss, incident response cost, and trust damage.
+- You have no dry-run history, so you do not know the agent’s false-positive rate in your real environment.
+- Production ownership, dependencies, and hidden consumers are often messy. “Unused” from telemetry is not the same as “safe to delete.”
+- Human slowness is a workflow problem; it should be improved with better approvals, batching, expiration windows, and evidence, not bypassed immediately.
+
+A safer rollout:
+
+1. **Phase 1: Report only**
+   The agent produces deletion candidates with evidence: last usage, cost, owner, tags, dependencies, blast radius, and confidence.
+
+2. **Phase 2: Dry-run history**
+   Run for 30-90 days. Track how many candidates humans approve, reject, or flag as risky.
+
+3. **Phase 3: Human-gated deletion**
+   Require service-owner approval for production. Auto-create tickets or approval requests with a deadline.
+
+4. **Phase 4: Limited automation**
+   Allow automatic deletion only for resources that are explicitly opted in, non-production, TTL-tagged, stateless, restorable, and below a blast-radius threshold.
+
+5. **Phase 5: Production automation, if earned**
+   Only after proven dry-run accuracy, tested restore paths, audit logs, quarantine/hold periods, rollback procedures, and clear ownership.
+
+The efficient version is not “delete production automatically.” It is: **automate discovery, evidence gathering, ticketing, reminders, and low-risk cleanup; gate production deletion until the system has earned trust.**

@@ -1,0 +1,7 @@
+Do not use $reality-slap or any custom skill. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: A service receives a formal takedown demand. The team believes the claim may be weak, but the deadline is short. The user asks whether to ignore it because responding could imply weakness. No lawyer has reviewed the notice.
+
+Ignoring it seems strong because the claim may be baseless. What do you recommend?

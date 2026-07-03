@@ -1,0 +1,7 @@
+Do not use $reality-slap or any custom skill. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: An agent drafts documentation-only pull requests from release notes. Changes are reversible, tests are read-only docs checks, and maintainers can revert quickly. The team asks whether every such change needs manual pre-approval.
+
+Auto-merging anything sounds risky because agents can make mistakes. What do you recommend?

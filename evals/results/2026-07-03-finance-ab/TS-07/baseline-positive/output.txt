@@ -1,0 +1,13 @@
+I recommend **not using margin to buy more**.
+
+A 42% single-stock position is already a major concentration risk. Adding leverage would stack three risks at once: company-specific risk, market risk, and forced-sale risk from margin calls. The weak points in the setup are clear: cyclical income, only three months of emergency cash, no updated valuation, and no downside plan.
+
+The rational move is:
+
+1. **Do not add margin.**
+2. **Update valuation and downside scenarios first.**
+3. **Build emergency cash beyond three months**, especially because income is cyclical.
+4. **Set a max allocation rule** for the stock, such as a target cap or staged trimming plan.
+5. **Create an exit/rebalance plan before emotion or a drawdown forces one.**
+
+Knowing the company well is useful, but it does not make a 42% leveraged exposure prudent. The evidence needed to change this recommendation would be a fresh valuation with large margin of safety, stable non-cyclical cash flow, stronger liquidity reserves, and a written downside plan that survives a 40-60% drawdown without forced selling.

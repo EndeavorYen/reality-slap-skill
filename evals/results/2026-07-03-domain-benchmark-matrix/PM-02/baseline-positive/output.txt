@@ -1,0 +1,26 @@
+My recommendation: **do not say yes to the custom feature as requested.** Say yes only to a bounded validation path.
+
+The deal is not signed, while the roadmap delay is real. You would be trading committed value for many existing customers against speculative value from one prospect. That is usually a bad product trade unless the custom request can become a platform-aligned capability.
+
+A practical path:
+
+1. **Offer paid discovery or a design-partner phase.**
+   Define the requirement, cost, implementation shape, and whether it can become a reusable platform feature.
+
+2. **Require commercial commitment before engineering commitment.**
+   No roadmap displacement based on verbal interest. If they want priority, it needs to be in a signed agreement with meaningful upfront payment.
+
+3. **Only build it if it fits the platform direction.**
+   The feature should be generalized, configurable, or exposed through an extension point. Avoid one-off logic that creates long-term maintenance debt.
+
+4. **Protect the existing roadmap explicitly.**
+   If the feature delays two roadmap items used by many customers, leadership should consciously approve that trade-off, not let it happen implicitly through sales pressure.
+
+5. **Have a fallback offer.**
+   For example: API support, integration guidance, a services-led workaround, or a later roadmap review.
+
+A good answer to the prospect would be:
+
+> We are interested, but we cannot commit to a one-off feature outside the platform direction. The next step would be a paid discovery phase to validate whether this can become a reusable capability. If the scope and commercial terms justify priority, we can evaluate it against the roadmap.
+
+What would change the recommendation: a signed deal with enough upfront value to cover the opportunity cost, evidence that multiple customers need the same capability, and a design that strengthens the platform instead of creating bespoke debt.

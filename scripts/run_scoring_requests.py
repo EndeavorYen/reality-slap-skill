@@ -2,6 +2,7 @@
 """Dry-run or execute Codex scorer requests and append score updates."""
 
 import argparse
+import concurrent.futures
 import json
 import subprocess
 import sys
@@ -148,6 +149,33 @@ def append_update(path, update):
         file.write(json.dumps(update, sort_keys=True) + "\n")
 
 
+def write_updates(path, updates):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        "".join(json.dumps(update, sort_keys=True) + "\n" for update in updates),
+        encoding="utf-8",
+    )
+
+
+def merge_updates(path, request_order, new_updates):
+    combined = load_existing_updates(path)
+    for update in new_updates:
+        combined[target_from_mapping(update)] = update
+
+    ordered = []
+    seen = set()
+    for target in request_order:
+        if target in combined:
+            ordered.append(combined[target])
+            seen.add(target)
+
+    for target in sorted(target for target in combined if target not in seen):
+        ordered.append(combined[target])
+
+    write_updates(path, ordered)
+
+
 def compact_event(event):
     event = dict(event)
     command = list(event["command"])
@@ -156,6 +184,17 @@ def compact_event(event):
     event["command"] = command
     event["prompt_chars"] = len(prompt)
     return event
+
+
+def positive_int(value):
+    parsed = int(value)
+    if parsed < 1:
+        raise argparse.ArgumentTypeError("--jobs must be at least 1")
+    return parsed
+
+
+class ScorerChildTimeout(RuntimeError):
+    pass
 
 
 def iter_runs(requests, updates_path, include_complete, limit):
@@ -171,6 +210,43 @@ def iter_runs(requests, updates_path, include_complete, limit):
             return
 
 
+def run_scorer_child(run, cwd, child_timeout_seconds):
+    child_log_path = run.get("child_log_path")
+    response_path = Path(run["response_path"])
+    response_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if child_log_path:
+        child_log_path = Path(child_log_path)
+        child_log_path.parent.mkdir(parents=True, exist_ok=True)
+        log_target = child_log_path.open("w", encoding="utf-8")
+    else:
+        log_target = subprocess.DEVNULL
+
+    try:
+        try:
+            subprocess.run(
+                run["command"],
+                cwd=cwd,
+                check=True,
+                stdout=log_target,
+                stderr=subprocess.STDOUT,
+                text=True,
+                timeout=child_timeout_seconds,
+            )
+        except subprocess.TimeoutExpired as error:
+            response_path.write_text(
+                f"ERROR: scorer child process timed out after {child_timeout_seconds:g} seconds\n",
+                encoding="utf-8",
+            )
+            raise ScorerChildTimeout(
+                "scorer child run timed out after "
+                f"{child_timeout_seconds:g} seconds: {run['target_tuple']}"
+            ) from error
+    finally:
+        if child_log_path:
+            log_target.close()
+
+
 def run_requests(
     requests_path,
     updates_path,
@@ -184,9 +260,12 @@ def run_requests(
     child_log_dir=None,
     child_timeout_seconds=None,
     compact_events=False,
+    jobs=2,
 ):
     requests = load_requests(requests_path)
+    request_order = [target_from_request(request) for request in requests]
     mode = "execute" if execute else "dry-run"
+    runs = []
     for target, request in iter_runs(requests, updates_path, include_complete, limit):
         prompt = scoring_prompt(request)
         response_path = response_path_for(response_dir, target)
@@ -215,44 +294,43 @@ def run_requests(
             event["child_log_path"] = str(child_log_path)
         print(json.dumps(compact_event(event) if compact_events else event, sort_keys=True))
 
-        if not execute:
-            continue
+        runs.append(
+            {
+                "target_tuple": target,
+                "response_path": str(response_path),
+                "command": command,
+                "child_log_path": str(child_log_path) if child_log_path else "",
+            }
+        )
 
-        if child_log_path:
-            child_log_path.parent.mkdir(parents=True, exist_ok=True)
-            log_target = child_log_path.open("w", encoding="utf-8")
+    if not execute:
+        return
+
+    try:
+        if jobs == 1 or len(runs) <= 1:
+            for run in runs:
+                run_scorer_child(run, cwd, child_timeout_seconds)
         else:
-            log_target = subprocess.DEVNULL
+            with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as executor:
+                futures = [
+                    executor.submit(run_scorer_child, run, cwd, child_timeout_seconds)
+                    for run in runs
+                ]
+                for future in concurrent.futures.as_completed(futures):
+                    future.result()
+    except ScorerChildTimeout as error:
+        print(error, file=sys.stderr)
+        raise SystemExit(124)
 
-        try:
-            try:
-                subprocess.run(
-                    command,
-                    cwd=cwd,
-                    check=True,
-                    stdout=log_target,
-                    stderr=subprocess.STDOUT,
-                    text=True,
-                    timeout=child_timeout_seconds,
-                )
-            except subprocess.TimeoutExpired:
-                response_path.write_text(
-                    f"ERROR: scorer child process timed out after {child_timeout_seconds:g} seconds\n",
-                    encoding="utf-8",
-                )
-                print(
-                    "scorer child run timed out after "
-                    f"{child_timeout_seconds:g} seconds: {target}",
-                    file=sys.stderr,
-                )
-                raise SystemExit(124)
-        finally:
-            if child_log_path:
-                log_target.close()
-
+    updates = []
+    for run in runs:
+        target = run["target_tuple"]
+        response_path = Path(run["response_path"])
         update = extract_json_object(response_path.read_text(encoding="utf-8"))
         validate_update_matches_request(update, target)
-        append_update(updates_path, update)
+        updates.append(update)
+    if updates:
+        merge_updates(updates_path, request_order, updates)
 
 
 def main():
@@ -269,6 +347,12 @@ def main():
     parser.add_argument("--child-log-dir")
     parser.add_argument("--child-timeout-seconds", type=float)
     parser.add_argument("--compact-events", action="store_true")
+    parser.add_argument(
+        "--jobs",
+        type=positive_int,
+        default=2,
+        help="Maximum scorer child runs to execute in parallel (default: 2).",
+    )
     args = parser.parse_args()
 
     response_dir = (
@@ -291,6 +375,7 @@ def main():
             child_log_dir=args.child_log_dir,
             child_timeout_seconds=args.child_timeout_seconds,
             compact_events=args.compact_events,
+            jobs=args.jobs,
         )
     except ValueError as error:
         print(error, file=sys.stderr)

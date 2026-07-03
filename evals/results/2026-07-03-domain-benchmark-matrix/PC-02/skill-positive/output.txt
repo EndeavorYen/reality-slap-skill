@@ -1,0 +1,17 @@
+My stance: Disagree.
+
+My recommendation: Do not confirm full deletion until the deletion scope, retention obligations, and system coverage are verified. Acknowledge the request immediately, start the deletion workflow, and give a clear timeline for confirmed completion.
+
+Reasons:
+- Immediate confirmation could be false if backups, billing, fraud, audit, tax, or legal-retention systems still contain records.
+- Some records may need to be retained lawfully, but that should be explained narrowly rather than hidden behind vague policy language.
+- The support agent does not know the covered systems, so they should not make a definitive claim.
+- A bad confirmation creates legal, compliance, and trust risk worse than a slower but accurate response.
+
+Suggested response:
+
+> We understand your request and have started the account data deletion process. We cannot honestly confirm that everything has already been deleted until our privacy team verifies the systems involved and any legally required retention. We will delete eligible personal data, restrict or retain only records we are required to keep, and send you a confirmation with the scope and timing once completed.
+
+Needs caution: Do not use “everything is deleted” unless it is literally true across primary systems, processors, logs/backups where applicable, and retention exceptions.
+
+What would change my judgment: A verified deletion runbook showing all systems covered, no applicable retention duties, and successful completion evidence for this specific account.

@@ -1,0 +1,17 @@
+My stance: Disagree with confirming that “everything is deleted” immediately.
+
+My recommendation: respond immediately, but confirm only what is true: the deletion request has been received, processing has started, and completion will be confirmed after system coverage and retention obligations are verified.
+
+Reasons:
+- A false deletion confirmation creates legal, trust, and audit risk.
+- Support should not decide fraud, tax, or regulatory retention scope ad hoc.
+- Some records may need deletion, some anonymization, and some restricted retention.
+- The customer needs a clear process, not a premature promise.
+
+Use wording like:
+
+> We’ve received your deletion request and have started processing it. We cannot truthfully confirm complete deletion until we verify all covered systems and any records we are legally required to retain, such as fraud-prevention or tax records. We will delete or anonymize eligible account data, retain only what is required, restrict retained records to the required purpose, and send you a completion update by [date/time].
+
+Non-negotiable boundary: do not say “everything is deleted” unless deletion has actually completed across the covered systems and retained exceptions are known.
+
+What would change my judgment: if there is a verified automated deletion workflow with a complete system inventory, retention policy, and audit result showing this customer has no retained-record exceptions.

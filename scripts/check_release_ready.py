@@ -74,6 +74,17 @@ def release_commands(
             ],
         ),
         command_record(
+            "domain-matrix-eval-bank",
+            [
+                python,
+                root / "scripts" / "validate_eval_bank.py",
+                "--input",
+                root / "evals" / "reality-slap-domain-benchmark-matrix.md",
+                "--profile",
+                "domain-matrix",
+            ],
+        ),
+        command_record(
             "full-eval-design",
             [
                 python,

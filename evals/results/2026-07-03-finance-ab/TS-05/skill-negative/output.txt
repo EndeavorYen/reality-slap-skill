@@ -1,0 +1,9 @@
+My stance: Agree.
+
+My recommendation: Do not buy the short-dated calls as stated.
+
+Reason: “Cheap in dollars” is not the same as cheap in expected value. High implied volatility means the market is already charging for a big earnings move. With short-dated calls, you need the stock to move up enough, fast enough, to beat the option premium, time decay, and post-earnings IV crush. “A big move feels likely” is not an edge, and calls only pay on the upside.
+
+Be careful: switching to a straddle does not magically fix this. It removes direction but doubles down on the high-IV bet.
+
+What would change my judgment: a quantified edge, such as evidence that the implied move is materially below your own defensible expected move, or a directional thesis strong enough to justify the breakeven price. Without that, the clean decision is to pass or treat it explicitly as entertainment-sized risk money you are willing to lose completely.

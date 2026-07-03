@@ -1,0 +1,1 @@
+Allow bounded automation for low-risk docs if checks pass, scope is constrained, audit logs exist, and maintainers can revert; keep approval gates for code, policy, or irreversible changes.

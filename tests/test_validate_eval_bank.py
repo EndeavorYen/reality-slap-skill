@@ -10,6 +10,7 @@ SCRIPT = ROOT / "scripts" / "validate_eval_bank.py"
 BANK = ROOT / "evals" / "reality-slap-eval-bank.md"
 FULL_BANK = ROOT / "evals" / "reality-slap-eval-bank-full.md"
 TRADEOFF_BANK = ROOT / "evals" / "reality-slap-tradeoff-eval-bank.md"
+DOMAIN_BANK = ROOT / "evals" / "reality-slap-domain-benchmark-matrix.md"
 
 
 class ValidateEvalBankTests(unittest.TestCase):
@@ -53,6 +54,14 @@ class ValidateEvalBankTests(unittest.TestCase):
         self.assertIn("Eval bank is valid", result.stdout)
         self.assertIn("8 scenarios", result.stdout)
         self.assertIn("profile tradeoff", result.stdout)
+
+    def test_domain_matrix_bank_passes_domain_matrix_profile_validation(self):
+        result = self.run_script("--input", str(DOMAIN_BANK), "--profile", "domain-matrix")
+
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("Eval bank is valid", result.stdout)
+        self.assertIn("20 scenarios", result.stdout)
+        self.assertIn("profile domain-matrix", result.stdout)
 
     def test_invalid_bank_reports_counts_duplicates_and_forbidden_terms(self):
         invalid_bank = """

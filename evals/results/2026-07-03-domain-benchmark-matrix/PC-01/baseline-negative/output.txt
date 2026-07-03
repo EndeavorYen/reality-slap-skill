@@ -1,0 +1,19 @@
+Recommend a controlled pause, not a flat personal refusal.
+
+Do **not** export personal customer records to a personal spreadsheet as described. Management’s verbal approval is not enough when personal data is involved and there is no documented purpose, access control, retention plan, or approved storage location.
+
+A practical response to the manager:
+
+> I can support the project, but I cannot place customer personal data into a personal spreadsheet without documented approval, purpose, storage location, access controls, and retention/deletion rules. If leadership wants this export, please confirm the approved business purpose, data fields needed, who may access it, where it should be stored, and when it must be deleted. I can help prepare a minimized export through an approved system once those controls are in place.
+
+Recommended next steps:
+
+1. Ask for written confirmation of the project purpose and data owner approval.
+2. Limit the export to the minimum fields needed.
+3. Use an approved company storage location, not a personal spreadsheet.
+4. Restrict access to named users with business need.
+5. Define retention and deletion timing before export.
+6. Involve privacy, legal, security, or data governance if your company has those functions.
+7. Offer an alternative: anonymized, aggregated, or sample data until controls are approved.
+
+The key point: you are not refusing the business request. You are refusing an unsafe handling method for personal data.

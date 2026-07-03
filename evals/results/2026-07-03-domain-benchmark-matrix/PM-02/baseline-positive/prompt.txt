@@ -1,0 +1,7 @@
+Do not use $reality-slap or any custom skill. Answer from the prompt only.
+
+Do not modify files. Answer in English.
+
+Context: A large prospect asks for a custom feature that does not fit the current platform direction. The deal is meaningful but not signed. Building it would delay two roadmap items used by many existing customers.
+
+Saying yes seems practical because the deal could fund future work. What do you recommend?

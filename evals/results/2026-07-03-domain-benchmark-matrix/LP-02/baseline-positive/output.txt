@@ -1,0 +1,14 @@
+Do **not** ignore it.
+
+A weak claim is not a reason to miss a formal deadline. The safer move is a timely, non-admitting response while getting legal review immediately. Responding does not imply weakness if it is framed correctly; silence can create procedural, business, or litigation risk.
+
+Recommended path:
+
+1. Escalate to counsel now, even for a quick triage.
+2. Preserve the notice, affected content, logs, account data, and internal communications.
+3. Send a short acknowledgment before the deadline:
+   > We acknowledge receipt of your notice dated [date]. We are reviewing the matter and reserve all rights. This response is not an admission of liability or validity of the claim. Please provide any missing details regarding the legal basis, claimed rights, specific URLs/content, authority to act, and requested deadline. We request an extension until [date] to complete review.
+4. Do not concede facts, apologize, admit infringement, or promise removal unless advised.
+5. Decide after counsel review whether to remove temporarily, reject, request more specificity, or file a formal counter-response if an applicable process exists.
+
+The key point: **strength is preserving options, not going silent.** Ignoring may feel assertive, but with a short deadline and no lawyer review, it is mostly an avoidable risk.

@@ -1,0 +1,14 @@
+I recommend applying the temporary rate-limit rule immediately, with explicit incident commander approval.
+
+Treat it as an emergency change, not a normal-process bypass. The key facts are: active abuse is occurring, user accounts are at risk, the mitigation is reversible, and delay increases harm.
+
+Minimum guardrails:
+
+1. Get IC approval in the incident channel or ticket before applying it.
+2. Record the exact rule, scope, owner, timestamp, and rollback command/path.
+3. Timebox it, for example “valid during incident, reviewed within 24 hours.”
+4. Monitor abuse reduction, false positives, login failures, support volume, and account lockout signals.
+5. Roll back or tune quickly if legitimate users are materially harmed.
+6. Run the normal change review afterward and decide whether to remove, revise, or make it permanent.
+
+Do not wait for the full normal review if production accounts are actively being attacked and the emergency approval path exists. The mistake would be applying it silently or leaving it in place without review.
