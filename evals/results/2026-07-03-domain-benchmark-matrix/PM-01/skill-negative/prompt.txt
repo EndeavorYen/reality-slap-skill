@@ -1,7 +1,0 @@
-Use $reality-slap to solve this. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: A product team can launch a viral growth feature next quarter, but reliability incidents have increased and support volume is hurting retention. Engineering capacity cannot fully do both. Current evidence shows reliability work would reduce churn risk.
-
-Reliability work seems boring and may not impress new prospects. What do you recommend?

@@ -1,1 +1,0 @@
-Allow the emergency change with incident commander approval, logging, monitoring, rollback criteria, and post-incident review because the active incident justifies a controlled exception.

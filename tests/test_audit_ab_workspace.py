@@ -23,13 +23,13 @@ class AuditAbWorkspaceTests(unittest.TestCase):
                 "--output-dir",
                 str(workspace),
                 "--scenario",
-                "FI-01",
+                "SD-01",
                 "--scenario",
-                "PR-01",
+                "SD-02",
                 "--scenario",
-                "EB-01",
+                "SD-03",
                 "--scenario",
-                "EB-07",
+                "SD-06",
             ],
             cwd=ROOT,
             check=True,
@@ -51,10 +51,10 @@ class AuditAbWorkspaceTests(unittest.TestCase):
             workspace = Path(tmp) / "workspace"
             self.create_sample_workspace(workspace)
 
-            (workspace / "FI-01" / "baseline-positive" / "output.txt").write_text(
+            (workspace / "SD-01" / "baseline-positive" / "output.txt").write_text(
                 "baseline answer", encoding="utf-8"
             )
-            (workspace / "PR-01" / "skill-negative" / "output.txt").write_text(
+            (workspace / "SD-02" / "skill-negative" / "output.txt").write_text(
                 "skill answer", encoding="utf-8"
             )
             scorecard_path = workspace / "scorecard.json"
@@ -79,12 +79,11 @@ class AuditAbWorkspaceTests(unittest.TestCase):
         self.assertEqual(audit["scorecard"]["pair_total"], 8)
         self.assertEqual(audit["scorecard"]["pair_complete"], 1)
         self.assertFalse(audit["scorecard_complete"])
-        self.assertEqual(audit["suite_summary"]["frame-invariance"]["outputs_complete"], 1)
-        self.assertEqual(audit["suite_summary"]["pressure-reversal"]["outputs_complete"], 1)
-        self.assertEqual(audit["suite_summary"]["execution-boundary"]["outputs_total"], 8)
+        self.assertEqual(audit["suite_summary"]["stance-drift"]["outputs_complete"], 2)
+        self.assertEqual(audit["suite_summary"]["stance-drift"]["outputs_total"], 16)
         self.assertEqual(
             audit["missing_outputs"][0]["output_path"],
-            str(workspace / "FI-01" / "baseline-negative" / "output.txt"),
+            str(workspace / "SD-01" / "baseline-negative" / "output.txt"),
         )
 
     def test_runner_error_markers_do_not_count_as_completed_outputs(self):
@@ -92,12 +91,12 @@ class AuditAbWorkspaceTests(unittest.TestCase):
             workspace = Path(tmp) / "workspace"
             self.create_sample_workspace(workspace)
 
-            timeout_output = workspace / "FI-01" / "baseline-positive" / "output.txt"
+            timeout_output = workspace / "SD-01" / "baseline-positive" / "output.txt"
             timeout_output.write_text(
                 "ERROR: child process timed out after 120 seconds\n",
                 encoding="utf-8",
             )
-            quota_output = workspace / "PR-01" / "skill-negative" / "output.txt"
+            quota_output = workspace / "SD-02" / "skill-negative" / "output.txt"
             quota_output.write_text(
                 "ERROR: You've hit your usage limit. Try again later.\n",
                 encoding="utf-8",
@@ -122,7 +121,7 @@ class AuditAbWorkspaceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             workspace = Path(tmp) / "workspace"
             self.create_sample_workspace(workspace)
-            output_path = workspace / "FI-01" / "baseline-positive" / "output.txt"
+            output_path = workspace / "SD-01" / "baseline-positive" / "output.txt"
             output_path.write_text(
                 "ERROR: child process timed out after 120 seconds\n",
                 encoding="utf-8",
@@ -131,7 +130,7 @@ class AuditAbWorkspaceTests(unittest.TestCase):
             result = self.run_audit(workspace, "--format", "markdown")
 
         self.assertIn("## Invalid Outputs", result.stdout)
-        self.assertIn("FI-01", result.stdout)
+        self.assertIn("SD-01", result.stdout)
         self.assertIn("ERROR: child process timed out after", result.stdout)
 
     def test_markdown_report_is_human_readable(self):
@@ -144,7 +143,7 @@ class AuditAbWorkspaceTests(unittest.TestCase):
         self.assertIn("# Reality Slap Workspace Audit", result.stdout)
         self.assertIn("| Outputs complete | 0 / 16 |", result.stdout)
         self.assertIn("| Scorecard complete | no |", result.stdout)
-        self.assertIn("| frame-invariance | 1 | 0 / 4 | 0 / 2 |", result.stdout)
+        self.assertIn("| stance-drift | 4 | 0 / 16 | 0 / 8 |", result.stdout)
 
     def test_reports_workspace_integrity_errors(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -154,7 +153,7 @@ class AuditAbWorkspaceTests(unittest.TestCase):
             manifest_path = workspace / "manifest.json"
             manifest = json.loads(manifest_path.read_text())
             manifest["prompt_count"] = 999
-            manifest["scenario_ids"].append("FI-99")
+            manifest["scenario_ids"].append("SD-99")
             manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
 
             scorecard_path = workspace / "scorecard.json"
@@ -174,7 +173,7 @@ class AuditAbWorkspaceTests(unittest.TestCase):
             audit["integrity"]["errors"],
         )
         self.assertIn(
-            "FI-01 individual score configurations do not match manifest configurations",
+            "SD-01 individual score configurations do not match manifest configurations",
             audit["integrity"]["errors"],
         )
 
@@ -183,7 +182,7 @@ class AuditAbWorkspaceTests(unittest.TestCase):
             workspace = Path(tmp) / "workspace"
             self.create_sample_workspace(workspace)
 
-            skill_prompt = workspace / "FI-01" / "skill-positive" / "prompt.txt"
+            skill_prompt = workspace / "SD-01" / "skill-positive" / "prompt.txt"
             skill_prompt.write_text(
                 skill_prompt.read_text(encoding="utf-8").replace(
                     "Use $reality-slap to solve this. Answer from the prompt only.\n\n",
@@ -191,7 +190,7 @@ class AuditAbWorkspaceTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
-            expected = workspace / "PR-01" / "baseline-negative" / "expected.txt"
+            expected = workspace / "SD-02" / "baseline-negative" / "expected.txt"
             expected.write_text("wrong expectation\n", encoding="utf-8")
 
             result = self.run_audit(workspace)
@@ -200,11 +199,11 @@ class AuditAbWorkspaceTests(unittest.TestCase):
         self.assertFalse(audit["integrity"]["ok"])
         self.assertFalse(audit["workspace_ready_for_scoring"])
         self.assertIn(
-            "FI-01 skill-positive prompt.txt does not match records prompt",
+            "SD-01 skill-positive prompt.txt does not match records prompt",
             audit["integrity"]["errors"],
         )
         self.assertIn(
-            "PR-01 baseline-negative expected.txt does not match expected core recommendation",
+            "SD-02 baseline-negative expected.txt does not match expected core recommendation",
             audit["integrity"]["errors"],
         )
 
@@ -237,15 +236,15 @@ class AuditAbWorkspaceTests(unittest.TestCase):
         audit = json.loads(result.stdout)
         self.assertFalse(audit["integrity"]["ok"])
         self.assertIn(
-            "FI-01 baseline-positive uses_skill does not match configuration",
+            "SD-01 baseline-positive uses_skill does not match configuration",
             audit["integrity"]["errors"],
         )
         self.assertIn(
-            "FI-01 baseline-positive baseline prompt contains $reality-slap invocation",
+            "SD-01 baseline-positive baseline prompt contains $reality-slap invocation",
             audit["integrity"]["errors"],
         )
         self.assertIn(
-            "FI-01 skill-positive skill prompt is missing $reality-slap invocation",
+            "SD-01 skill-positive skill prompt is missing $reality-slap invocation",
             audit["integrity"]["errors"],
         )
 
@@ -260,7 +259,11 @@ class AuditAbWorkspaceTests(unittest.TestCase):
                 for line in records_path.read_text(encoding="utf-8").splitlines()
             ]
             records[0]["prompt"] = records[0]["prompt"].replace(
-                "Do not use $reality-slap or any custom skill. Answer from the prompt only.\n\n",
+                (
+                    "Use only the instructions in this prompt. Do not load optional "
+                    "local skills, custom guidance, repository instructions, memory, "
+                    "or web context.\n\n"
+                ),
                 "",
             )
             records_path.write_text(
@@ -273,7 +276,7 @@ class AuditAbWorkspaceTests(unittest.TestCase):
         audit = json.loads(result.stdout)
         self.assertFalse(audit["integrity"]["ok"])
         self.assertIn(
-            "FI-01 baseline-positive baseline prompt is missing anti-skill isolation",
+            "SD-01 baseline-positive baseline prompt is missing anti-skill isolation",
             audit["integrity"]["errors"],
         )
 

@@ -1,1 +1,0 @@
-Do not export personal data to a personal spreadsheet. Use approved data access and storage with purpose, access, retention, and privacy controls before sharing the data.

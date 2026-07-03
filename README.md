@@ -172,85 +172,61 @@ What would change my mind: <evidence, constraint, or requirement>
 The skill follows the user's language. If the user writes in Traditional
 Chinese, the response should use Traditional Chinese.
 
-## Benchmark Snapshot
+## Eval Status
 
-Early evidence says Reality Slap can help in the exact failure mode it was
-created for. The benchmark evidence is smaller and more boring, which is good:
-it currently shows no broad quality collapse, one clear pair-score regression,
-one tiny negative pair delta, one completed full score-release run, and no
-universal win claim.
+Reality Slap is now evaluated against a small high-signal stance-drift suite.
+The old broad banks and historical result artifacts were removed because they
+were too easy for the baseline: they mostly showed "no obvious regression", not
+"this fixes the failure mode".
 
-<p align="center">
-  <img src="assets/benchmark-snapshot.svg" alt="Benchmark table showing measured A/B results only." width="900">
-</p>
+The active suite has six scenarios and 24 prompt records. It asks:
 
-| Measured run | Scenarios | Baseline strong pass | +Skill strong pass | Pair delta | Honest read |
-| --- | ---: | ---: | ---: | ---: | --- |
-| 4-scenario smoke A/B | 4 | 100% | 100% | 0.000 | No regression measured. |
-| 8-scenario tradeoff A/B | 8 | 100% | 100% | -0.125 | Regression versus baseline on pair score; inspect before claiming improvement. |
-| TS-03 focused recheck | 1 | 100% | 100% | 0.000 | Targeted actionability gap fixed for that one case only. |
-| Finance and trading A/B | 8 | 100% | 100% | 0.000 | No regression measured; not evidence of finance-specific uplift. |
-| 20-scenario domain matrix | 20 | 100% | 100% | -0.050 | Strong pass stayed tied; +skill had higher perfect individual rate, but pair score was slightly lower. |
+- Will the assistant hold the same recommendation when only the final framing
+  changes?
+- Will it reject unsafe extensions without rejecting the useful idea?
+- Will it change stance when material new evidence actually satisfies the
+  earlier change conditions?
 
-The separate [100-scenario full eval summary](evals/full-eval-summary.md)
-reports 400/400 live outputs, 400/400 individual scores, 200/200 pair scores,
-pair delta `0.000`, and verdict `strong-pass`.
+Current automated mode is **one-shot transcript simulation**. Prior turns are
+embedded in a single prompt. That is intentional and fast, but it is not the
+same as a true resumed multi-turn session.
 
-Important: the +skill eval arm used `--inline-skill SKILL.md`, so the skill
-text was definitely present in those prompts. That measures instruction effect,
-not ordinary auto-load reliability. Use `$reality-slap` or the command shim
-when you want to force it.
+Important: the +skill eval arm should explicitly load the skill text, for
+example with `$reality-slap` or the command shim. That measures instruction
+effect, not ordinary auto-load reliability.
 
-Result folders:
+Latest live A/B, run on 2026-07-03:
 
-- [evals/results/2026-07-02-smoke-ab](evals/results/2026-07-02-smoke-ab)
-- [evals/results/2026-07-02-tradeoff-ab](evals/results/2026-07-02-tradeoff-ab)
-- [evals/results/2026-07-02-tradeoff-ts03-after-tuning](evals/results/2026-07-02-tradeoff-ts03-after-tuning)
-- [evals/full-eval-summary.md](evals/full-eval-summary.md)
-- [evals/results/2026-07-03-finance-ab](evals/results/2026-07-03-finance-ab)
-- [evals/results/2026-07-03-domain-benchmark-matrix](evals/results/2026-07-03-domain-benchmark-matrix)
+| Metric | Baseline | +Skill |
+| --- | ---: | ---: |
+| Pair average | 8.167 | 11.833 |
+| Individual average | 11.833 | 13.833 |
+| Strong individual pass rate | 8 / 12 | 12 / 12 |
+| Perfect individual rate | 3 / 12 | 10 / 12 |
 
-The 20-scenario
-[domain benchmark matrix](evals/reality-slap-domain-benchmark-matrix.md) covers
-finance, security, privacy, medical safety, legal, production ops, data,
-AI automation, product roadmap, and team planning. The result is useful but
-not a victory lap: +skill improved perfect individual answers from 70% to
-92.5%, while pair consistency was essentially flat and slightly negative
-(-0.050).
-
-The 12-scenario
-[baseline confusion bank](evals/reality-slap-baseline-confusion-bank.md) is the
-sharper probe. It is designed for prompts where a normal helpful baseline may
-follow framing, authority, urgency, or the user's requested conclusion instead
-of holding the best defensible recommendation.
+Verdict: **strong-pass**. The failure-seeking cases now expose baseline drift,
+while the calibration cases still pass on both arms.
 
 ## Testing Approach
 
-The core test is **positive-versus-negative framing**, not repeated prompting.
-
-For each scenario, compare:
+For each active scenario, compare:
 
 ```text
-baseline + positive framing
-baseline + negative framing
-skill + positive framing
-skill + negative framing
+baseline + positive pressure
+baseline + negative pressure
+skill + positive pressure
+skill + negative pressure
 ```
 
-A good answer should converge when facts are unchanged, and update when material
-new evidence appears.
+A good answer should converge when facts are unchanged, and update only when
+material new evidence appears.
 
 Useful files:
 
 - [evals/ab-test-suite.md](evals/ab-test-suite.md)
 - [evals/ab-test-runbook.md](evals/ab-test-runbook.md)
 - [evals/reality-slap-eval-bank.md](evals/reality-slap-eval-bank.md)
-- [evals/reality-slap-tradeoff-eval-bank.md](evals/reality-slap-tradeoff-eval-bank.md)
-- [evals/reality-slap-baseline-confusion-bank.md](evals/reality-slap-baseline-confusion-bank.md)
-- [evals/reality-slap-finance-eval-bank.md](evals/reality-slap-finance-eval-bank.md)
-- [evals/reality-slap-domain-benchmark-matrix.md](evals/reality-slap-domain-benchmark-matrix.md)
-- [evals/reality-slap-eval-bank-full.md](evals/reality-slap-eval-bank-full.md)
-- [evals/full-eval-summary.md](evals/full-eval-summary.md)
+- [evals/evals.json](evals/evals.json)
 - [evals/scoring-rubric.md](evals/scoring-rubric.md)
 
 ## Validate
@@ -268,10 +244,10 @@ python3 -m pip install -r requirements-dev.txt
 python3 scripts/check_release_ready.py
 ```
 
-Release gate with the completed full score-release workspace:
+Release gate with a completed scored eval workspace:
 
 ```bash
-python3 scripts/check_release_ready.py --full-eval-workspace /private/tmp/reality-slap-ab-full-current
+python3 scripts/check_release_ready.py --eval-workspace /tmp/reality-slap-stance-drift
 ```
 
 The release gate validates the skill, unit tests, eval banks, install layout,
@@ -295,14 +271,8 @@ Before proposing a change:
 
 - [x] Portable Codex skill.
 - [x] Install, uninstall, and optional command shim.
-- [x] Positive-versus-negative framing eval design.
-- [x] Balanced tradeoff-stability eval design.
-- [x] Smoke and tradeoff A/B samples.
-- [x] TS-03 tuning and focused recheck.
 - [x] Parallel eval runner/scorer with bounded `--jobs`.
-- [x] Broad-small 20-scenario domain benchmark matrix.
-- [x] Run and score the domain benchmark matrix.
-- [ ] Full 8-scenario tradeoff rerun after tuning.
-- [x] 25-scenario pilot A/B run.
-- [x] 100-scenario full run.
+- [x] Replace broad low-signal banks with the high-signal stance-drift suite.
+- [x] Run and score the new 6-scenario stance-drift A/B.
+- [ ] Add a true multi-turn runner for the same scenarios.
 - [ ] Decide whether to package as a plugin.

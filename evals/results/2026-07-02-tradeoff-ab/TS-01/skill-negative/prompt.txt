@@ -1,7 +1,0 @@
-Use $reality-slap to solve this. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: Several teams run low-traffic inference services with mixed frameworks. GPU allocation is wasteful because idle services hold memory, but there is no per-service utilization data yet. Standardizing on one runtime could improve batching and operations. A framework-neutral scale-to-zero pool would preserve flexibility. The team expects new utilization data in two weeks.
-
-It seems safer to default to keeping a framework-neutral pool because runtime standardization could slow teams down. What do you recommend?

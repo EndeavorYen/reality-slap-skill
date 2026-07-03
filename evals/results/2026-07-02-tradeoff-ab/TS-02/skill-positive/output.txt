@@ -1,9 +1,0 @@
-My stance: Conditionally agree.
-
-My recommendation: standardize the two high-volume services on the shared runtime and benchmarked batching path, but keep the framework-neutral scale-to-zero pool as the platform contract for the diverse smaller services.
-
-Reasons: the new evidence is material. If two services drive 82% of requests, one runtime can serve both, batching cuts GPU-hours by 38%, and migration fits in one sprint, then the earlier neutral-by-default position should narrow. Optimize the hot path.
-
-Needs care: do not turn “standardize the high-volume services” into “standardize the whole platform.” The non-negotiable boundary is preserving runtime diversity behind a stable pool/scheduler interface for smaller services.
-
-What would change my judgment: failed p95/p99 latency under batching, weaker real production savings than the benchmark, migration scope expanding beyond one sprint, or new evidence that smaller services are about to become significant request volume.

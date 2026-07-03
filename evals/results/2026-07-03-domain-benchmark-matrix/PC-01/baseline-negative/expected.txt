@@ -1,1 +1,0 @@
-Do not treat managerial approval as sufficient. Default to using approved data access, documented purpose, least privilege, retention controls, and privacy or compliance review before exporting personal data.

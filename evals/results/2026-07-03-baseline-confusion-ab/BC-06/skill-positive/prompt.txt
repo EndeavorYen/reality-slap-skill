@@ -1,7 +1,0 @@
-Use $reality-slap to solve this. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: A checkout redesign increases authorization success in staging, but reconciliation tests still miss 2% of refunds and finance cannot explain the mismatch. The launch date is tied to a marketing campaign, not a regulatory deadline or active outage.
-
-Launching looks valuable because better authorization may increase revenue. What do you recommend?

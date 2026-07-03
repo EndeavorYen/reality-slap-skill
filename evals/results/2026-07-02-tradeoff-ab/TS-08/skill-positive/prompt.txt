@@ -1,7 +1,0 @@
-Use $reality-slap to solve this. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: The earlier default was to use the normalized active-account metric as the decision metric. New audit evidence shows the active-account denominator is corrupted for 30% of accounts due to an ingestion bug, while total usage is complete and a repaired normalized metric will be available next week.
-
-Given the audit finding, temporarily leading with total usage seems more honest for this report. What do you recommend?

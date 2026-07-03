@@ -9,10 +9,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "create_ab_workspace.py"
 BANK = ROOT / "evals" / "reality-slap-eval-bank.md"
-FULL_BANK = ROOT / "evals" / "reality-slap-eval-bank-full.md"
-TRADEOFF_BANK = ROOT / "evals" / "reality-slap-tradeoff-eval-bank.md"
-DOMAIN_BANK = ROOT / "evals" / "reality-slap-domain-benchmark-matrix.md"
-CONFUSION_BANK = ROOT / "evals" / "reality-slap-baseline-confusion-bank.md"
 
 
 class CreateAbWorkspaceTests(unittest.TestCase):
@@ -35,34 +31,28 @@ class CreateAbWorkspaceTests(unittest.TestCase):
                 "--output-dir",
                 str(out_dir),
                 "--scenario",
-                "FI-01",
+                "SD-01",
                 "--scenario",
-                "PR-01",
-                "--scenario",
-                "EB-01",
-                "--scenario",
-                "EB-07",
+                "SD-06",
             )
 
             manifest = json.loads((out_dir / "manifest.json").read_text())
-            self.assertEqual(manifest["scenario_count"], 4)
-            self.assertEqual(manifest["prompt_count"], 16)
-            self.assertEqual(
-                manifest["scenario_ids"], ["FI-01", "PR-01", "EB-01", "EB-07"]
-            )
+            self.assertEqual(manifest["scenario_count"], 2)
+            self.assertEqual(manifest["prompt_count"], 8)
+            self.assertEqual(manifest["scenario_ids"], ["SD-01", "SD-06"])
 
             records = [
                 json.loads(line)
                 for line in (out_dir / "records.jsonl").read_text().splitlines()
             ]
-            self.assertEqual(len(records), 16)
+            self.assertEqual(len(records), 8)
 
-            prompt_path = out_dir / "FI-01" / "baseline-positive" / "prompt.txt"
-            output_path = out_dir / "FI-01" / "baseline-positive" / "output.txt"
-            self.assertIn("Switching the full team", prompt_path.read_text())
+            prompt_path = out_dir / "SD-01" / "baseline-positive" / "prompt.txt"
+            output_path = out_dir / "SD-01" / "baseline-positive" / "output.txt"
+            self.assertIn("request proxy", prompt_path.read_text())
             self.assertEqual(output_path.read_text(), "")
 
-    def test_default_workspace_uses_full_eval_bank(self):
+    def test_default_workspace_uses_active_eval_bank(self):
         with tempfile.TemporaryDirectory() as tmp:
             out_dir = Path(tmp) / "ab-workspace"
 
@@ -74,72 +64,23 @@ class CreateAbWorkspaceTests(unittest.TestCase):
                 for line in (out_dir / "records.jsonl").read_text().splitlines()
             ]
 
-            self.assertEqual(manifest["scenario_count"], 25)
-            self.assertEqual(manifest["prompt_count"], 100)
-            self.assertEqual(len(records), 100)
-            self.assertEqual(manifest["scenario_ids"][0], "FI-01")
-            self.assertEqual(manifest["scenario_ids"][-1], "EB-07")
+            self.assertEqual(manifest["scenario_count"], 6)
+            self.assertEqual(manifest["prompt_count"], 24)
+            self.assertEqual(len(records), 24)
+            self.assertEqual(manifest["scenario_ids"][0], "SD-01")
+            self.assertEqual(manifest["scenario_ids"][-1], "SD-06")
 
-    def test_full_profile_rejects_pilot_bank_before_creating_workspace(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            out_dir = Path(tmp) / "ab-workspace"
-
-            result = subprocess.run(
-                [
-                    sys.executable,
-                    str(SCRIPT),
-                    "--input",
-                    str(BANK),
-                    "--output-dir",
-                    str(out_dir),
-                    "--profile",
-                    "full",
-                ],
-                cwd=ROOT,
-                text=True,
-                capture_output=True,
-            )
-
-            self.assertEqual(result.returncode, 1)
-            self.assertIn("expected 100 scenarios", result.stderr)
-            self.assertFalse(out_dir.exists())
-
-    def test_full_profile_accepts_full_eval_bank(self):
+    def test_stance_drift_profile_accepts_active_eval_bank(self):
         with tempfile.TemporaryDirectory() as tmp:
             out_dir = Path(tmp) / "ab-workspace"
 
             self.run_script(
                 "--input",
-                str(FULL_BANK),
+                str(BANK),
                 "--output-dir",
                 str(out_dir),
                 "--profile",
-                "full",
-            )
-
-            manifest = json.loads((out_dir / "manifest.json").read_text())
-            records = [
-                json.loads(line)
-                for line in (out_dir / "records.jsonl").read_text().splitlines()
-            ]
-
-            self.assertEqual(manifest["scenario_count"], 100)
-            self.assertEqual(manifest["prompt_count"], 400)
-            self.assertEqual(manifest["profile"], "full")
-            self.assertEqual(len(records), 400)
-            self.assertEqual(manifest["scenario_ids"][-1], "EB-30")
-
-    def test_tradeoff_profile_accepts_tradeoff_eval_bank(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            out_dir = Path(tmp) / "ab-workspace"
-
-            self.run_script(
-                "--input",
-                str(TRADEOFF_BANK),
-                "--output-dir",
-                str(out_dir),
-                "--profile",
-                "tradeoff",
+                "stance-drift",
             )
 
             manifest = json.loads((out_dir / "manifest.json").read_text())
@@ -149,69 +90,13 @@ class CreateAbWorkspaceTests(unittest.TestCase):
             ]
             scorecard = json.loads((out_dir / "scorecard.json").read_text())
 
-            self.assertEqual(manifest["scenario_count"], 8)
-            self.assertEqual(manifest["prompt_count"], 32)
-            self.assertEqual(manifest["profile"], "tradeoff")
-            self.assertEqual(len(records), 32)
-            self.assertEqual(manifest["scenario_ids"][0], "TS-01")
-            self.assertEqual(manifest["scenario_ids"][-1], "TS-08")
-            self.assertEqual(scorecard["scenarios"][0]["suite"], "tradeoff-stability")
-
-    def test_domain_matrix_profile_accepts_domain_matrix_eval_bank(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            out_dir = Path(tmp) / "ab-workspace"
-
-            self.run_script(
-                "--input",
-                str(DOMAIN_BANK),
-                "--output-dir",
-                str(out_dir),
-                "--profile",
-                "domain-matrix",
-            )
-
-            manifest = json.loads((out_dir / "manifest.json").read_text())
-            records = [
-                json.loads(line)
-                for line in (out_dir / "records.jsonl").read_text().splitlines()
-            ]
-            scorecard = json.loads((out_dir / "scorecard.json").read_text())
-
-            self.assertEqual(manifest["scenario_count"], 20)
-            self.assertEqual(manifest["prompt_count"], 80)
-            self.assertEqual(manifest["profile"], "domain-matrix")
-            self.assertEqual(len(records), 80)
-            self.assertEqual(manifest["scenario_ids"][0], "FT-01")
-            self.assertEqual(manifest["scenario_ids"][-1], "TP-02")
-            self.assertEqual(scorecard["scenarios"][0]["suite"], "domain-benchmark")
-
-    def test_confusion_profile_accepts_confusion_eval_bank(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            out_dir = Path(tmp) / "ab-workspace"
-
-            self.run_script(
-                "--input",
-                str(CONFUSION_BANK),
-                "--output-dir",
-                str(out_dir),
-                "--profile",
-                "confusion",
-            )
-
-            manifest = json.loads((out_dir / "manifest.json").read_text())
-            records = [
-                json.loads(line)
-                for line in (out_dir / "records.jsonl").read_text().splitlines()
-            ]
-            scorecard = json.loads((out_dir / "scorecard.json").read_text())
-
-            self.assertEqual(manifest["scenario_count"], 12)
-            self.assertEqual(manifest["prompt_count"], 48)
-            self.assertEqual(manifest["profile"], "confusion")
-            self.assertEqual(len(records), 48)
-            self.assertEqual(manifest["scenario_ids"][0], "BC-01")
-            self.assertEqual(manifest["scenario_ids"][-1], "BC-12")
-            self.assertEqual(scorecard["scenarios"][0]["suite"], "baseline-confusion")
+            self.assertEqual(manifest["scenario_count"], 6)
+            self.assertEqual(manifest["prompt_count"], 24)
+            self.assertEqual(manifest["profile"], "stance-drift")
+            self.assertEqual(len(records), 24)
+            self.assertEqual(manifest["scenario_ids"][0], "SD-01")
+            self.assertEqual(manifest["scenario_ids"][-1], "SD-06")
+            self.assertEqual(scorecard["scenarios"][0]["suite"], "stance-drift")
 
     def test_scorecard_contains_individual_and_pair_templates(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -223,13 +108,13 @@ class CreateAbWorkspaceTests(unittest.TestCase):
                 "--output-dir",
                 str(out_dir),
                 "--scenario",
-                "FI-01",
+                "SD-01",
             )
 
             scorecard = json.loads((out_dir / "scorecard.json").read_text())
             scenario = scorecard["scenarios"][0]
 
-            self.assertEqual(scenario["scenario_id"], "FI-01")
+            self.assertEqual(scenario["scenario_id"], "SD-01")
             self.assertEqual(
                 sorted(scenario["individual_scores"]),
                 [

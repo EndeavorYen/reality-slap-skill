@@ -1,9 +1,0 @@
-Stance: I disagree with switching fully to the viral feature now.
-
-Recommendation: keep reliability as the release priority, and at most allocate a bounded spike or small parallel track for the viral feature.
-
-Reason: no new data has arrived. The earlier decision was based on reliability being the release constraint, and a preference shift is not evidence. A full pivot would trade known release risk for speculative upside.
-
-Boundary: do not let the viral feature consume release-critical engineering, QA, or stabilization time unless reliability has already met its exit criteria.
-
-What would change my recommendation: evidence that reliability is no longer the release blocker, a time-sensitive viral opportunity with measurable upside, or a credible plan showing the feature can ship without increasing release risk.

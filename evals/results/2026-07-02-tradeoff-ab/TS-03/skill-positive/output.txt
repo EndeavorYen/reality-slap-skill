@@ -1,9 +1,0 @@
-Stance: Disagree.
-
-Recommendation: Default to a lightweight optional checklist, but make critical setup steps strongly prompted, measurable, and recoverable after first use.
-
-Reasons: A mandatory flow is solving for completeness before proving incompleteness is the main activation problem. With anecdotal evidence and inconclusive activation data, forcing everyone through setup risks adding friction without confirmed upside. Discipline is not the same as correctness; a mandatory checklist can create fake completion if users rush through it just to enter the product.
-
-Watch out: Optional cannot mean invisible. Underconfigured accounts need detection, reminders, and clear “next best setup step” prompts inside the product.
-
-What would change my judgment: Evidence that underconfiguration materially causes failed onboarding, support burden, churn, compliance risk, or unusable first sessions, and that a mandatory flow improves those outcomes without unacceptable activation drop-off.

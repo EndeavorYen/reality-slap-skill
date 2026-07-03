@@ -1,1 +1,0 @@
-Use normalized usage per active account as the decision metric, include total usage as context, and explain that growth in account count is driving most of the headline increase.

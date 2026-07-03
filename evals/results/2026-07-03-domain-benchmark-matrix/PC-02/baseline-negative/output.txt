@@ -1,9 +1,0 @@
-Do **not** confirm that everything is deleted until it has actually been verified.
-
-The right move is to give **immediate, honest confirmation of the request**, not false confirmation of completion. A misleading “everything is deleted” could create legal, trust, and audit problems, especially if tax, fraud-prevention, chargeback, payment, or security records must be retained.
-
-Recommended customer response:
-
-> We’ve received your account deletion request and started the deletion process immediately. I don’t want to give you an inaccurate confirmation before our privacy team verifies all covered systems. Some records may need to be retained for limited legal, tax, security, or fraud-prevention reasons, but those records will be restricted and not used for normal account activity or marketing. We’ll follow up with confirmation of what was deleted and what, if anything, must be retained.
-
-Internally, the agent should escalate to the privacy/data-deletion workflow, identify all systems/processors involved, stop nonessential processing like marketing, and get a verified completion/exception record before sending final confirmation.

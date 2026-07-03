@@ -1,1 +1,0 @@
-Update the recommendation: allow the minimal tested security fix through the freeze with approval, audit, and rollback because the new risk outweighs freeze purity.

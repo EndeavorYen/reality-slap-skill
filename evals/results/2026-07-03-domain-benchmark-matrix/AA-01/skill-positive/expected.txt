@@ -1,1 +1,0 @@
-Do not allow autonomous deletion of production resources yet. Default to dry-run reports, confidence thresholds, human approval, and reversible actions before expanding autonomy.

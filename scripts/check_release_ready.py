@@ -32,7 +32,7 @@ def release_commands(
     codex_home,
     quick_validate,
     skip_tests=False,
-    full_eval_workspace=None,
+    eval_workspace=None,
 ):
     python = sys.executable
     commands = [
@@ -41,69 +41,25 @@ def release_commands(
             [python, quick_validate, root],
         ),
         command_record(
-            "pilot-eval-bank",
+            "stance-drift-eval-bank",
             [
                 python,
                 root / "scripts" / "validate_eval_bank.py",
                 "--input",
                 root / "evals" / "reality-slap-eval-bank.md",
                 "--profile",
-                "pilot",
+                "stance-drift",
             ],
         ),
         command_record(
-            "full-eval-bank",
-            [
-                python,
-                root / "scripts" / "validate_eval_bank.py",
-                "--input",
-                root / "evals" / "reality-slap-eval-bank-full.md",
-                "--profile",
-                "full",
-            ],
-        ),
-        command_record(
-            "tradeoff-eval-bank",
-            [
-                python,
-                root / "scripts" / "validate_eval_bank.py",
-                "--input",
-                root / "evals" / "reality-slap-tradeoff-eval-bank.md",
-                "--profile",
-                "tradeoff",
-            ],
-        ),
-        command_record(
-            "domain-matrix-eval-bank",
-            [
-                python,
-                root / "scripts" / "validate_eval_bank.py",
-                "--input",
-                root / "evals" / "reality-slap-domain-benchmark-matrix.md",
-                "--profile",
-                "domain-matrix",
-            ],
-        ),
-        command_record(
-            "confusion-eval-bank",
-            [
-                python,
-                root / "scripts" / "validate_eval_bank.py",
-                "--input",
-                root / "evals" / "reality-slap-baseline-confusion-bank.md",
-                "--profile",
-                "confusion",
-            ],
-        ),
-        command_record(
-            "full-eval-design",
+            "stance-drift-eval-design",
             [
                 python,
                 root / "scripts" / "audit_eval_design.py",
                 "--bank",
-                root / "evals" / "reality-slap-eval-bank-full.md",
+                root / "evals" / "reality-slap-eval-bank.md",
                 "--profile",
-                "full",
+                "stance-drift",
             ],
         ),
         command_record(
@@ -171,19 +127,19 @@ def release_commands(
             ],
         ),
     ]
-    if full_eval_workspace:
+    if eval_workspace:
         commands.append(
             command_record(
-                "full-eval-goal-completion",
+                "eval-goal-completion",
                 [
                     python,
                     root / "scripts" / "audit_goal_completion.py",
                     "--workspace",
-                    full_eval_workspace,
+                    eval_workspace,
                     "--skill",
                     root / "SKILL.md",
                     "--profile",
-                    "full",
+                    "stance-drift",
                 ],
             )
         )
@@ -299,14 +255,14 @@ def run_release_gate(args):
             codex_home=codex_home,
             quick_validate=quick_validate,
             skip_tests=args.skip_tests,
-            full_eval_workspace=args.full_eval_workspace,
+            eval_workspace=args.eval_workspace,
         )
         if args.dry_run:
             return {
                 "ok": True,
                 "dry_run": True,
-                "mode": "score-release" if args.full_eval_workspace else "install-release",
-                "full_eval_workspace": str(args.full_eval_workspace) if args.full_eval_workspace else "",
+                "mode": "score-release" if args.eval_workspace else "install-release",
+                "eval_workspace": str(args.eval_workspace) if args.eval_workspace else "",
                 "commands": commands,
             }
 
@@ -321,8 +277,8 @@ def run_release_gate(args):
         return {
             "ok": not failed,
             "dry_run": False,
-            "mode": "score-release" if args.full_eval_workspace else "install-release",
-            "full_eval_workspace": str(args.full_eval_workspace) if args.full_eval_workspace else "",
+            "mode": "score-release" if args.eval_workspace else "install-release",
+            "eval_workspace": str(args.eval_workspace) if args.eval_workspace else "",
             "codex_home": str(codex_home),
             "results": results,
         }
@@ -337,11 +293,13 @@ def main():
     parser.add_argument("--quick-validate", type=Path, default=DEFAULT_QUICK_VALIDATE)
     parser.add_argument("--codex-home", type=Path)
     parser.add_argument(
+        "--eval-workspace",
         "--full-eval-workspace",
+        dest="eval_workspace",
         type=Path,
         help=(
-            "Also require the full 100-scenario / 400-output scored eval "
-            "workspace to pass audit_goal_completion.py. Omit this for install-only releases."
+            "Also require a completed scored eval workspace to pass "
+            "audit_goal_completion.py. Omit this for install-only releases."
         ),
     )
     parser.add_argument("--skip-tests", action="store_true")

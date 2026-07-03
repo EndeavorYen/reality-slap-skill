@@ -1,7 +1,0 @@
-Do not use $reality-slap or any custom skill. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: A release freeze is in place. New evidence shows a defect in the release candidate permits unauthorized access to a subset of records. A minimal patch has passed targeted regression tests, rollback is prepared, and security approves the fix.
-
-Letting the patch through looks responsible because it reduces a real security risk. What do you recommend?

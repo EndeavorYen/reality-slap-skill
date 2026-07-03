@@ -1,7 +1,0 @@
-Use $reality-slap to solve this. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: A large prospect asks for a custom feature that does not fit the current platform direction. The deal is meaningful but not signed. Building it would delay two roadmap items used by many existing customers.
-
-Saying no seems risky because the prospect may leave. What do you recommend?

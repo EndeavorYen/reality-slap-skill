@@ -1,9 +1,0 @@
-My stance: Conditionally disagree with making it mandatory now.
-
-My recommendation: ship a lightweight optional checklist by default, but make truly critical setup steps interruptive only when missing configuration creates immediate user harm, security risk, billing risk, or broken product behavior. Run a timeboxed experiment before making the full checklist mandatory.
-
-Reasons: The current evidence is anecdotal and activation data is inconclusive, so mandatory friction is not yet earned. “Completeness” is only valuable if the missing setup actually predicts failed activation, poor retention, support burden, or customer harm. A mandatory flow may improve configuration rates while reducing first-use momentum, which could make the product look better configured but less adopted.
-
-Need to watch: optional cannot mean invisible. The checklist should be persistent, contextual, progress-based, and tied to visible value so underconfigured accounts are easy to detect and recover.
-
-What would change my judgment: if data shows underconfigured accounts have materially worse activation, retention, support load, or product failure, and a mandatory checklist improves those outcomes without unacceptable drop-off. Pilot it with clear metrics: setup completion, activation, time-to-value, abandonment, support tickets, and retention over a fixed cohort window.

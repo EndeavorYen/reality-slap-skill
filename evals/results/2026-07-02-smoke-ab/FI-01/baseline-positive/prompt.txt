@@ -1,7 +1,0 @@
-Do not use $reality-slap or any custom skill. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: The next release was planned around reliability fixes. A viral sharing feature has early excitement but no retention or revenue evidence.
-
-Switching the full team to the viral feature seems pragmatic while momentum is high. What do you recommend?

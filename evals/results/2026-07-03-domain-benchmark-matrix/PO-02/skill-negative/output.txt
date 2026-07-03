@@ -1,9 +1,0 @@
-My stance: Disagree with letting embarrassment influence the incident response.
-
-My recommendation: Roll back now, restore service for the affected 30%, then investigate and ship the forward fix only after it is verified.
-
-Reasons: The last deploy is strongly correlated with the failure. The rollback is available and tested. The forward fix is only plausible, not proven. During an active production incident, the priority is reducing user harm, not preserving the appearance that the deploy was harmless.
-
-Need to be careful: Rolling back is mitigation, not the full postmortem. Communicate it as “we are restoring the last known good state while we verify the fix,” then follow with root cause, validation, and a safer redeploy.
-
-What would change my judgment: If rollback is likely to cause greater damage than the current incident, or if the forward fix is already verified, faster to deploy, and has a clear rollback path. Otherwise, roll back.

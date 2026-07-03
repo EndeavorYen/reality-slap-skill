@@ -23,7 +23,7 @@ class CreateScoringPacketsTests(unittest.TestCase):
                 "--output-dir",
                 str(workspace),
                 "--scenario",
-                "FI-01",
+                "SD-01",
             ],
             cwd=ROOT,
             check=True,
@@ -44,9 +44,9 @@ class CreateScoringPacketsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             workspace = Path(tmp) / "workspace"
             self.create_workspace(workspace)
-            self.write_output(workspace, "FI-01", "baseline-positive", "baseline yes")
-            self.write_output(workspace, "FI-01", "baseline-negative", "baseline no")
-            self.write_output(workspace, "FI-01", "skill-positive", "skill yes")
+            self.write_output(workspace, "SD-01", "baseline-positive", "baseline yes")
+            self.write_output(workspace, "SD-01", "baseline-negative", "baseline no")
+            self.write_output(workspace, "SD-01", "skill-positive", "skill yes")
 
             result = self.run_script(workspace, "--kind", "individual")
 
@@ -56,12 +56,12 @@ class CreateScoringPacketsTests(unittest.TestCase):
         self.assertEqual(
             packets[0]["score_update_target"],
             {
-                "scenario_id": "FI-01",
+                "scenario_id": "SD-01",
                 "score_type": "individual",
                 "configuration": "baseline-positive",
             },
         )
-        self.assertIn("Switching the full team", packets[0]["prompt"])
+        self.assertIn("GPU", packets[0]["prompt"])
         self.assertEqual(packets[0]["output"], "baseline yes")
         self.assertIn("stance", packets[0]["score_dimensions"])
 
@@ -69,9 +69,9 @@ class CreateScoringPacketsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             workspace = Path(tmp) / "workspace"
             self.create_workspace(workspace)
-            self.write_output(workspace, "FI-01", "baseline-positive", "baseline yes")
-            self.write_output(workspace, "FI-01", "baseline-negative", "baseline no")
-            self.write_output(workspace, "FI-01", "skill-positive", "skill yes")
+            self.write_output(workspace, "SD-01", "baseline-positive", "baseline yes")
+            self.write_output(workspace, "SD-01", "baseline-negative", "baseline no")
+            self.write_output(workspace, "SD-01", "skill-positive", "skill yes")
 
             result = self.run_script(workspace, "--kind", "pair")
 
@@ -82,7 +82,7 @@ class CreateScoringPacketsTests(unittest.TestCase):
         self.assertEqual(
             packet["score_update_target"],
             {
-                "scenario_id": "FI-01",
+                "scenario_id": "SD-01",
                 "score_type": "pair",
                 "configuration": "baseline",
             },
@@ -95,7 +95,7 @@ class CreateScoringPacketsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             workspace = Path(tmp) / "workspace"
             self.create_workspace(workspace)
-            self.write_output(workspace, "FI-01", "baseline-positive", "baseline yes")
+            self.write_output(workspace, "SD-01", "baseline-positive", "baseline yes")
 
             result = self.run_script(
                 workspace,
@@ -106,7 +106,7 @@ class CreateScoringPacketsTests(unittest.TestCase):
             )
 
         self.assertIn("# Reality Slap Scoring Packets", result.stdout)
-        self.assertIn("## FI-01 baseline-positive", result.stdout)
+        self.assertIn("## SD-01 baseline-positive", result.stdout)
         self.assertIn("baseline yes", result.stdout)
 
     @staticmethod

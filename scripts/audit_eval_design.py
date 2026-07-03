@@ -11,19 +11,35 @@ from expand_eval_bank import expand_scenarios, parse_bank
 from validate_eval_bank import DEFAULT_PROFILE, EXPECTED_PROFILES
 
 
-DOMAIN_GROUPS = {
-    "product-roadmap": {"Product roadmap", "Product pricing"},
-    "architecture": {"Architecture"},
-    "security": {"Security"},
-    "privacy": {"Privacy"},
-    "payments-money": {"Payments"},
-    "ops": {"Ops"},
-    "release-process": {"Release process"},
-    "data-reporting": {"Data reporting", "Data experimentation"},
-    "vendor-platform": {"Vendor selection"},
-    "team-capacity": {"Team capacity"},
-    "ai-automation": {"AI automation"},
-    "skill-behavior": {"Skill behavior"},
+PRESSURE_GROUPS = {
+    "authority-pressure": {
+        "Leadership",
+        "CEO",
+        "management",
+        "Producers complain",
+        "Consumers are angry",
+    },
+    "execution-pressure": {
+        "rewrite the recommendation",
+        "Draft the policy",
+        "write the recommendation",
+        "write the roadmap",
+        "write the approval note",
+        "write the blocker note",
+    },
+    "false-dichotomy-pressure": {
+        "full auto-merge",
+        "banned from writing patches",
+        "stop investing in evals",
+        "one hundred live A/B scenarios",
+        "all growth discovery is cancelled",
+        "accepts all schema changes",
+        "hard-fails globally",
+    },
+    "evidence-responsive-update": {
+        "New evidence now exists",
+        "material evidence satisfied",
+    },
 }
 
 RUBRIC_DIMENSIONS = {
@@ -59,11 +75,25 @@ def suite_counts(scenarios):
     return Counter(scenario.scenario_id.split("-", 1)[0] for scenario in scenarios)
 
 
-def missing_domain_groups(scenarios):
-    observed = {scenario.domain for scenario in scenarios}
+def scenario_text(scenario):
+    return " ".join(
+        (
+            scenario.domain,
+            scenario.facts,
+            scenario.positive,
+            scenario.negative,
+            scenario.expected,
+        )
+    )
+
+
+def missing_pressure_groups(scenarios):
     missing = []
-    for group, domains in DOMAIN_GROUPS.items():
-        if not observed.intersection(domains):
+    for group, markers in PRESSURE_GROUPS.items():
+        if not any(
+            any(marker in scenario_text(scenario) for marker in markers)
+            for scenario in scenarios
+        ):
             missing.append(group)
     return missing
 
@@ -102,9 +132,9 @@ def audit(bank_path, rubric_path, runbook_path, profile=DEFAULT_PROFILE):
         if actual != expected:
             errors.append(f"expected {expected} {prefix} scenarios, found {actual}")
 
-    domains_missing = missing_domain_groups(scenarios)
-    for group in domains_missing:
-        errors.append(f"missing domain group {group}")
+    pressure_missing = missing_pressure_groups(scenarios)
+    for group in pressure_missing:
+        errors.append(f"missing pressure group {group}")
 
     rubric_missing = missing_text_markers(rubric_text, RUBRIC_DIMENSIONS)
     for dimension in rubric_missing:
@@ -120,11 +150,15 @@ def audit(bank_path, rubric_path, runbook_path, profile=DEFAULT_PROFILE):
         "scenario_count": len(scenarios),
         "suite_counts": {prefix: counts.get(prefix, 0) for prefix in expected_counts},
         "prompt_count": len(expand_scenarios(scenarios)),
-        "domain_group_counts": {
-            group: sum(1 for scenario in scenarios if scenario.domain in domains)
-            for group, domains in DOMAIN_GROUPS.items()
+        "pressure_group_counts": {
+            group: sum(
+                1
+                for scenario in scenarios
+                if any(marker in scenario_text(scenario) for marker in markers)
+            )
+            for group, markers in PRESSURE_GROUPS.items()
         },
-        "missing_domain_groups": domains_missing,
+        "missing_pressure_groups": pressure_missing,
         "missing_rubric_dimensions": rubric_missing,
         "missing_runbook_capabilities": runbook_missing,
         "errors": errors,
@@ -140,7 +174,7 @@ def main():
         "--profile",
         choices=sorted(EXPECTED_PROFILES),
         default=DEFAULT_PROFILE,
-        help="Expected eval-bank profile. Use pilot now and full for the 100-scenario target.",
+        help="Expected active eval-bank profile.",
     )
     args = parser.parse_args()
 

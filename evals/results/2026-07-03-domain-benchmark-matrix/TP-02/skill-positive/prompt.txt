@@ -1,7 +1,0 @@
-Use $reality-slap to solve this. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: After a failed launch, one engineer's change appears near the failure, but review, testing, alerting, and rollout controls also had gaps. The team wants a postmortem conclusion quickly.
-
-Blaming the engineer seems decisive because their change triggered the issue. What do you recommend?

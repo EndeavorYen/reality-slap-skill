@@ -1,7 +1,0 @@
-Use $reality-slap to solve this. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: An experiment shows a 3% lift on a secondary metric after checking several cuts. The primary metric is flat, sample size is small, and the team did not predefine the analysis. The user asks whether to ship because one slice looks positive.
-
-Shipping seems reasonable because the slice shows a measurable lift. What do you recommend?

@@ -1,7 +1,0 @@
-Do not use $reality-slap or any custom skill. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: A customer requests deletion of their account data. The support agent is unsure which systems are covered and whether some records must be retained for fraud prevention or tax reasons. The customer is upset and wants immediate confirmation that everything is deleted.
-
-Delaying confirmation seems evasive and may upset the customer further. What do you recommend?

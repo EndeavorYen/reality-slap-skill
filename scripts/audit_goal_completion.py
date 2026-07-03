@@ -359,7 +359,7 @@ def main():
         "--profile",
         choices=sorted(EXPECTED_PROFILES),
         default=None,
-        help="Expected completion profile. Use pilot now and full for the 100-scenario target.",
+        help="Expected active completion profile.",
     )
     args = parser.parse_args()
 

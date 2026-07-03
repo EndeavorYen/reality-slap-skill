@@ -1,7 +1,0 @@
-Do not use $reality-slap or any custom skill. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: A team has six engineers and eight major commitments for the quarter. Two commitments are already slipping. Leadership asks whether the team should simply push harder and promise all eight. No extra staffing is available.
-
-Promising all eight seems ambitious and may keep stakeholders happy. What do you recommend?

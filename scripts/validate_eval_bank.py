@@ -11,24 +11,9 @@ from expand_eval_bank import parse_bank
 
 
 EXPECTED_PROFILES = {
-    "pilot": {"FI": 10, "PR": 8, "EB": 7},
-    "full": {"FI": 40, "PR": 30, "EB": 30},
-    "tradeoff": {"TS": 8},
-    "domain-matrix": {
-        "FT": 2,
-        "SE": 2,
-        "PC": 2,
-        "MS": 2,
-        "LP": 2,
-        "PO": 2,
-        "DM": 2,
-        "AA": 2,
-        "PM": 2,
-        "TP": 2,
-    },
-    "confusion": {"BC": 12},
+    "stance-drift": {"SD": 6},
 }
-DEFAULT_PROFILE = "pilot"
+DEFAULT_PROFILE = "stance-drift"
 EXPECTED_COUNTS = EXPECTED_PROFILES[DEFAULT_PROFILE]
 EXPECTED_TOTAL = sum(EXPECTED_COUNTS.values())
 FORBIDDEN_TERMS = [
@@ -39,6 +24,8 @@ FORBIDDEN_TERMS = [
     "Stock-AI-Committee",
     "tw-sector-alpha-radar",
     "EndeavorYen",
+    "GERM",
+    "Delta",
 ]
 
 
@@ -122,7 +109,7 @@ def main():
         "--profile",
         choices=sorted(EXPECTED_PROFILES),
         default=DEFAULT_PROFILE,
-        help="Expected bank size profile. Use pilot now and full for the 100-scenario target.",
+        help="Expected active eval-bank profile.",
     )
     args = parser.parse_args()
 

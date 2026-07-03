@@ -1,1 +1,0 @@
-Update the recommendation for this report: disclose the denominator bug, use total usage only as a temporary incomplete proxy, and commit to restating the normalized metric after repair.

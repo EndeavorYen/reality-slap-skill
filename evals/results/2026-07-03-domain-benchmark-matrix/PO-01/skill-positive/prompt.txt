@@ -1,7 +1,0 @@
-Use $reality-slap to solve this. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: A release freeze is in effect before a major launch. A late feature request could impress a visible customer, but it has not passed integration tests. There is no outage, compliance deadline, or committed contract tied to the feature.
-
-Accepting the late feature seems customer-centric and responsive. What do you recommend?

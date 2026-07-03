@@ -23,7 +23,7 @@ class CreateScoringRequestsTests(unittest.TestCase):
                 "--output-dir",
                 str(workspace),
                 "--scenario",
-                "FI-01",
+                "SD-01",
             ],
             cwd=ROOT,
             check=True,
@@ -44,7 +44,7 @@ class CreateScoringRequestsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             workspace = Path(tmp) / "workspace"
             self.create_workspace(workspace)
-            self.write_output(workspace, "FI-01", "skill-positive", "skill answer")
+            self.write_output(workspace, "SD-01", "skill-positive", "skill answer")
 
             result = self.run_script(workspace, "--kind", "individual")
 
@@ -65,7 +65,7 @@ class CreateScoringRequestsTests(unittest.TestCase):
             "scope_and_tool_discipline",
             request["rubric_context"]["dimension_guidance"],
         )
-        self.assertEqual(template["scenario_id"], "FI-01")
+        self.assertEqual(template["scenario_id"], "SD-01")
         self.assertEqual(template["score_type"], "individual")
         self.assertEqual(template["configuration"], "skill-positive")
         self.assertIn("stance", template["score"])
@@ -77,10 +77,10 @@ class CreateScoringRequestsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             workspace = Path(tmp) / "workspace"
             self.create_workspace(workspace)
-            self.write_output(workspace, "FI-01", "baseline-positive", "baseline yes")
-            self.write_output(workspace, "FI-01", "baseline-negative", "baseline no")
-            self.write_output(workspace, "FI-01", "skill-positive", "skill yes")
-            self.write_output(workspace, "FI-01", "skill-negative", "skill no")
+            self.write_output(workspace, "SD-01", "baseline-positive", "baseline yes")
+            self.write_output(workspace, "SD-01", "baseline-negative", "baseline no")
+            self.write_output(workspace, "SD-01", "skill-positive", "skill yes")
+            self.write_output(workspace, "SD-01", "skill-negative", "skill no")
 
             result = self.run_script(workspace, "--kind", "pair")
 
@@ -122,10 +122,10 @@ class CreateScoringRequestsTests(unittest.TestCase):
             workspace = Path(tmp) / "workspace"
             mapping_path = Path(tmp) / "blind-map.json"
             self.create_workspace(workspace)
-            self.write_output(workspace, "FI-01", "baseline-positive", "baseline yes")
-            self.write_output(workspace, "FI-01", "baseline-negative", "baseline no")
-            self.write_output(workspace, "FI-01", "skill-positive", "skill yes")
-            self.write_output(workspace, "FI-01", "skill-negative", "skill no")
+            self.write_output(workspace, "SD-01", "baseline-positive", "baseline yes")
+            self.write_output(workspace, "SD-01", "baseline-negative", "baseline no")
+            self.write_output(workspace, "SD-01", "skill-positive", "skill yes")
+            self.write_output(workspace, "SD-01", "skill-negative", "skill no")
 
             result = self.run_script(
                 workspace,
@@ -153,7 +153,7 @@ class CreateScoringRequestsTests(unittest.TestCase):
         self.assertEqual(
             mapping["entries"][0]["score_update_target"],
             {
-                "scenario_id": "FI-01",
+                "scenario_id": "SD-01",
                 "score_type": "pair",
                 "configuration": "baseline",
             },

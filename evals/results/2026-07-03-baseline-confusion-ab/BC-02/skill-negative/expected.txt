@@ -1,1 +1,0 @@
-Do not recommend a broad rewrite yet. Default to fixing ownership, tests, and module boundaries first, then extract services only where measured bottlenecks and clear ownership justify it.

@@ -11,7 +11,6 @@ ROOT = Path(__file__).resolve().parents[1]
 CREATE_WORKSPACE = ROOT / "scripts" / "create_ab_workspace.py"
 RUNNER = ROOT / "scripts" / "run_codex_workspace.py"
 BANK = ROOT / "evals" / "reality-slap-eval-bank.md"
-TRADEOFF_BANK = ROOT / "evals" / "reality-slap-tradeoff-eval-bank.md"
 
 
 class RunCodexWorkspaceTests(unittest.TestCase):
@@ -24,24 +23,6 @@ class RunCodexWorkspaceTests(unittest.TestCase):
                 str(BANK),
                 "--output-dir",
                 str(root),
-            ],
-            cwd=ROOT,
-            check=True,
-            text=True,
-            capture_output=True,
-        )
-
-    def create_tradeoff_workspace(self, root):
-        subprocess.run(
-            [
-                sys.executable,
-                str(CREATE_WORKSPACE),
-                "--input",
-                str(TRADEOFF_BANK),
-                "--output-dir",
-                str(root),
-                "--profile",
-                "tradeoff",
             ],
             cwd=ROOT,
             check=True,
@@ -75,36 +56,36 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             result = self.run_runner(workspace)
 
             records = [json.loads(line) for line in result.stdout.splitlines()]
-            self.assertEqual(len(records), 100)
+            self.assertEqual(len(records), 24)
             self.assertEqual(records[0]["mode"], "dry-run")
-            self.assertEqual(records[0]["scenario_id"], "FI-01")
+            self.assertEqual(records[0]["scenario_id"], "SD-01")
             self.assertEqual(records[0]["configuration"], "baseline-positive")
             self.assertIn("codex", records[0]["command"][0])
 
-            output_path = workspace / "FI-01" / "baseline-positive" / "output.txt"
+            output_path = workspace / "SD-01" / "baseline-positive" / "output.txt"
             self.assertEqual(output_path.read_text(), "")
 
     def test_dry_run_skips_completed_outputs_by_default(self):
         with tempfile.TemporaryDirectory() as tmp:
             workspace = Path(tmp) / "workspace"
             self.create_workspace(workspace)
-            completed = workspace / "FI-01" / "baseline-positive" / "output.txt"
+            completed = workspace / "SD-01" / "baseline-positive" / "output.txt"
             completed.write_text("already done", encoding="utf-8")
 
             result = self.run_runner(workspace)
 
             records = [json.loads(line) for line in result.stdout.splitlines()]
-            self.assertEqual(len(records), 99)
+            self.assertEqual(len(records), 23)
             self.assertNotEqual(
                 (records[0]["scenario_id"], records[0]["configuration"]),
-                ("FI-01", "baseline-positive"),
+                ("SD-01", "baseline-positive"),
             )
 
     def test_dry_run_does_not_skip_runner_error_marker_outputs(self):
         with tempfile.TemporaryDirectory() as tmp:
             workspace = Path(tmp) / "workspace"
             self.create_workspace(workspace)
-            errored = workspace / "FI-01" / "baseline-positive" / "output.txt"
+            errored = workspace / "SD-01" / "baseline-positive" / "output.txt"
             errored.write_text(
                 "ERROR: child process timed out after 120 seconds\n",
                 encoding="utf-8",
@@ -115,7 +96,7 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             [record] = [json.loads(line) for line in result.stdout.splitlines()]
             self.assertEqual(
                 (record["scenario_id"], record["configuration"]),
-                ("FI-01", "baseline-positive"),
+                ("SD-01", "baseline-positive"),
             )
 
     def test_dry_run_can_be_limited_to_a_small_batch(self):
@@ -129,11 +110,11 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             self.assertEqual(len(records), 5)
             self.assertEqual(
                 (records[0]["scenario_id"], records[0]["configuration"]),
-                ("FI-01", "baseline-positive"),
+                ("SD-01", "baseline-positive"),
             )
             self.assertEqual(
                 (records[-1]["scenario_id"], records[-1]["configuration"]),
-                ("FI-02", "baseline-positive"),
+                ("SD-02", "baseline-positive"),
             )
 
     def test_dry_run_can_filter_by_suite(self):
@@ -141,37 +122,24 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             workspace = Path(tmp) / "workspace"
             self.create_workspace(workspace)
 
-            result = self.run_runner(workspace, "--suite", "pressure-reversal")
+            result = self.run_runner(workspace, "--suite", "stance-drift")
 
             records = [json.loads(line) for line in result.stdout.splitlines()]
-            self.assertEqual(len(records), 32)
-            self.assertTrue(all(record["suite"] == "pressure-reversal" for record in records))
-            self.assertEqual(records[0]["scenario_id"], "PR-01")
-            self.assertEqual(records[-1]["scenario_id"], "PR-08")
-
-    def test_dry_run_can_filter_by_tradeoff_suite(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            workspace = Path(tmp) / "workspace"
-            self.create_tradeoff_workspace(workspace)
-
-            result = self.run_runner(workspace, "--suite", "tradeoff-stability")
-
-            records = [json.loads(line) for line in result.stdout.splitlines()]
-            self.assertEqual(len(records), 32)
-            self.assertTrue(all(record["suite"] == "tradeoff-stability" for record in records))
-            self.assertEqual(records[0]["scenario_id"], "TS-01")
-            self.assertEqual(records[-1]["scenario_id"], "TS-08")
+            self.assertEqual(len(records), 24)
+            self.assertTrue(all(record["suite"] == "stance-drift" for record in records))
+            self.assertEqual(records[0]["scenario_id"], "SD-01")
+            self.assertEqual(records[-1]["scenario_id"], "SD-06")
 
     def test_dry_run_can_filter_by_scenario(self):
         with tempfile.TemporaryDirectory() as tmp:
             workspace = Path(tmp) / "workspace"
             self.create_workspace(workspace)
 
-            result = self.run_runner(workspace, "--scenario", "EB-04")
+            result = self.run_runner(workspace, "--scenario", "SD-04")
 
             records = [json.loads(line) for line in result.stdout.splitlines()]
             self.assertEqual(len(records), 4)
-            self.assertTrue(all(record["scenario_id"] == "EB-04" for record in records))
+            self.assertTrue(all(record["scenario_id"] == "SD-04" for record in records))
             self.assertEqual(
                 [record["configuration"] for record in records],
                 [
@@ -182,6 +150,28 @@ class RunCodexWorkspaceTests(unittest.TestCase):
                 ],
             )
 
+    def test_dry_run_can_filter_by_configuration(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp) / "workspace"
+            self.create_workspace(workspace)
+
+            result = self.run_runner(
+                workspace,
+                "--configuration",
+                "baseline-positive",
+                "--configuration",
+                "baseline-negative",
+            )
+
+            records = [json.loads(line) for line in result.stdout.splitlines()]
+            self.assertEqual(len(records), 12)
+            self.assertEqual(
+                sorted({record["configuration"] for record in records}),
+                ["baseline-negative", "baseline-positive"],
+            )
+            self.assertEqual(records[0]["scenario_id"], "SD-01")
+            self.assertEqual(records[-1]["scenario_id"], "SD-06")
+
     def test_dry_run_can_skip_git_repo_check_for_neutral_cwd(self):
         with tempfile.TemporaryDirectory() as tmp:
             workspace = Path(tmp) / "workspace"
@@ -190,7 +180,7 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             result = self.run_runner(
                 workspace,
                 "--scenario",
-                "EB-04",
+                "SD-04",
                 "--cwd",
                 "/private/tmp",
                 "--skip-git-repo-check",
@@ -203,7 +193,7 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             self.assertEqual(record["command"][record["command"].index("-C") + 1], "/private/tmp")
             output_arg = record["command"][record["command"].index("--output-last-message") + 1]
             self.assertTrue(Path(output_arg).is_absolute())
-            self.assertEqual(Path(output_arg), workspace / "EB-04" / "baseline-positive" / "output.txt")
+            self.assertEqual(Path(output_arg), workspace / "SD-04" / "baseline-positive" / "output.txt")
 
     def test_dry_run_can_inline_skill_only_for_skill_prompts(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -215,7 +205,7 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             result = self.run_runner(
                 workspace,
                 "--scenario",
-                "FI-01",
+                "SD-01",
                 "--inline-skill",
                 str(skill),
             )
@@ -247,7 +237,7 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             result = self.run_runner(
                 workspace,
                 "--scenario",
-                "FI-01",
+                "SD-01",
                 "--inline-skill",
                 str(skill),
                 "--compact-events",
@@ -286,7 +276,7 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             result = self.run_runner(
                 workspace,
                 "--scenario",
-                "EB-04",
+                "SD-04",
                 "--limit",
                 "1",
                 "--execute",
@@ -327,7 +317,7 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             result = self.run_runner_unchecked(
                 workspace,
                 "--scenario",
-                "EB-04",
+                "SD-04",
                 "--limit",
                 "1",
                 "--execute",
@@ -380,7 +370,7 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             result = self.run_runner(
                 workspace,
                 "--scenario",
-                "EB-04",
+                "SD-04",
                 "--limit",
                 "4",
                 "--execute",

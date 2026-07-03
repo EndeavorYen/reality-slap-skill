@@ -1,9 +1,0 @@
-Stance: Conditionally agree
-
-Recommendation: Make the normalized active-account metric the headline, and show total usage (+18%) as a supporting context metric.
-
-Reason: The headline should answer whether the program improved usage intensity, not just whether the customer base grew. Total usage is valid, but as the main metric it overclaims program impact because it mixes account growth with behavioral change.
-
-Watch-out: The normalized metric rose only 2%, so the story is less impressive. Do not bury that. Say plainly: “Total usage grew 18%, largely supported by account growth; normalized active-account usage grew 2%, which is the cleaner measure of program lift.”
-
-What would change my judgment: If the program goal was explicitly total platform volume, capacity demand, revenue exposure, or aggregate adoption, then total usage could be the headline. But for a program-effectiveness review, normalized usage should lead.

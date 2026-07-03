@@ -11,7 +11,6 @@ SCRIPT = ROOT / "scripts" / "audit_goal_completion.py"
 CREATE_WORKSPACE = ROOT / "scripts" / "create_ab_workspace.py"
 CREATE_ITERATION_LOG = ROOT / "scripts" / "create_skill_iteration_log.py"
 BANK = ROOT / "evals" / "reality-slap-eval-bank.md"
-FULL_BANK = ROOT / "evals" / "reality-slap-eval-bank-full.md"
 RUBRIC = ROOT / "evals" / "scoring-rubric.md"
 RUNBOOK = ROOT / "evals" / "ab-test-runbook.md"
 SKILL = ROOT / "SKILL.md"
@@ -118,9 +117,9 @@ class AuditGoalCompletionTests(unittest.TestCase):
 
         audit = json.loads(result.stdout)
         self.assertTrue(audit["ok"])
-        self.assertEqual(audit["profile"], "pilot")
-        self.assertEqual(audit["outputs"]["complete"], 100)
-        self.assertEqual(audit["scorecard"]["pair_complete"], 50)
+        self.assertEqual(audit["profile"], "stance-drift")
+        self.assertEqual(audit["outputs"]["complete"], 24)
+        self.assertEqual(audit["scorecard"]["pair_complete"], 12)
         self.assertGreaterEqual(audit["summary"]["pair_score_delta"], 3)
         self.assertEqual(audit["failure_patterns"]["actionable_pattern_count"], 3)
         self.assertEqual(audit["iteration_log"]["skill_update_count"], 3)
@@ -146,7 +145,7 @@ class AuditGoalCompletionTests(unittest.TestCase):
             self.create_workspace(workspace)
             self.fill_outputs(workspace)
             self.fill_scorecard_without_failures(workspace / "scorecard.json")
-            timeout_output = workspace / "FI-01" / "baseline-positive" / "output.txt"
+            timeout_output = workspace / "SD-01" / "baseline-positive" / "output.txt"
             timeout_output.write_text(
                 "ERROR: child process timed out after 120 seconds\n",
                 encoding="utf-8",
@@ -157,9 +156,9 @@ class AuditGoalCompletionTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         audit = json.loads(result.stdout)
         self.assertFalse(audit["ok"])
-        self.assertEqual(audit["outputs"]["complete"], 99)
-        self.assertEqual(audit["invalid_outputs"][0]["scenario_id"], "FI-01")
-        self.assertIn("live outputs are incomplete: 99 / 100", result.stderr)
+        self.assertEqual(audit["outputs"]["complete"], 23)
+        self.assertEqual(audit["invalid_outputs"][0]["scenario_id"], "SD-01")
+        self.assertIn("live outputs are incomplete: 23 / 24", result.stderr)
 
     def test_iteration_log_updates_must_be_marked_applied_with_evidence(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -238,7 +237,7 @@ class AuditGoalCompletionTests(unittest.TestCase):
         self.assertFalse(audit["workspace_integrity"]["ok"])
         self.assertIn("workspace integrity is not passing", result.stderr)
         self.assertIn(
-            "FI-01 individual score configurations do not match manifest configurations",
+            "SD-01 individual score configurations do not match manifest configurations",
             result.stderr,
         )
 
@@ -361,84 +360,6 @@ class AuditGoalCompletionTests(unittest.TestCase):
             "iteration log failure_mode unnecessary-lookup is not actionable in scorecard",
             result.stderr,
         )
-
-    def test_completed_pilot_fixture_fails_full_profile_completion_audit(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            workspace = root / "workspace"
-            iteration_log = root / "iteration-log.json"
-            self.create_workspace(workspace)
-            self.fill_outputs(workspace)
-            self.fill_scorecard(workspace / "scorecard.json")
-            iteration_log.write_text(
-                json.dumps(
-                    {
-                        "skill_updates": [
-                            {
-                                "failure_mode": "overpush",
-                                "file": "SKILL.md",
-                                "change": "Strengthened when to stop pushing.",
-                            },
-                            {
-                                "failure_mode": "follows-framing",
-                                "file": "SKILL.md",
-                                "change": "Strengthened frame-as-presentation rule.",
-                            },
-                            {
-                                "failure_mode": "vague-boundary",
-                                "file": "SKILL.md",
-                                "change": "Strengthened boundary naming.",
-                            },
-                        ],
-                    }
-                ),
-                encoding="utf-8",
-            )
-
-            result = self.run_script(
-                workspace,
-                iteration_log=iteration_log,
-                profile="full",
-                check=False,
-            )
-
-        self.assertEqual(result.returncode, 1)
-        audit = json.loads(result.stdout)
-        self.assertFalse(audit["ok"])
-        self.assertEqual(audit["profile"], "full")
-        self.assertIn("expected 100 workspace scenarios", result.stderr)
-        self.assertIn("expected 400 prompt records", result.stderr)
-        self.assertIn("400 individual scores", result.stderr)
-        self.assertIn("200 pair scores", result.stderr)
-
-    def test_infers_full_profile_from_workspace_manifest(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            workspace = Path(tmp) / "workspace"
-            self.create_workspace(workspace, bank=FULL_BANK, profile="full")
-
-            result = self.run_script(workspace, bank=FULL_BANK, check=False)
-
-        self.assertEqual(result.returncode, 1)
-        audit = json.loads(result.stdout)
-        self.assertEqual(audit["profile"], "full")
-        self.assertIn("live outputs are incomplete: 0 / 400", result.stderr)
-        self.assertIn("0 / 400 individual scores", result.stderr)
-        self.assertIn("0 / 200 pair scores", result.stderr)
-
-    def test_infers_full_bank_from_workspace_manifest_source(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            workspace = Path(tmp) / "workspace"
-            self.create_workspace(workspace, bank=FULL_BANK, profile="full")
-
-            result = self.run_script(workspace, bank=None, check=False)
-
-        self.assertEqual(result.returncode, 1)
-        audit = json.loads(result.stdout)
-        self.assertEqual(audit["profile"], "full")
-        self.assertTrue(audit["design"]["ok"])
-        self.assertEqual(audit["design"]["scenario_count"], 100)
-        self.assertEqual(audit["design"]["prompt_count"], 400)
-        self.assertNotIn("eval design audit is not passing", result.stderr)
 
     @staticmethod
     def fill_outputs(workspace):

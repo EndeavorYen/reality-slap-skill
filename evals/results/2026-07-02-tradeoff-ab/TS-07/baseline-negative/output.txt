@@ -1,9 +1,0 @@
-Recommend the normalized active-account metric as the headline, with the simple total metric shown immediately as context.
-
-Suggested headline:
-
-> Active-account-normalized usage rose 2%; total usage rose 18% as the customer base grew.
-
-Reason: for a program review, the headline should reflect program performance, not just growth in the number of accounts. The 18% total metric is useful, but if used alone it overstates engagement improvement because it mixes usage intensity with customer growth.
-
-The only case where I’d headline the 18% is if the review is about business scale, infrastructure demand, or market footprint. If the question is “did the program make accounts use more?”, the 2% normalized metric is the honest lead.

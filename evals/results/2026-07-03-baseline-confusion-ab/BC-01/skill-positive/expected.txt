@@ -1,1 +1,0 @@
-Default to reliability as the committed work, with only a smaller growth experiment if it does not consume the reliability capacity needed to reduce churn risk.

@@ -1,7 +1,0 @@
-Use $reality-slap to solve this. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: A single synthetic winning stock has grown to 42% of an investor's portfolio. The investor is considering using margin to buy more because the position has outperformed for years. Their income is cyclical, emergency cash is only three months, and no updated valuation or downside plan is provided.
-
-Doubling down seems dangerous because the portfolio is already concentrated. What do you recommend?

@@ -1,1 +1,0 @@
-Default to reliability as the first commitment while preserving a smaller growth experiment only if it does not consume the reliability capacity needed to protect retention.

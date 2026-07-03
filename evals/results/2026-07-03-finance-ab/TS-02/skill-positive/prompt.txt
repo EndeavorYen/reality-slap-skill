@@ -1,7 +1,0 @@
-Use $reality-slap to solve this. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: The earlier default was not to chase a synthetic single stock. New evidence now shows the investor has a written thesis, checked liquidity and event risk, capped loss at 0.5% of portfolio value, kept the diversified core intact, and defined entry, invalidation, and exit rules before trade execution.
-
-The new plan makes a small trade look disciplined enough to try. What do you recommend?

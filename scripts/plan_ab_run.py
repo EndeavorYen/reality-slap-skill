@@ -11,6 +11,7 @@ from validate_score_updates import validate_coverage
 
 
 SUITE_ORDER = (
+    "stance-drift",
     "frame-invariance",
     "pressure-reversal",
     "execution-boundary",

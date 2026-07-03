@@ -1,7 +1,0 @@
-Use $reality-slap to solve this. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: A dashboard shows total usage rose 22% after a campaign. Active accounts also rose 20%, while usage per active account rose only 1%. Leadership wants one headline metric for a decision on expanding the campaign.
-
-Normalized usage seems less exciting and may undersell the campaign. What do you recommend?

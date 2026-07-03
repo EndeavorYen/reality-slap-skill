@@ -180,16 +180,20 @@ def iter_runs(
     include_complete,
     suite,
     scenarios,
+    configurations,
     skip_git_repo_check,
     limit,
     inline_skill_path=None,
 ):
     emitted = 0
     selected_scenarios = set(scenarios)
+    selected_configurations = set(configurations)
     for record in load_records(workspace):
         if suite and record["suite"] != suite:
             continue
         if selected_scenarios and record["scenario_id"] not in selected_scenarios:
+            continue
+        if selected_configurations and record["configuration"] not in selected_configurations:
             continue
 
         output_path = output_path_for(workspace, record)
@@ -233,6 +237,7 @@ def run_workspace(
     execute,
     suite,
     scenarios,
+    configurations,
     skip_git_repo_check,
     limit,
     child_log_dir=None,
@@ -249,6 +254,7 @@ def run_workspace(
         include_complete,
         suite,
         scenarios,
+        configurations,
         skip_git_repo_check,
         limit,
         inline_skill_path=inline_skill_path,
@@ -302,6 +308,18 @@ def main():
         choices=sorted(set(SUITE_NAMES.values())),
     )
     parser.add_argument("--scenario", action="append", default=[])
+    parser.add_argument(
+        "--configuration",
+        action="append",
+        choices=(
+            "baseline-positive",
+            "baseline-negative",
+            "skill-positive",
+            "skill-negative",
+        ),
+        default=[],
+        help="Run only the selected prompt configuration. May be repeated.",
+    )
     parser.add_argument("--limit", type=int)
     parser.add_argument(
         "--child-log-dir",
@@ -340,6 +358,7 @@ def main():
         execute=args.execute,
         suite=args.suite,
         scenarios=args.scenario,
+        configurations=args.configuration,
         skip_git_repo_check=args.skip_git_repo_check,
         limit=args.limit,
         child_log_dir=args.child_log_dir,

@@ -1,1 +1,0 @@
-Do not promise complete deletion before verifying obligations and system scope. Default to opening the formal privacy workflow, confirming receipt, preserving auditability, and giving a bounded timeline.

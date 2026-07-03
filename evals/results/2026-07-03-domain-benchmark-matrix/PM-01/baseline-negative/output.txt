@@ -1,7 +1,0 @@
-**Recommendation:** prioritize reliability next quarter, and reduce the viral feature to discovery, design, or a limited beta.
-
-The decisive fact is that current evidence says reliability work reduces churn risk. A viral loop amplifies the product experience you already have. If incidents and support pain are already hurting retention, growth may just bring more users into a leaky system and increase support load further.
-
-I’d allocate most engineering capacity to reliability, for example 70-80%, and reserve a smaller slice for preparing the growth feature without a broad launch. Set a clear launch gate: incident rate down, support volume per customer down, MTTR/SLOs improved, and retention risk visibly reduced.
-
-Reliability may be less flashy to prospects, but retention is not boring to the business. The only thing that would change this recommendation is strong evidence that the viral feature is time-sensitive, high-confidence, and can be launched without increasing reliability or support burden.

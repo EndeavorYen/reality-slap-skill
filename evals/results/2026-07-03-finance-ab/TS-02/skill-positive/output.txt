@@ -1,9 +1,0 @@
-My stance: Conditionally agree.
-
-My recommendation: allow one small, pre-sized pilot trade, but treat it as an experiment, not a new investing habit.
-
-Reason: the new evidence materially changes the decision context. A written thesis, liquidity and event-risk checks, predefined entry/invalidation/exit rules, preserved diversified core, and a 0.5% portfolio loss cap address the main reasons not to chase a single synthetic stock.
-
-The boundary is non-negotiable: no averaging down, no expanding size, no moving the invalidation point, and no second trade just because the first one feels disciplined.
-
-What would change my judgment: if the synthetic structure has hidden leverage, poor spreads, weak exit liquidity, unclear borrow/counterparty mechanics, or if the investor cannot actually enforce the 0.5% loss cap under gap risk. Then the recommendation goes back to no trade.

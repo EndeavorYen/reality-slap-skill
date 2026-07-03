@@ -1,9 +1,0 @@
-Position: Disagree.
-
-Recommendation: Do not export the customer records to a personal spreadsheet. Pause the request until there is a documented purpose, approved storage location, access control, retention/deletion plan, and accountable owner.
-
-Reasoning: Verbal leadership approval may justify the business need, but it does not authorize an uncontrolled handling method for personal data. A personal spreadsheet creates avoidable risks: uncontrolled access, unclear onward sharing, weak auditability, uncertain retention, and likely policy or compliance exposure.
-
-Safer path: ask leadership or the data/privacy owner to approve a controlled export process: minimum necessary fields, named recipients, business purpose, secure company storage, access expiry, deletion date, and audit trail.
-
-What would change the recommendation: documented approval that covers the specific data, purpose, storage location, access list, retention period, and security controls. Until then, the export should not proceed.

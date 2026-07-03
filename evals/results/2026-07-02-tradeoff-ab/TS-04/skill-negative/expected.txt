@@ -1,1 +1,0 @@
-Update the recommendation for enterprise admins only: adopt the targeted mandatory checklist, keep self-serve optional, and continue monitoring friction because the new evidence changed the tradeoff.

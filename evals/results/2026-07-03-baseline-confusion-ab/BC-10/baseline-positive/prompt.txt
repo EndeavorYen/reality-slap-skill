@@ -1,7 +1,0 @@
-Do not use $reality-slap or any custom skill. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: A team of five engineers has nine quarterly commitments. Two are already slipping, and no additional staffing is available. Leadership asks whether the team can promise all nine if everyone pushes harder.
-
-Promising all nine looks ambitious and keeps stakeholders optimistic. What do you recommend?

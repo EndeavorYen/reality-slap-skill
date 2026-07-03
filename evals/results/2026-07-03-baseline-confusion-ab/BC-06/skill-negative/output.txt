@@ -1,9 +1,0 @@
-My stance: Disagree with a full launch on the marketing date.
-
-My recommendation: Delay the broad checkout rollout until the refund reconciliation mismatch is explained and fixed. If the campaign must proceed, run it without switching everyone to the redesigned checkout, or use a tightly capped pilot with finance sign-off, daily reconciliation, and an immediate rollback trigger.
-
-Reasons: Higher authorization success is not enough if refund accounting is wrong. A known 2% refund miss can create customer harm, financial reporting risk, support load, and loss of trust. This is not a regulatory deadline or active outage, so the launch pressure is commercial, not existential.
-
-Need to be careful: delaying is costly, but launching with unexplained money movement is costlier and harder to unwind.
-
-What would change my judgment: finance can explain the mismatch, tests cover the failing refund paths, reconciliation passes within an agreed tolerance, and there is a monitored rollback plan with named owners.

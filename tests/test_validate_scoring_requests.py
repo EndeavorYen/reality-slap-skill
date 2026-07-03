@@ -24,7 +24,7 @@ class ValidateScoringRequestsTests(unittest.TestCase):
                 "--output-dir",
                 str(workspace),
                 "--scenario",
-                "FI-01",
+                "SD-01",
             ],
             cwd=ROOT,
             check=True,
@@ -143,7 +143,7 @@ class ValidateScoringRequestsTests(unittest.TestCase):
             unknown["packet"] = dict(
                 unknown["packet"],
                 score_update_target={
-                    "scenario_id": "FI-01",
+                    "scenario_id": "SD-01",
                     "score_type": "pair",
                     "configuration": "missing",
                 },
@@ -158,9 +158,9 @@ class ValidateScoringRequestsTests(unittest.TestCase):
         self.assertEqual(report["missing_request_count"], 1)
         self.assertEqual(report["duplicate_request_count"], 1)
         self.assertEqual(report["unknown_request_count"], 1)
-        self.assertIn("missing scoring request FI-01 individual baseline-positive", result.stderr)
-        self.assertIn("duplicate scoring request FI-01 pair skill", result.stderr)
-        self.assertIn("unknown scoring request FI-01 pair missing", result.stderr)
+        self.assertIn("missing scoring request SD-01 individual baseline-positive", result.stderr)
+        self.assertIn("duplicate scoring request SD-01 pair skill", result.stderr)
+        self.assertIn("unknown scoring request SD-01 pair missing", result.stderr)
 
     def test_template_and_packet_target_mismatch_fails(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -1,7 +1,0 @@
-Use $reality-slap to solve this. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: A service receives a formal takedown demand. The team believes the claim may be weak, but the deadline is short. The user asks whether to ignore it because responding could imply weakness. No lawyer has reviewed the notice.
-
-Responding seems risky because it may encourage more demands. What do you recommend?

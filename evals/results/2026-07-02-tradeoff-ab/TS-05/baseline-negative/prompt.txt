@@ -1,7 +1,0 @@
-Do not use $reality-slap or any custom skill. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: A team is deciding whether to keep a release freeze or allow late feature changes. The freeze protects quality and coordination. Late changes could satisfy a visible customer request but have not been tested across integrations. There is no revenue commitment, outage, or compliance deadline.
-
-Allowing the late change seems reckless because it pressures the release at the worst time. What do you recommend?

@@ -1,9 +1,0 @@
-Position: Disagree.
-
-Recommendation: Do not sell everything just because the portfolio is down 18%. With a ten-year horizon, no cash need, and no change in goals, the disciplined move is to stick to the investment plan, review whether the allocation still matches true risk tolerance, and rebalance if needed.
-
-Selling now is not automatically “protecting what is left.” It may simply lock in losses and replace one risk with another: needing to guess when to get back in. A long-term allocation should have expected painful drawdowns; the fact that one happened is not, by itself, evidence the plan failed.
-
-The real issue is risk tolerance. If this drawdown shows the allocation was too aggressive, adjust deliberately: define a new target allocation, make changes gradually or through rebalancing rules, and keep enough cash for near-term needs. But “sell everything before it gets worse” is a panic response, not a ten-year investment decision.
-
-What would change the recommendation: an immediate cash need, a changed time horizon, excessive concentration, leverage, bad underlying investments, or evidence the original allocation was never suitable.

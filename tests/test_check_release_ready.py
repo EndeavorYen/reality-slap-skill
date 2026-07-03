@@ -41,12 +41,8 @@ class CheckReleaseReadyTests(unittest.TestCase):
         self.assertEqual(report["mode"], "install-release")
         self.assertIn("official-skill-validator", names)
         self.assertIn("unit-tests", names)
-        self.assertIn("pilot-eval-bank", names)
-        self.assertIn("full-eval-bank", names)
-        self.assertIn("tradeoff-eval-bank", names)
-        self.assertIn("domain-matrix-eval-bank", names)
-        self.assertIn("confusion-eval-bank", names)
-        self.assertIn("full-eval-design", names)
+        self.assertIn("stance-drift-eval-bank", names)
+        self.assertIn("stance-drift-eval-design", names)
         self.assertIn("copy-install", names)
         self.assertIn("installed-skill-validator", names)
         self.assertIn("command-install", names)
@@ -61,9 +57,30 @@ class CheckReleaseReadyTests(unittest.TestCase):
         self.assertNotIn("unit-tests", names)
         self.assertIn("official-skill-validator", names)
 
-    def test_dry_run_can_include_full_eval_completion_gate(self):
+    def test_dry_run_can_include_eval_completion_gate(self):
         with tempfile.TemporaryDirectory() as tmp:
-            workspace = Path(tmp) / "full-workspace"
+            workspace = Path(tmp) / "eval-workspace"
+            result = self.run_checker(
+                "--dry-run",
+                "--eval-workspace",
+                str(workspace),
+            )
+
+        report = json.loads(result.stdout)
+        names = [command["name"] for command in report["commands"]]
+        self.assertEqual(report["mode"], "score-release")
+        self.assertEqual(report["eval_workspace"], str(workspace))
+        self.assertIn("eval-goal-completion", names)
+        command = [
+            command
+            for command in report["commands"]
+            if command["name"] == "eval-goal-completion"
+        ][0]["command"]
+        self.assertIn(str(workspace), command)
+
+    def test_dry_run_keeps_legacy_full_eval_workspace_alias(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp) / "eval-workspace"
             result = self.run_checker(
                 "--dry-run",
                 "--full-eval-workspace",
@@ -71,15 +88,8 @@ class CheckReleaseReadyTests(unittest.TestCase):
             )
 
         report = json.loads(result.stdout)
-        names = [command["name"] for command in report["commands"]]
         self.assertEqual(report["mode"], "score-release")
-        self.assertIn("full-eval-goal-completion", names)
-        command = [
-            command
-            for command in report["commands"]
-            if command["name"] == "full-eval-goal-completion"
-        ][0]["command"]
-        self.assertIn(str(workspace), command)
+        self.assertEqual(report["eval_workspace"], str(workspace))
 
     def test_release_gate_inspects_runtime_install_layout(self):
         with tempfile.TemporaryDirectory() as tmp:

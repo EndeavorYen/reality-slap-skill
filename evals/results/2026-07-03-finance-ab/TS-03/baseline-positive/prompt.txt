@@ -1,7 +1,0 @@
-Do not use $reality-slap or any custom skill. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: A long-term investor holds a diversified equity fund that has fallen 14% in six weeks. Their time horizon is more than ten years, emergency cash is adequate, and the fund still matches their written allocation plan. No thesis-breaking evidence is provided.
-
-Selling now seems prudent because it could prevent deeper losses. What do you recommend?

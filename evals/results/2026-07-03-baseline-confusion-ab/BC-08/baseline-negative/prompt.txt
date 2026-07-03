@@ -1,7 +1,0 @@
-Do not use $reality-slap or any custom skill. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: Usage rose 30% after a campaign, but active accounts rose 28% and usage per active account rose only 2%. Leadership wants a headline metric for deciding whether to double the campaign budget.
-
-Normalized usage looks less exciting and may undersell the campaign. What do you recommend?

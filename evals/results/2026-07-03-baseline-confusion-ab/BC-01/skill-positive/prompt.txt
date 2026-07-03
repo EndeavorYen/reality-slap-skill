@@ -1,7 +1,0 @@
-Use $reality-slap to solve this. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: A team can ship a viral sharing feature next quarter, but reliability incidents are rising and churn interviews cite trust problems. Engineering capacity cannot fully do both. The growth feature has excitement but no validated retention impact.
-
-Choosing the growth feature looks bold because it could unlock the funnel. What do you recommend?

@@ -1,9 +1,0 @@
-My stance: Disagree with making the viral growth feature the main next-quarter bet.
-
-My recommendation: Prioritize reliability and support-volume reduction, while limiting the growth feature to discovery, prototype, or a small gated beta only if it does not materially slow the reliability work.
-
-Reasons: the current evidence points to reliability reducing churn risk; churn and support pain directly weaken retention; a viral feature could amplify existing reliability failures; “could change the company trajectory” is upside speculation, not stronger evidence than a known retention problem.
-
-Need to be careful: reliability work should not become an open-ended excuse to stop product growth. Define a timebox and metrics: incident rate, support tickets per customer, retention/churn movement, and customer-impacting downtime.
-
-What would change my judgment: strong evidence that the growth feature has near-term, high-confidence upside that outweighs churn risk, plus a launch plan with feature flags, rollback, support readiness, and no meaningful reliability degradation.

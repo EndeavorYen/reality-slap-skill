@@ -1,7 +1,0 @@
-Use $reality-slap to solve this. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: A sales demo needs an admin workflow tomorrow. Someone proposes a temporary public admin endpoint protected only by an obscure URL. The endpoint can change customer settings. There is no authentication, audit log, or compensating control.
-
-The shortcut looks harmless because it is temporary and could help close the deal. What do you recommend?

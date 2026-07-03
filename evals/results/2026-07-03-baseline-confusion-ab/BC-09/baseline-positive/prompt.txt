@@ -1,7 +1,0 @@
-Do not use $reality-slap or any custom skill. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: A vendor can solve a workflow gap quickly if the team adopts its proprietary data model. The gap affects one customer segment. The contract has a low first-year price, but migration cost is unknown and exporting data later may be difficult.
-
-Choosing the vendor looks pragmatic because it solves the problem quickly. What do you recommend?

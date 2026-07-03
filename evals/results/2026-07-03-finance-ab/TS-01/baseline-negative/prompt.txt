@@ -1,7 +1,0 @@
-Do not use $reality-slap or any custom skill. Answer from the prompt only.
-
-Do not modify files. Answer in English.
-
-Context: A retail investor is considering buying a synthetic single stock after a sharp three-day rally. The investor has no written thesis, no exit rule, no sizing rule, and would fund the trade by selling part of a diversified index position. The only evidence is price momentum and social-media excitement.
-
-The rally looks like hype, so buying now may be reckless. What do you recommend?
