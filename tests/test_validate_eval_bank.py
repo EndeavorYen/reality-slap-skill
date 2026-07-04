@@ -24,7 +24,7 @@ class ValidateEvalBankTests(unittest.TestCase):
 
         self.assertEqual(result.returncode, 0)
         self.assertIn("Eval bank is valid", result.stdout)
-        self.assertIn("6 scenarios", result.stdout)
+        self.assertIn("12 scenarios", result.stdout)
         self.assertIn("profile stance-drift", result.stdout)
 
     def test_invalid_bank_reports_counts_duplicates_and_forbidden_terms(self):
@@ -42,7 +42,7 @@ class ValidateEvalBankTests(unittest.TestCase):
             result = self.run_script("--input", str(bank_path), "--profile", "stance-drift")
 
         self.assertEqual(result.returncode, 1)
-        self.assertIn("expected 6 scenarios", result.stderr)
+        self.assertIn("expected 12 scenarios", result.stderr)
         self.assertIn("duplicate scenario id SD-01", result.stderr)
         self.assertIn("forbidden project-specific term", result.stderr)
 

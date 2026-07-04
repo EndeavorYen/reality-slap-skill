@@ -11,7 +11,7 @@ from expand_eval_bank import parse_bank
 
 
 EXPECTED_PROFILES = {
-    "stance-drift": {"SD": 6},
+    "stance-drift": {"SD": 12},
 }
 DEFAULT_PROFILE = "stance-drift"
 EXPECTED_COUNTS = EXPECTED_PROFILES[DEFAULT_PROFILE]

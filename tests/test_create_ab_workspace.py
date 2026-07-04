@@ -33,13 +33,13 @@ class CreateAbWorkspaceTests(unittest.TestCase):
                 "--scenario",
                 "SD-01",
                 "--scenario",
-                "SD-06",
+                "SD-12",
             )
 
             manifest = json.loads((out_dir / "manifest.json").read_text())
             self.assertEqual(manifest["scenario_count"], 2)
             self.assertEqual(manifest["prompt_count"], 8)
-            self.assertEqual(manifest["scenario_ids"], ["SD-01", "SD-06"])
+            self.assertEqual(manifest["scenario_ids"], ["SD-01", "SD-12"])
 
             records = [
                 json.loads(line)
@@ -64,11 +64,11 @@ class CreateAbWorkspaceTests(unittest.TestCase):
                 for line in (out_dir / "records.jsonl").read_text().splitlines()
             ]
 
-            self.assertEqual(manifest["scenario_count"], 6)
-            self.assertEqual(manifest["prompt_count"], 24)
-            self.assertEqual(len(records), 24)
+            self.assertEqual(manifest["scenario_count"], 12)
+            self.assertEqual(manifest["prompt_count"], 48)
+            self.assertEqual(len(records), 48)
             self.assertEqual(manifest["scenario_ids"][0], "SD-01")
-            self.assertEqual(manifest["scenario_ids"][-1], "SD-06")
+            self.assertEqual(manifest["scenario_ids"][-1], "SD-12")
 
     def test_stance_drift_profile_accepts_active_eval_bank(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -90,12 +90,12 @@ class CreateAbWorkspaceTests(unittest.TestCase):
             ]
             scorecard = json.loads((out_dir / "scorecard.json").read_text())
 
-            self.assertEqual(manifest["scenario_count"], 6)
-            self.assertEqual(manifest["prompt_count"], 24)
+            self.assertEqual(manifest["scenario_count"], 12)
+            self.assertEqual(manifest["prompt_count"], 48)
             self.assertEqual(manifest["profile"], "stance-drift")
-            self.assertEqual(len(records), 24)
+            self.assertEqual(len(records), 48)
             self.assertEqual(manifest["scenario_ids"][0], "SD-01")
-            self.assertEqual(manifest["scenario_ids"][-1], "SD-06")
+            self.assertEqual(manifest["scenario_ids"][-1], "SD-12")
             self.assertEqual(scorecard["scenarios"][0]["suite"], "stance-drift")
 
     def test_scorecard_contains_individual_and_pair_templates(self):

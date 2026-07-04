@@ -24,15 +24,15 @@ class ExpandEvalBankTests(unittest.TestCase):
         result = self.run_script("--input", str(BANK), "--summary")
         summary = json.loads(result.stdout)
 
-        self.assertEqual(summary["scenarios"], 6)
-        self.assertEqual(summary["prompts"], 24)
-        self.assertEqual(summary["suites"], {"SD": 6})
+        self.assertEqual(summary["scenarios"], 12)
+        self.assertEqual(summary["prompts"], 48)
+        self.assertEqual(summary["suites"], {"SD": 12})
 
     def test_jsonl_expands_four_runs_per_scenario(self):
         result = self.run_script("--input", str(BANK), "--format", "jsonl")
         records = [json.loads(line) for line in result.stdout.splitlines()]
 
-        self.assertEqual(len(records), 24)
+        self.assertEqual(len(records), 48)
 
         sd_runs = [record for record in records if record["scenario_id"] == "SD-01"]
         self.assertEqual(
@@ -62,7 +62,7 @@ class ExpandEvalBankTests(unittest.TestCase):
             "--format",
             "jsonl",
             "--scenario",
-            "SD-05",
+            "SD-11",
         )
         records = [json.loads(line) for line in result.stdout.splitlines()]
 
@@ -80,14 +80,14 @@ class ExpandEvalBankTests(unittest.TestCase):
             "--scenario",
             "SD-01",
             "--scenario",
-            "SD-06",
+            "SD-12",
         )
         records = [json.loads(line) for line in result.stdout.splitlines()]
 
         self.assertEqual(len(records), 8)
         self.assertEqual(
             sorted({record["scenario_id"] for record in records}),
-            ["SD-01", "SD-06"],
+            ["SD-01", "SD-12"],
         )
 
 

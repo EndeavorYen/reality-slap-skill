@@ -118,8 +118,8 @@ class AuditGoalCompletionTests(unittest.TestCase):
         audit = json.loads(result.stdout)
         self.assertTrue(audit["ok"])
         self.assertEqual(audit["profile"], "stance-drift")
-        self.assertEqual(audit["outputs"]["complete"], 24)
-        self.assertEqual(audit["scorecard"]["pair_complete"], 12)
+        self.assertEqual(audit["outputs"]["complete"], 48)
+        self.assertEqual(audit["scorecard"]["pair_complete"], 24)
         self.assertGreaterEqual(audit["summary"]["pair_score_delta"], 3)
         self.assertEqual(audit["failure_patterns"]["actionable_pattern_count"], 3)
         self.assertEqual(audit["iteration_log"]["skill_update_count"], 3)
@@ -156,9 +156,9 @@ class AuditGoalCompletionTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         audit = json.loads(result.stdout)
         self.assertFalse(audit["ok"])
-        self.assertEqual(audit["outputs"]["complete"], 23)
+        self.assertEqual(audit["outputs"]["complete"], 47)
         self.assertEqual(audit["invalid_outputs"][0]["scenario_id"], "SD-01")
-        self.assertIn("live outputs are incomplete: 23 / 24", result.stderr)
+        self.assertIn("live outputs are incomplete: 47 / 48", result.stderr)
 
     def test_iteration_log_updates_must_be_marked_applied_with_evidence(self):
         with tempfile.TemporaryDirectory() as tmp:

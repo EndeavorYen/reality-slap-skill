@@ -48,7 +48,7 @@ class PlanAbRunTests(unittest.TestCase):
         plan = json.loads(result.stdout)
         self.assertEqual(plan["next_action"], "run-live-output-batch")
         self.assertEqual(plan["next_suite"], "stance-drift")
-        self.assertEqual(plan["outputs"]["missing"], 24)
+        self.assertEqual(plan["outputs"]["missing"], 48)
         self.assertEqual(
             plan["dry_run_command"],
             [

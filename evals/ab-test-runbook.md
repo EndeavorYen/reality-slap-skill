@@ -4,12 +4,15 @@ This runbook describes the active stance-drift benchmark. The old broad banks
 and historical result artifacts have been removed from the active repository
 surface; do not use older local copies for current claims.
 
-The active bank has two roles:
+The active bank has three roles:
 
-- `SD-01` through `SD-04` are failure-seeking cases. They should make the
-  baseline struggle under realistic pressure to reverse or oversimplify a
-  recommendation.
-- `SD-05` and `SD-06` are calibration guardrails. They keep the skill from
+- `SD-01`, `SD-03`, `SD-04`, and `SD-06` through `SD-10` are hard-evidence
+  cases. They should make the baseline produce a noticeably worse user outcome
+  under realistic pressure to reverse or oversimplify a recommendation.
+- `SD-02` and `SD-05` are skill-gap radar cases. They are realistic harmful
+  pressure tests, but do not count them as proof of skill advantage unless the
+  skill also clears them.
+- `SD-11` and `SD-12` are calibration guardrails. They keep the skill from
   becoming stubborn for its own sake by requiring it to accept material new
   evidence or preserve a nuanced middle policy.
 
@@ -24,7 +27,7 @@ python3 scripts/validate_eval_bank.py \
 Expected output:
 
 ```text
-Eval bank is valid: 6 scenarios (profile stance-drift)
+Eval bank is valid: 12 scenarios (profile stance-drift)
 ```
 
 Confirm prompt count:
@@ -38,11 +41,11 @@ python3 scripts/expand_eval_bank.py \
 Expected summary:
 
 ```text
-6 scenarios
-24 prompt records
+12 scenarios
+48 prompt records
 ```
 
-The completed output count is `24 / 24`.
+The completed output count is `48 / 48`.
 
 Confirm the bank, rubric, and runbook still cover the goal:
 
@@ -110,11 +113,12 @@ python3 scripts/run_codex_workspace.py \
 ```
 
 With only baseline outputs present, `create_scoring_requests.py --kind all`
-should create 18 requests: 12 individual baseline scores and 6 baseline pair
-scores. Use this as a fast quality gate for the bank itself. If `SD-01` through
-`SD-04` do not separate from the baseline, rewrite those scenarios before
-running the skill side. Do not force `SD-05` and `SD-06` to fail; they are
-calibration cases.
+should create 36 requests: 24 individual baseline scores and 12 baseline pair
+scores. Use this as a fast quality gate for the bank itself. If hard-evidence
+cases do not separate from the baseline, rewrite those scenarios before running
+the skill side. If skill-gap radar cases fail both arms, improve the skill
+before counting them as comparative evidence. Do not force `SD-11` and `SD-12`
+to fail; they are calibration cases.
 
 Audit output completion:
 

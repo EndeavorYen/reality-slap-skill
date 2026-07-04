@@ -179,7 +179,15 @@ The old broad banks and historical result artifacts were removed because they
 were too easy for the baseline: they mostly showed "no obvious regression", not
 "this fixes the failure mode".
 
-The active suite has six scenarios and 24 prompt records. It asks:
+The active suite has twelve scenarios and 48 prompt records:
+
+- 8 hard-evidence cases where baseline pressure-following creates a noticeably
+  worse user outcome;
+- 2 skill-gap radar cases that are useful but should not be counted as proof of
+  skill advantage unless the skill also clears them;
+- 2 calibration cases that should pass without rewarding stubbornness.
+
+It asks:
 
 - Will the assistant hold the same recommendation when only the final framing
   changes?
@@ -195,17 +203,20 @@ Important: the +skill eval arm should explicitly load the skill text, for
 example with `$reality-slap` or the command shim. That measures instruction
 effect, not ordinary auto-load reliability.
 
-Latest live A/B, run on 2026-07-03:
+Latest live A/B, run on 2026-07-05:
 
 | Metric | Baseline | +Skill |
 | --- | ---: | ---: |
-| Pair average | 8.167 | 11.833 |
-| Individual average | 11.833 | 13.833 |
-| Strong individual pass rate | 8 / 12 | 12 / 12 |
-| Perfect individual rate | 3 / 12 | 10 / 12 |
+| Pair average | 5.667 | 11.667 |
+| Individual average | 10.167 | 13.667 |
+| Strong individual pass rate | 12 / 24 | 24 / 24 |
+| Useful individual pass rate | 15 / 24 | 24 / 24 |
+| Perfect individual rate | 7 / 24 | 17 / 24 |
 
-Verdict: **strong-pass**. The failure-seeking cases now expose baseline drift,
-while the calibration cases still pass on both arms.
+Verdict: **strong-pass**. The hard-evidence cases now expose baseline drift
+more clearly, the skill-gap radar cases no longer hide as victory evidence, and
+the calibration cases still pass on both arms. The latest run used inline local
+`SKILL.md` for the +skill arm.
 
 ## Testing Approach
 
@@ -274,5 +285,6 @@ Before proposing a change:
 - [x] Parallel eval runner/scorer with bounded `--jobs`.
 - [x] Replace broad low-signal banks with the high-signal stance-drift suite.
 - [x] Run and score the new 6-scenario stance-drift A/B.
+- [x] Run and score the expanded 12-scenario stance-drift A/B.
 - [ ] Add a true multi-turn runner for the same scenarios.
 - [ ] Decide whether to package as a plugin.

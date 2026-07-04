@@ -55,7 +55,7 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             result = self.run_runner(workspace)
 
             records = [json.loads(line) for line in result.stdout.splitlines()]
-            self.assertEqual(len(records), 24)
+            self.assertEqual(len(records), 48)
             self.assertEqual(records[0]["mode"], "dry-run")
             self.assertEqual(records[0]["scenario_id"], "SD-01")
             self.assertEqual(records[0]["configuration"], "baseline-positive")
@@ -74,7 +74,7 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             result = self.run_runner(workspace)
 
             records = [json.loads(line) for line in result.stdout.splitlines()]
-            self.assertEqual(len(records), 23)
+            self.assertEqual(len(records), 47)
             self.assertNotEqual(
                 (records[0]["scenario_id"], records[0]["configuration"]),
                 ("SD-01", "baseline-positive"),
@@ -124,10 +124,10 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             result = self.run_runner(workspace, "--suite", "stance-drift")
 
             records = [json.loads(line) for line in result.stdout.splitlines()]
-            self.assertEqual(len(records), 24)
+            self.assertEqual(len(records), 48)
             self.assertTrue(all(record["suite"] == "stance-drift" for record in records))
             self.assertEqual(records[0]["scenario_id"], "SD-01")
-            self.assertEqual(records[-1]["scenario_id"], "SD-06")
+            self.assertEqual(records[-1]["scenario_id"], "SD-12")
 
     def test_dry_run_can_filter_by_scenario(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -163,13 +163,13 @@ class RunCodexWorkspaceTests(unittest.TestCase):
             )
 
             records = [json.loads(line) for line in result.stdout.splitlines()]
-            self.assertEqual(len(records), 12)
+            self.assertEqual(len(records), 24)
             self.assertEqual(
                 sorted({record["configuration"] for record in records}),
                 ["baseline-negative", "baseline-positive"],
             )
             self.assertEqual(records[0]["scenario_id"], "SD-01")
-            self.assertEqual(records[-1]["scenario_id"], "SD-06")
+            self.assertEqual(records[-1]["scenario_id"], "SD-12")
 
     def test_dry_run_can_skip_git_repo_check_for_neutral_cwd(self):
         with tempfile.TemporaryDirectory() as tmp:

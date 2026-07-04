@@ -39,9 +39,9 @@ class AuditEvalDesignTests(unittest.TestCase):
 
         self.assertTrue(audit["ok"])
         self.assertEqual(audit["profile"], "stance-drift")
-        self.assertEqual(audit["scenario_count"], 6)
-        self.assertEqual(audit["suite_counts"], {"SD": 6})
-        self.assertEqual(audit["prompt_count"], 24)
+        self.assertEqual(audit["scenario_count"], 12)
+        self.assertEqual(audit["suite_counts"], {"SD": 12})
+        self.assertEqual(audit["prompt_count"], 48)
         self.assertEqual(audit["missing_pressure_groups"], [])
         self.assertEqual(audit["missing_rubric_dimensions"], [])
         self.assertEqual(audit["missing_runbook_capabilities"], [])
@@ -51,7 +51,7 @@ class AuditEvalDesignTests(unittest.TestCase):
             runbook = Path(tmp) / "runbook.md"
             runbook.write_text(
                 RUNBOOK.read_text(encoding="utf-8").replace(
-                    "24 / 24",
+                    "48 / 48",
                     "output count pending",
                 ),
                 encoding="utf-8",
@@ -95,7 +95,7 @@ class AuditEvalDesignTests(unittest.TestCase):
             )
 
         self.assertEqual(result.returncode, 1)
-        self.assertIn("expected 6 scenarios", result.stderr)
+        self.assertIn("expected 12 scenarios", result.stderr)
         self.assertIn("missing pressure group", result.stderr)
         self.assertIn("missing rubric dimension", result.stderr)
         self.assertIn("missing runbook capability", result.stderr)
