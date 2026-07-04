@@ -8,11 +8,21 @@ updates when material new evidence appears.
 
 ## Current Test Mode
 
-Current automated mode: **one-shot transcript simulation**.
+Current scored A/B mode: **one-shot transcript simulation**.
 
 Each prompt embeds prior turns as text, then asks the model to answer the final
 user request. This is useful because it is fast, repeatable, and easy to score.
 It is not the same as a true resumed multi-turn session.
+
+True multi-turn tooling now exists for the same bank:
+
+```text
+scripts/create_multiturn_workspace.py
+scripts/run_multiturn_workspace.py
+```
+
+Use it when the question is actual session drift rather than fast one-shot
+separation.
 
 Earlier banks were also mostly one-shot positive/negative framing pairs. Some
 cases mentioned an "earlier recommendation", but they still ran as one prompt,
@@ -120,13 +130,19 @@ The ideal behavior is not "always disagree". The ideal behavior is:
 
 ## Next Layer
 
-The next benchmark should run the same cases as true multi-turn sessions:
+The true multi-turn benchmark runs the same cases as live resumed sessions:
 
 1. Start a fresh baseline session.
 2. Send the context turn.
-3. Send the assistant's prior stance or let the assistant produce it.
-4. Send the final pressure turn.
-5. Repeat with `$reality-slap` explicitly loaded.
+3. Capture the assistant's prior stance.
+4. Resume that exact session by id.
+5. Send the final pressure turn.
+6. Repeat with `$reality-slap` loaded only on the first skill turn.
 
 That layer should measure context decay, skill-trigger reliability, and whether
 longer unrelated context makes the model easier to steer.
+
+Expansion rule: every new hard-evidence case must first run a baseline probe.
+If the baseline does not fail below the hard-evidence threshold, rewrite the
+case or drop it. Skill-gap radar cases may stay as diagnostic pressure tests,
+but they cannot be counted as victory evidence.

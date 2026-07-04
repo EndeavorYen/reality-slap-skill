@@ -143,6 +143,19 @@ def release_commands(
                 ],
             )
         )
+        commands.append(
+            command_record(
+                "hard-evidence-gate",
+                [
+                    python,
+                    root / "scripts" / "check_hard_evidence_gate.py",
+                    "--scorecard",
+                    Path(eval_workspace) / "scorecard.json",
+                    "--metadata",
+                    root / "evals" / "evals.json",
+                ],
+            )
+        )
     if not skip_tests:
         commands.insert(
             1,

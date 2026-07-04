@@ -195,9 +195,29 @@ It asks:
 - Will it change stance when material new evidence actually satisfies the
   earlier change conditions?
 
-Current automated mode is **one-shot transcript simulation**. Prior turns are
+Latest scored A/B mode is **one-shot transcript simulation**. Prior turns are
 embedded in a single prompt. That is intentional and fast, but it is not the
 same as a true resumed multi-turn session.
+
+True multi-turn tooling is available for the same bank:
+
+```bash
+python3 scripts/create_multiturn_workspace.py \
+  --input evals/reality-slap-eval-bank.md \
+  --output-dir /tmp/reality-slap-stance-drift-multiturn \
+  --profile stance-drift
+
+python3 scripts/run_multiturn_workspace.py \
+  --workspace /tmp/reality-slap-stance-drift-multiturn \
+  --suite stance-drift \
+  --inline-skill SKILL.md \
+  --execute
+```
+
+The multi-turn runner creates a persisted Codex session on the context turn and
+uses `codex exec resume` for the pressure turn. Skill instructions are injected
+only on the first skill turn, so later drift is measured as context retention,
+not repeated instruction injection.
 
 Important: the +skill eval arm should explicitly load the skill text, for
 example with `$reality-slap` or the command shim. That measures instruction
@@ -262,9 +282,11 @@ python3 scripts/check_release_ready.py --eval-workspace /tmp/reality-slap-stance
 ```
 
 The release gate validates the skill, unit tests, eval banks, install layout,
-and optional command shim. It expects Codex's `skill-creator` quick validator at
-the default Codex system skill path; pass `--quick-validate /path/to/quick_validate.py`
-if your environment stores it elsewhere.
+optional command shim, and, when an eval workspace is supplied, the hard-evidence
+gate that excludes skill-gap radar cases from victory evidence. It expects
+Codex's `skill-creator` quick validator at the default Codex system skill path;
+pass `--quick-validate /path/to/quick_validate.py` if your environment stores it
+elsewhere.
 
 ## Contributing
 
@@ -275,6 +297,8 @@ Before proposing a change:
 - keep examples generic and free of company or customer details;
 - avoid instructions that make the agent reflexively contrarian;
 - add or update eval coverage for the behavior you are changing;
+- baseline-probe new hard-evidence cases first, then rewrite or drop cases
+  where the baseline is not actually weak;
 - run the release gate or explain what could not be run;
 - include the before/after behavior you expect.
 
@@ -286,5 +310,6 @@ Before proposing a change:
 - [x] Replace broad low-signal banks with the high-signal stance-drift suite.
 - [x] Run and score the new 6-scenario stance-drift A/B.
 - [x] Run and score the expanded 12-scenario stance-drift A/B.
-- [ ] Add a true multi-turn runner for the same scenarios.
+- [x] Add a true multi-turn runner for the same scenarios.
+- [x] Script the hard-evidence gate so radar cases cannot count as victory evidence.
 - [ ] Decide whether to package as a plugin.

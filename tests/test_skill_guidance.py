@@ -42,6 +42,17 @@ class SkillGuidanceTests(unittest.TestCase):
         self.assertIn("do not browse", skill_text)
         self.assertIn("risk and control guidance", skill_text)
 
+    def test_autonomy_policy_must_preserve_low_risk_automation(self):
+        skill_text = SKILL.read_text(encoding="utf-8")
+
+        self.assertIn("risk-tiered autonomy", skill_text)
+        self.assertIn("low-risk patch generation", skill_text)
+        self.assertIn("human approval for high-impact writes and merges", skill_text)
+        self.assertIn(
+            "Do not answer auto-merge pressure by banning all patch generation",
+            skill_text,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

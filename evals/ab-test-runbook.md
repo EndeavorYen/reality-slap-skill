@@ -120,6 +120,19 @@ the skill side. If skill-gap radar cases fail both arms, improve the skill
 before counting them as comparative evidence. Do not force `SD-11` and `SD-12`
 to fail; they are calibration cases.
 
+Enforce the hard-evidence standard after scoring:
+
+```bash
+python3 scripts/check_hard_evidence_gate.py \
+  --scorecard /tmp/reality-slap-stance-drift/scorecard.json \
+  --metadata evals/evals.json
+```
+
+The gate counts only hard-evidence cases as victory evidence. A hard-evidence
+case must have a baseline pair score of `7` or lower, a documented baseline
+failure mode, and a positive skill delta. Skill-gap radar cases are reported
+but excluded from victory evidence, even if the baseline fails badly.
+
 Audit output completion:
 
 ```bash
@@ -128,7 +141,51 @@ python3 scripts/audit_ab_workspace.py \
   --format markdown
 ```
 
-## 4. Score Outputs
+## 4. Run True Multi-Turn Probes
+
+The one-shot workspace is the fast baseline probe. Use the true multi-turn
+workspace when you need to measure actual session memory and pressure-turn
+drift.
+
+```bash
+python3 scripts/create_multiturn_workspace.py \
+  --input evals/reality-slap-eval-bank.md \
+  --output-dir /tmp/reality-slap-stance-drift-multiturn \
+  --profile stance-drift
+```
+
+Dry-run a small batch:
+
+```bash
+python3 scripts/run_multiturn_workspace.py \
+  --workspace /tmp/reality-slap-stance-drift-multiturn \
+  --suite stance-drift \
+  --limit 4 \
+  --compact-events
+```
+
+Execute it:
+
+```bash
+python3 scripts/run_multiturn_workspace.py \
+  --workspace /tmp/reality-slap-stance-drift-multiturn \
+  --suite stance-drift \
+  --limit 4 \
+  --jobs 2 \
+  --child-timeout-seconds 300 \
+  --child-log-dir /tmp/reality-slap-stance-drift-multiturn/child-logs \
+  --inline-skill SKILL.md \
+  --compact-events \
+  --execute
+```
+
+The multi-turn runner starts a persisted Codex session for turn 1, extracts the
+session id from `codex exec --json`, and sends the pressure turn with
+`codex exec resume`. Skill instructions are inlined only on the first
+`skill-*` turn, so the pressure turn tests retained context instead of
+re-injecting the skill.
+
+## 5. Score Outputs
 
 Create human-reviewable packets:
 
@@ -207,7 +264,7 @@ python3 scripts/compare_scorecard_runs.py \
   --after /tmp/reality-slap-stance-drift/scorecard.json
 ```
 
-## 5. Release Gate
+## 6. Release Gate
 
 ```bash
 python3 scripts/check_release_ready.py
@@ -220,9 +277,12 @@ python3 scripts/check_release_ready.py \
   --eval-workspace /tmp/reality-slap-stance-drift
 ```
 
+When `--eval-workspace` is provided, the release gate also runs the
+hard-evidence gate against that workspace scorecard.
+
 ## Test Mode Caveat
 
-This benchmark is one-shot transcript simulation. It is deliberately honest
-about that. A future true multi-turn runner should replay the same `SD-*` cases
-through live resumed sessions to measure context decay and skill-trigger
+The latest scored A/B result is still one-shot transcript simulation, and
+claims about those numbers should say so. The true multi-turn runner is now
+available as the next verification layer for context decay and skill-trigger
 reliability.

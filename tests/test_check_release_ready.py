@@ -71,12 +71,19 @@ class CheckReleaseReadyTests(unittest.TestCase):
         self.assertEqual(report["mode"], "score-release")
         self.assertEqual(report["eval_workspace"], str(workspace))
         self.assertIn("eval-goal-completion", names)
+        self.assertIn("hard-evidence-gate", names)
         command = [
             command
             for command in report["commands"]
             if command["name"] == "eval-goal-completion"
         ][0]["command"]
         self.assertIn(str(workspace), command)
+        hard_gate_command = [
+            command
+            for command in report["commands"]
+            if command["name"] == "hard-evidence-gate"
+        ][0]["command"]
+        self.assertIn(str(workspace / "scorecard.json"), hard_gate_command)
 
     def test_dry_run_keeps_legacy_full_eval_workspace_alias(self):
         with tempfile.TemporaryDirectory() as tmp:
