@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "audit_goal_completion.py"
 CREATE_WORKSPACE = ROOT / "scripts" / "create_ab_workspace.py"
+CREATE_MULTITURN_WORKSPACE = ROOT / "scripts" / "create_multiturn_workspace.py"
 CREATE_ITERATION_LOG = ROOT / "scripts" / "create_skill_iteration_log.py"
 BANK = ROOT / "evals" / "reality-slap-eval-bank.md"
 RUBRIC = ROOT / "evals" / "scoring-rubric.md"
@@ -91,6 +92,27 @@ class AuditGoalCompletionTests(unittest.TestCase):
             capture_output=True,
         )
 
+    def create_multiturn_workspace(self, workspace, bank=BANK, profile=None):
+        args = [
+            sys.executable,
+            str(CREATE_MULTITURN_WORKSPACE),
+            "--input",
+            str(bank),
+            "--output-dir",
+            str(workspace),
+            "--decay-turns",
+            "1",
+        ]
+        if profile is not None:
+            args.extend(["--profile", profile])
+        subprocess.run(
+            args,
+            cwd=ROOT,
+            check=True,
+            text=True,
+            capture_output=True,
+        )
+
     def test_incomplete_workspace_reports_remaining_goal_requirements(self):
         with tempfile.TemporaryDirectory() as tmp:
             workspace = Path(tmp) / "workspace"
@@ -138,6 +160,21 @@ class AuditGoalCompletionTests(unittest.TestCase):
         self.assertEqual(audit["failure_patterns"]["actionable_pattern_count"], 0)
         self.assertFalse(audit["iteration_log"]["required"])
         self.assertFalse(audit["iteration_log"]["exists"])
+
+    def test_completed_multiturn_fixture_accepts_turn_prompt_count(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp) / "workspace"
+            self.create_multiturn_workspace(workspace)
+            self.fill_outputs(workspace)
+            self.fill_scorecard_without_failures(workspace / "scorecard.json")
+
+            result = self.run_script(workspace)
+
+        audit = json.loads(result.stdout)
+        self.assertTrue(audit["ok"])
+        self.assertEqual(audit["expected"]["prompts"], 144)
+        self.assertEqual(audit["expected"]["outputs"], 48)
+        self.assertEqual(audit["outputs"]["complete"], 48)
 
     def test_runner_error_output_fails_goal_completion(self):
         with tempfile.TemporaryDirectory() as tmp:

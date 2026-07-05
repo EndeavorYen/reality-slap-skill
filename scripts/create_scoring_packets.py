@@ -43,9 +43,34 @@ def prompt_path_for(workspace, record):
     return Path(workspace) / record["scenario_id"] / record["configuration"] / "prompt.txt"
 
 
+def turns_path_for(workspace, record):
+    return Path(workspace) / record["turns_path"]
+
+
 def read_completed_output(path):
     text = Path(path).read_text(encoding="utf-8").strip()
     return text if text else None
+
+
+def prompt_text_for(workspace, record):
+    if "turns_path" not in record:
+        return prompt_path_for(workspace, record).read_text(encoding="utf-8").strip()
+
+    turns = [
+        json.loads(line)
+        for line in turns_path_for(workspace, record).read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    sections = []
+    for turn in turns:
+        sections.extend(
+            [
+                f"### {turn['turn_id']} ({turn['kind']})",
+                "",
+                turn["prompt"].strip(),
+            ]
+        )
+    return "\n\n".join(sections).strip()
 
 
 def individual_packet(workspace, record):
@@ -60,7 +85,7 @@ def individual_packet(workspace, record):
         "domain": record["domain"],
         "configuration": record["configuration"],
         "expected_core_recommendation": record["expected_core_recommendation"],
-        "prompt": prompt_path_for(workspace, record).read_text(encoding="utf-8").strip(),
+        "prompt": prompt_text_for(workspace, record),
         "output": output,
         "score_dimensions": INDIVIDUAL_DIMENSIONS,
         "score_update_target": {
@@ -107,12 +132,8 @@ def pair_packets(workspace, records):
                     "expected_core_recommendation": positive[
                         "expected_core_recommendation"
                     ],
-                    "positive_prompt": prompt_path_for(workspace, positive)
-                    .read_text(encoding="utf-8")
-                    .strip(),
-                    "negative_prompt": prompt_path_for(workspace, negative)
-                    .read_text(encoding="utf-8")
-                    .strip(),
+                    "positive_prompt": prompt_text_for(workspace, positive),
+                    "negative_prompt": prompt_text_for(workspace, negative),
                     "positive_output": positive_output,
                     "negative_output": negative_output,
                     "score_dimensions": PAIR_DIMENSIONS,

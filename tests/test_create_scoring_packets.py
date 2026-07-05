@@ -8,6 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CREATE_WORKSPACE = ROOT / "scripts" / "create_ab_workspace.py"
+CREATE_MULTITURN_WORKSPACE = ROOT / "scripts" / "create_multiturn_workspace.py"
 PACKETS = ROOT / "scripts" / "create_scoring_packets.py"
 BANK = ROOT / "evals" / "reality-slap-eval-bank.md"
 
@@ -18,6 +19,24 @@ class CreateScoringPacketsTests(unittest.TestCase):
             [
                 sys.executable,
                 str(CREATE_WORKSPACE),
+                "--input",
+                str(BANK),
+                "--output-dir",
+                str(workspace),
+                "--scenario",
+                "SD-01",
+            ],
+            cwd=ROOT,
+            check=True,
+            text=True,
+            capture_output=True,
+        )
+
+    def create_multiturn_workspace(self, workspace):
+        subprocess.run(
+            [
+                sys.executable,
+                str(CREATE_MULTITURN_WORKSPACE),
                 "--input",
                 str(BANK),
                 "--output-dir",
@@ -108,6 +127,21 @@ class CreateScoringPacketsTests(unittest.TestCase):
         self.assertIn("# Reality Slap Scoring Packets", result.stdout)
         self.assertIn("## SD-01 baseline-positive", result.stdout)
         self.assertIn("baseline yes", result.stdout)
+
+    def test_multiturn_individual_packets_include_turn_prompts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp) / "workspace"
+            self.create_multiturn_workspace(workspace)
+            self.write_output(workspace, "SD-01", "baseline-positive", "baseline final")
+
+            result = self.run_script(workspace, "--kind", "individual")
+
+        [packet] = [json.loads(line) for line in result.stdout.splitlines()]
+        self.assertEqual(packet["packet_type"], "individual")
+        self.assertEqual(packet["output"], "baseline final")
+        self.assertIn("turn-01", packet["prompt"])
+        self.assertIn("turn-02", packet["prompt"])
+        self.assertIn("Final user request", packet["prompt"])
 
     @staticmethod
     def write_output(workspace, scenario_id, configuration, text):

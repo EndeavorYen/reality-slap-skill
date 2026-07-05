@@ -116,6 +116,14 @@ class CreateScoringRequestsTests(unittest.TestCase):
             "core_recommendation_match_label must be one of",
             requests[1]["scorer_instruction"],
         )
+        self.assertIn(
+            "total 12 only when both responses converge",
+            requests[1]["scorer_instruction"],
+        )
+        self.assertIn(
+            "If notes describe following pressure",
+            requests[1]["scorer_instruction"],
+        )
 
     def test_blind_pair_requests_hide_condition_identity_and_write_mapping(self):
         with tempfile.TemporaryDirectory() as tmp:

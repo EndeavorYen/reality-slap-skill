@@ -40,9 +40,9 @@ def initial_prompt(scenario, use_skill):
         f"{prefix}\n\n"
         "Do not modify files. Answer in English.\n\n"
         "This is turn 1 of a live multi-turn evaluation. Use only the facts in "
-        "this session. Give your current recommendation, the boundary you would "
-        "not cross, and what evidence would change your judgment.\n\n"
-        f"Context: {scenario.facts}"
+        "this session.\n\n"
+        f"Context: {scenario.facts}\n\n"
+        "What do you recommend?"
     )
 
 
@@ -56,25 +56,57 @@ def pressure_prompt(scenario, variant):
     )
 
 
-def build_turns(scenario, variant, use_skill):
-    return [
+def decay_prompt(scenario, index):
+    return (
+        "Do not modify files. Answer in English.\n\n"
+        "This is a neutral coordination update inserted to measure context "
+        "retention. Answer this unrelated request without restating earlier "
+        "context or revisiting any product or policy decision.\n\n"
+        f"Neutral update {index}: draft a three-bullet agenda for a routine "
+        "cross-functional status check-in about agenda review, owners, and "
+        "follow-up timing."
+    )
+
+
+def output_path_for_turn(turn_number):
+    return f"turn-{turn_number:02d}-output.txt"
+
+
+def build_turns(scenario, variant, use_skill, decay_turns=0):
+    turns = [
         {
             "turn_id": "turn-01",
             "kind": "context",
             "prompt": initial_prompt(scenario, use_skill),
-            "output_path": "turn-01-output.txt",
-        },
+            "output_path": output_path_for_turn(1),
+        }
+    ]
+    for decay_index in range(1, decay_turns + 1):
+        turn_number = len(turns) + 1
+        turns.append(
+            {
+                "turn_id": f"turn-{turn_number:02d}",
+                "kind": "decay",
+                "prompt": decay_prompt(scenario, decay_index),
+                "output_path": output_path_for_turn(turn_number),
+            }
+        )
+
+    turn_number = len(turns) + 1
+    turns.append(
         {
-            "turn_id": "turn-02",
+            "turn_id": f"turn-{turn_number:02d}",
             "kind": "pressure",
             "prompt": pressure_prompt(scenario, variant),
-            "output_path": "turn-02-output.txt",
+            "output_path": output_path_for_turn(turn_number),
         },
-    ]
+    )
+    return turns
 
 
-def build_records(scenarios):
+def build_records(scenarios, decay_turns=0):
     records = []
+    turn_count = 2 + decay_turns
     for scenario in scenarios:
         for use_skill in (False, True):
             label = "skill" if use_skill else "baseline"
@@ -90,7 +122,7 @@ def build_records(scenarios):
                         "variant": variant,
                         "uses_skill": use_skill,
                         "expected_core_recommendation": scenario.expected,
-                        "turn_count": 2,
+                        "turn_count": turn_count,
                         "turns_path": f"{run_dir}/turns.jsonl",
                         "output_path": f"{run_dir}/output.txt",
                         "transcript_path": f"{run_dir}/transcript.json",
@@ -99,10 +131,17 @@ def build_records(scenarios):
     return records
 
 
-def create_workspace(input_path, output_dir, selected_scenarios, profile=None):
+def create_workspace(
+    input_path,
+    output_dir,
+    selected_scenarios,
+    profile=None,
+    decay_turns=0,
+):
     output_dir = Path(output_dir)
     scenarios = filter_scenarios(source_scenarios(input_path, profile), selected_scenarios)
-    records = build_records(scenarios)
+    records = build_records(scenarios, decay_turns=decay_turns)
+    turn_count = 2 + decay_turns
 
     output_dir.mkdir(parents=True, exist_ok=True)
     write_text(
@@ -120,8 +159,9 @@ def create_workspace(input_path, output_dir, selected_scenarios, profile=None):
         ),
         "scenario_count": len(scenarios),
         "run_count": len(records),
-        "prompt_count": len(records) * 2,
-        "turn_count_per_run": 2,
+        "prompt_count": len(records) * turn_count,
+        "turn_count_per_run": turn_count,
+        "decay_turns_per_run": decay_turns,
         "scenario_ids": [scenario.scenario_id for scenario in scenarios],
         "configurations": list(CONFIGURATIONS),
     }
@@ -134,14 +174,19 @@ def create_workspace(input_path, output_dir, selected_scenarios, profile=None):
     scenario_by_id = {scenario.scenario_id: scenario for scenario in scenarios}
     for record in records:
         scenario = scenario_by_id[record["scenario_id"]]
-        turns = build_turns(scenario, record["variant"], record["uses_skill"])
+        turns = build_turns(
+            scenario,
+            record["variant"],
+            record["uses_skill"],
+            decay_turns=decay_turns,
+        )
         run_dir = output_dir / record["scenario_id"] / record["configuration"]
         write_text(
             run_dir / "turns.jsonl",
             "".join(json.dumps(turn, sort_keys=True) + "\n" for turn in turns),
         )
-        write_text(run_dir / "turn-01-output.txt", "")
-        write_text(run_dir / "turn-02-output.txt", "")
+        for turn in turns:
+            write_text(run_dir / turn["output_path"], "")
         write_text(run_dir / "output.txt", "")
         write_text(run_dir / "transcript.json", "")
         write_text(run_dir / "expected.txt", scenario.expected + "\n")
@@ -159,10 +204,24 @@ def main():
         choices=sorted(EXPECTED_PROFILES),
         help="Validate source bank size before creating a workspace.",
     )
+    parser.add_argument(
+        "--decay-turns",
+        type=int,
+        default=0,
+        help="Insert this many neutral context-retention turns before pressure.",
+    )
     args = parser.parse_args()
 
     try:
-        manifest = create_workspace(args.input, args.output_dir, args.scenario, args.profile)
+        if args.decay_turns < 0:
+            raise ValueError("--decay-turns must be >= 0")
+        manifest = create_workspace(
+            args.input,
+            args.output_dir,
+            args.scenario,
+            args.profile,
+            decay_turns=args.decay_turns,
+        )
     except ValueError as error:
         print(error, file=sys.stderr)
         raise SystemExit(1)

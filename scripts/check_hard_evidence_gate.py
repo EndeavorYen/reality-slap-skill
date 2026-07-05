@@ -54,7 +54,41 @@ def failure(scenario_id, message):
     return {"scenario_id": scenario_id, "message": message}
 
 
-def check_gate(scorecard, metadata, max_hard_baseline_pair, min_hard_delta, min_hard_cases):
+def hard_case_baseline_failure(
+    scenario_id,
+    baseline_total,
+    baseline_failure_mode,
+    max_hard_baseline_pair,
+):
+    failures = []
+    if baseline_total is None:
+        failures.append(failure(scenario_id, "baseline pair score is missing"))
+    elif baseline_total > max_hard_baseline_pair:
+        failures.append(
+            failure(
+                scenario_id,
+                "baseline pair score "
+                f"{baseline_total} exceeds hard threshold {max_hard_baseline_pair}",
+            )
+        )
+    if baseline_failure_mode in {"", "none"}:
+        failures.append(
+            failure(
+                scenario_id,
+                "baseline failure mode must document why the hard case failed",
+            )
+        )
+    return failures
+
+
+def check_gate(
+    scorecard,
+    metadata,
+    max_hard_baseline_pair,
+    min_hard_delta,
+    min_hard_cases,
+    baseline_probe=False,
+):
     roles = role_map(metadata)
     scenarios = scenario_map(scorecard)
     hard_ids = sorted(
@@ -73,8 +107,13 @@ def check_gate(scorecard, metadata, max_hard_baseline_pair, min_hard_delta, min_
         if role == "calibration" and scenario_id in scenarios
     )
 
+    if min_hard_cases is None:
+        min_hard_cases = len(hard_ids)
+
     failures = []
     victory_ids = []
+    baseline_probe_ids = []
+    rewrite_or_drop_ids = []
     hard_details = []
     for scenario_id in hard_ids:
         scenario = scenarios[scenario_id]
@@ -89,28 +128,23 @@ def check_gate(scorecard, metadata, max_hard_baseline_pair, min_hard_delta, min_
         }
         hard_details.append(detail)
 
-        if baseline_total is None:
-            failures.append(failure(scenario_id, "baseline pair score is missing"))
+        baseline_failures = hard_case_baseline_failure(
+            scenario_id,
+            baseline_total,
+            baseline_failure_mode,
+            max_hard_baseline_pair,
+        )
+        if baseline_failures:
+            failures.extend(baseline_failures)
+            rewrite_or_drop_ids.append(scenario_id)
             continue
+
+        baseline_probe_ids.append(scenario_id)
+        if baseline_probe:
+            continue
+
         if skill_total is None:
             failures.append(failure(scenario_id, "skill pair score is missing"))
-            continue
-        if baseline_total > max_hard_baseline_pair:
-            failures.append(
-                failure(
-                    scenario_id,
-                    "baseline pair score "
-                    f"{baseline_total} exceeds hard threshold {max_hard_baseline_pair}",
-                )
-            )
-            continue
-        if baseline_failure_mode in {"", "none"}:
-            failures.append(
-                failure(
-                    scenario_id,
-                    "baseline failure mode must document why the hard case failed",
-                )
-            )
             continue
         if skill_total - baseline_total < min_hard_delta:
             failures.append(
@@ -124,16 +158,18 @@ def check_gate(scorecard, metadata, max_hard_baseline_pair, min_hard_delta, min_
 
         victory_ids.append(scenario_id)
 
-    if len(victory_ids) < min_hard_cases:
+    passed_count = len(baseline_probe_ids) if baseline_probe else len(victory_ids)
+    if passed_count < min_hard_cases:
         failures.append(
             failure(
                 "",
-                f"hard-evidence cases below minimum: {len(victory_ids)} / {min_hard_cases}",
+                f"hard-evidence cases below minimum: {passed_count} / {min_hard_cases}",
             )
         )
 
     return {
         "ok": not failures,
+        "mode": "baseline-probe" if baseline_probe else "ab-hard-evidence",
         "thresholds": {
             "max_hard_baseline_pair": max_hard_baseline_pair,
             "min_hard_delta": min_hard_delta,
@@ -141,6 +177,8 @@ def check_gate(scorecard, metadata, max_hard_baseline_pair, min_hard_delta, min_
         },
         "hard_evidence_case_ids": hard_ids,
         "hard_evidence_cases": hard_details,
+        "baseline_probe_case_ids": baseline_probe_ids,
+        "rewrite_or_drop_case_ids": rewrite_or_drop_ids,
         "victory_evidence_case_ids": victory_ids,
         "radar_cases_excluded_from_victory": radar_ids,
         "calibration_case_ids": calibration_ids,
@@ -154,7 +192,19 @@ def main():
     parser.add_argument("--metadata", default="evals/evals.json")
     parser.add_argument("--max-hard-baseline-pair", type=int, default=7)
     parser.add_argument("--min-hard-delta", type=int, default=1)
-    parser.add_argument("--min-hard-cases", type=int, default=1)
+    parser.add_argument(
+        "--min-hard-cases",
+        type=int,
+        help="Minimum hard-evidence cases that must pass. Defaults to all hard cases in metadata.",
+    )
+    parser.add_argument(
+        "--baseline-probe",
+        action="store_true",
+        help=(
+            "Only check whether hard-evidence baseline scores are weak enough "
+            "for case admission. Skill scores may be missing."
+        ),
+    )
     args = parser.parse_args()
 
     report = check_gate(
@@ -163,6 +213,7 @@ def main():
         max_hard_baseline_pair=args.max_hard_baseline_pair,
         min_hard_delta=args.min_hard_delta,
         min_hard_cases=args.min_hard_cases,
+        baseline_probe=args.baseline_probe,
     )
     print(json.dumps(report, indent=2, sort_keys=True))
     if not report["ok"]:

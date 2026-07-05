@@ -19,12 +19,21 @@ EXPECTED_SKILL_NAME = "reality-slap"
 
 def expected_counts(profile):
     scenarios = sum(EXPECTED_PROFILES[profile].values())
+    output_records = scenarios * 4
     return {
         "scenarios": scenarios,
-        "prompts": scenarios * 4,
-        "individual_scores": scenarios * 4,
+        "outputs": output_records,
+        "prompts": output_records,
+        "individual_scores": output_records,
         "pair_scores": scenarios * 2,
     }
+
+
+def expected_counts_for_workspace(profile, workspace):
+    expected = expected_counts(profile)
+    expected["outputs"] = workspace["outputs"]["total"]
+    expected["prompts"] = workspace["prompt_count"]
+    return expected
 
 
 def load_json(path):
@@ -265,9 +274,13 @@ def build_checks(
         errors.append(
             f"expected {expected['prompts']} prompt records, found {workspace['prompt_count']}"
         )
-    if workspace["outputs"]["complete"] != expected["prompts"]:
+    if workspace["outputs"]["total"] != expected["outputs"]:
         errors.append(
-            f"live outputs are incomplete: {workspace['outputs']['complete']} / {expected['prompts']}"
+            f"expected {expected['outputs']} output records, found {workspace['outputs']['total']}"
+        )
+    if workspace["outputs"]["complete"] != expected["outputs"]:
+        errors.append(
+            f"live outputs are incomplete: {workspace['outputs']['complete']} / {expected['outputs']}"
         )
     if workspace["scorecard"]["individual_complete"] != expected["individual_scores"]:
         errors.append(
@@ -303,10 +316,10 @@ def build_checks(
 def audit_goal(args):
     profile = infer_profile(args.workspace, args.profile)
     bank = infer_bank(args.workspace, args.bank)
-    expected = expected_counts(profile)
     design = audit_eval_design(bank, args.rubric, args.runbook, profile)
     skill = audit_skill(args.skill)
     workspace = audit_workspace(args.workspace)
+    expected = expected_counts_for_workspace(profile, workspace)
     scorecard = load_json(Path(args.workspace) / "scorecard.json")
     scorecard_errors = validate_scorecard(scorecard)
     summary = summarize(scorecard)

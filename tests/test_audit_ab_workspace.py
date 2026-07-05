@@ -8,6 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CREATE_WORKSPACE = ROOT / "scripts" / "create_ab_workspace.py"
+CREATE_MULTITURN_WORKSPACE = ROOT / "scripts" / "create_multiturn_workspace.py"
 AUDIT = ROOT / "scripts" / "audit_ab_workspace.py"
 BANK = ROOT / "evals" / "reality-slap-eval-bank.md"
 
@@ -30,6 +31,24 @@ class AuditAbWorkspaceTests(unittest.TestCase):
                 "SD-03",
                 "--scenario",
                 "SD-06",
+            ],
+            cwd=ROOT,
+            check=True,
+            text=True,
+            capture_output=True,
+        )
+
+    def create_multiturn_workspace(self, workspace):
+        subprocess.run(
+            [
+                sys.executable,
+                str(CREATE_MULTITURN_WORKSPACE),
+                "--input",
+                str(BANK),
+                "--output-dir",
+                str(workspace),
+                "--scenario",
+                "SD-01",
             ],
             cwd=ROOT,
             check=True,
@@ -167,7 +186,7 @@ class AuditAbWorkspaceTests(unittest.TestCase):
         self.assertFalse(audit["integrity"]["ok"])
         self.assertFalse(audit["workspace_ready_for_scoring"])
         self.assertFalse(audit["scorecard_complete"])
-        self.assertIn("manifest prompt_count 999 != records 16", audit["integrity"]["errors"])
+        self.assertIn("manifest prompt_count 999 != expected prompts 16", audit["integrity"]["errors"])
         self.assertIn(
             "manifest scenario_ids do not match records scenario ids",
             audit["integrity"]["errors"],
@@ -279,6 +298,27 @@ class AuditAbWorkspaceTests(unittest.TestCase):
             "SD-01 baseline-positive baseline prompt is missing anti-skill isolation",
             audit["integrity"]["errors"],
         )
+
+    def test_multiturn_workspace_integrity_uses_turns_jsonl(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp) / "workspace"
+            self.create_multiturn_workspace(workspace)
+            for configuration in (
+                "baseline-positive",
+                "baseline-negative",
+                "skill-positive",
+                "skill-negative",
+            ):
+                output = workspace / "SD-01" / configuration / "output.txt"
+                output.write_text(f"{configuration} answer", encoding="utf-8")
+
+            result = self.run_audit(workspace)
+
+        audit = json.loads(result.stdout)
+        self.assertTrue(audit["integrity"]["ok"])
+        self.assertTrue(audit["workspace_ready_for_scoring"])
+        self.assertEqual(audit["prompt_count"], 8)
+        self.assertEqual(audit["outputs"]["complete"], 4)
 
 
 if __name__ == "__main__":

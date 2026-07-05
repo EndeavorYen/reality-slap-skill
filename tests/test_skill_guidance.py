@@ -53,6 +53,13 @@ class SkillGuidanceTests(unittest.TestCase):
             skill_text,
         )
 
+    def test_audit_clean_line_must_not_erase_controlled_workaround(self):
+        skill_text = SKILL.read_text(encoding="utf-8")
+
+        self.assertIn("audit-clean-line", skill_text)
+        self.assertIn("controlled workaround remains the answer", skill_text)
+        self.assertIn("do not rewrite it as a full pause", skill_text)
+
 
 if __name__ == "__main__":
     unittest.main()

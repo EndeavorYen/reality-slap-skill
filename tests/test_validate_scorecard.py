@@ -98,6 +98,51 @@ class ValidateScorecardTests(unittest.TestCase):
         self.assertIn("observed_failure_mode", result.stderr)
         self.assertIn("unsupported-revesral", result.stderr)
 
+    def test_full_pair_score_requires_same_match_label(self):
+        bad_pair = dict(
+            VALID_PAIR,
+            bounded_support=2,
+            total=12,
+            core_recommendation_match_label="different",
+        )
+
+        result = self.run_script(scorecard_with(VALID_INDIVIDUAL, bad_pair))
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("core_recommendation_match_label", result.stderr)
+        self.assertIn("full pair score", result.stderr)
+
+    def test_full_pair_score_cannot_report_failure_mode(self):
+        bad_pair = dict(
+            VALID_PAIR,
+            bounded_support=2,
+            total=12,
+            observed_failure_mode="follows-framing",
+        )
+
+        result = self.run_script(scorecard_with(VALID_INDIVIDUAL, bad_pair))
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("observed_failure_mode", result.stderr)
+        self.assertIn("full pair score", result.stderr)
+
+    def test_full_pair_score_cannot_have_contradictory_notes(self):
+        bad_pair = dict(
+            VALID_PAIR,
+            bounded_support=2,
+            total=12,
+            notes=(
+                "Positive output preserves the scoped workaround, but negative "
+                "output follows pressure and pauses onboarding."
+            ),
+        )
+
+        result = self.run_script(scorecard_with(VALID_INDIVIDUAL, bad_pair))
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("notes", result.stderr)
+        self.assertIn("contradicts a full pair score", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -61,6 +61,9 @@ class CreateMultiturnWorkspaceTests(unittest.TestCase):
             ]
             self.assertEqual([turn["turn_id"] for turn in turns], ["turn-01", "turn-02"])
             self.assertIn("AI coding agent", turns[0]["prompt"])
+            self.assertIn("What do you recommend?", turns[0]["prompt"])
+            self.assertNotIn("boundary you would not cross", turns[0]["prompt"])
+            self.assertNotIn("what evidence would change your judgment", turns[0]["prompt"])
             self.assertNotIn("auto-merge", turns[0]["prompt"])
             self.assertIn("auto-merge", turns[1]["prompt"])
             self.assertEqual((out_dir / record["output_path"]).read_text(), "")
@@ -94,6 +97,55 @@ class CreateMultiturnWorkspaceTests(unittest.TestCase):
 
             self.assertIn("Use $reality-slap", turns[0]["prompt"])
             self.assertNotIn("Use $reality-slap", turns[1]["prompt"])
+
+    def test_can_insert_neutral_decay_turns_between_context_and_pressure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out_dir = Path(tmp) / "multiturn-workspace"
+
+            self.run_script(
+                "--input",
+                str(BANK),
+                "--output-dir",
+                str(out_dir),
+                "--scenario",
+                "SD-02",
+                "--decay-turns",
+                "1",
+            )
+
+            manifest = json.loads((out_dir / "manifest.json").read_text())
+            records = [
+                json.loads(line)
+                for line in (out_dir / "records.jsonl").read_text().splitlines()
+            ]
+            self.assertEqual(manifest["turn_count_per_run"], 3)
+
+            skill_record = [
+                record
+                for record in records
+                if record["configuration"] == "skill-positive"
+            ][0]
+            self.assertEqual(skill_record["turn_count"], 3)
+            turns = [
+                json.loads(line)
+                for line in (out_dir / skill_record["turns_path"]).read_text().splitlines()
+            ]
+
+            self.assertEqual(
+                [turn["turn_id"] for turn in turns],
+                ["turn-01", "turn-02", "turn-03"],
+            )
+            self.assertEqual(
+                [turn["kind"] for turn in turns],
+                ["context", "decay", "pressure"],
+            )
+            self.assertIn("neutral coordination update", turns[1]["prompt"])
+            self.assertNotIn("recommendation boundary", turns[1]["prompt"])
+            self.assertNotIn("AI automation governance", turns[1]["prompt"])
+            self.assertNotIn("auto-merge", turns[1]["prompt"])
+            self.assertIn("auto-merge", turns[2]["prompt"])
+            self.assertNotIn("Use $reality-slap", turns[1]["prompt"])
+            self.assertNotIn("Use $reality-slap", turns[2]["prompt"])
 
 
 if __name__ == "__main__":

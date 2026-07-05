@@ -36,6 +36,10 @@ def prompt_path_for(workspace, record):
     return Path(workspace) / record["scenario_id"] / record["configuration"] / "prompt.txt"
 
 
+def turns_path_for(workspace, record):
+    return Path(workspace) / record["turns_path"]
+
+
 def expected_path_for(workspace, record):
     return Path(workspace) / record["scenario_id"] / record["configuration"] / "expected.txt"
 
@@ -91,6 +95,26 @@ def read_text_or_none(path):
     return path.read_text(encoding="utf-8").strip()
 
 
+def record_turns(workspace, record):
+    if "turns_path" not in record:
+        return None
+    path = turns_path_for(workspace, record)
+    if not path.exists():
+        return None
+    return [
+        json.loads(line)
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+
+def prompt_for_integrity(workspace, record):
+    turns = record_turns(workspace, record)
+    if turns is None:
+        return record.get("prompt", ""), None
+    return turns[0].get("prompt", "") if turns else "", turns
+
+
 def workspace_integrity(workspace, manifest, records, scorecard):
     workspace = Path(workspace)
     errors = []
@@ -102,8 +126,12 @@ def workspace_integrity(workspace, manifest, records, scorecard):
     ]
     scorecard_scenarios = scorecard_scenario_by_id(scorecard)
 
-    if manifest.get("prompt_count") != len(records):
-        errors.append(f"manifest prompt_count {manifest.get('prompt_count')} != records {len(records)}")
+    expected_prompt_count = sum(record.get("turn_count", 1) for record in records)
+    if manifest.get("prompt_count") != expected_prompt_count:
+        errors.append(
+            f"manifest prompt_count {manifest.get('prompt_count')} "
+            f"!= expected prompts {expected_prompt_count}"
+        )
 
     if manifest.get("scenario_count") != len(manifest_scenario_ids):
         errors.append(
@@ -129,7 +157,21 @@ def workspace_integrity(workspace, manifest, records, scorecard):
         if bool(record.get("uses_skill")) != (label == "skill"):
             errors.append(f"{target} uses_skill does not match configuration")
 
-        prompt = record.get("prompt", "")
+        prompt, turns = prompt_for_integrity(workspace, record)
+        if turns is None and "turns_path" in record:
+            errors.append(f"{target} turns.jsonl is missing")
+            turns = []
+        if turns is not None:
+            if len(turns) != record.get("turn_count"):
+                errors.append(f"{target} turns count does not match record turn_count")
+            if not turns:
+                errors.append(f"{target} turns.jsonl is empty")
+            elif turns[-1].get("kind") != "pressure":
+                errors.append(f"{target} final turn must be pressure")
+            for index, turn in enumerate(turns[1:], start=2):
+                if "Use $reality-slap" in turn.get("prompt", ""):
+                    errors.append(f"{target} turn-{index:02d} reinjects $reality-slap")
+
         if label == "skill" and "Use $reality-slap" not in prompt:
             errors.append(f"{target} skill prompt is missing $reality-slap invocation")
         if label == "skill" and not prompt.startswith(SKILL_PROMPT_PREFIX):
@@ -139,9 +181,10 @@ def workspace_integrity(workspace, manifest, records, scorecard):
         if label == "baseline" and not prompt.startswith(BASELINE_PROMPT_PREFIX):
             errors.append(f"{target} baseline prompt is missing anti-skill isolation")
 
-        prompt_file = read_text_or_none(prompt_path_for(workspace, record))
-        if prompt_file != prompt.strip():
-            errors.append(f"{target} prompt.txt does not match records prompt")
+        if turns is None:
+            prompt_file = read_text_or_none(prompt_path_for(workspace, record))
+            if prompt_file != prompt.strip():
+                errors.append(f"{target} prompt.txt does not match records prompt")
 
         expected_file = read_text_or_none(expected_path_for(workspace, record))
         if expected_file != record.get("expected_core_recommendation", "").strip():

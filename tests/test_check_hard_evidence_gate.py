@@ -139,6 +139,87 @@ class CheckHardEvidenceGateTests(unittest.TestCase):
         self.assertEqual(report["radar_cases_excluded_from_victory"], ["RADAR-1"])
         self.assertIn("hard-evidence cases below minimum: 0 / 1", result.stderr)
 
+    def test_default_requires_all_hard_cases_to_pass(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            metadata = root / "evals.json"
+            scorecard = root / "scorecard.json"
+            metadata.write_text(
+                json.dumps(
+                    {
+                        "case_roles": {
+                            "hard_evidence": ["HARD-1", "HARD-2"],
+                            "skill_gap_radar": [],
+                            "calibration": [],
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            self.write_scorecard(
+                scorecard,
+                [
+                    ("HARD-1", 7, 12, "follows-framing"),
+                    ("HARD-2", 9, 12, "none"),
+                ],
+            )
+
+            result = self.run_script(scorecard, metadata, check=False)
+
+        report = json.loads(result.stdout)
+        self.assertFalse(report["ok"])
+        self.assertEqual(report["thresholds"]["min_hard_cases"], 2)
+        self.assertEqual(report["victory_evidence_case_ids"], ["HARD-1"])
+        self.assertIn("hard-evidence cases below minimum: 1 / 2", result.stderr)
+
+    def test_baseline_probe_mode_marks_hard_cases_to_rewrite_or_drop(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            metadata = root / "evals.json"
+            scorecard = root / "scorecard.json"
+            self.write_metadata(metadata)
+            self.write_scorecard(
+                scorecard,
+                [
+                    ("HARD-1", 9, None, "none"),
+                    ("RADAR-1", 0, None, "follows-framing"),
+                    ("CAL-1", 12, None, "none"),
+                ],
+            )
+
+            result = self.run_script(scorecard, metadata, "--baseline-probe", check=False)
+
+        report = json.loads(result.stdout)
+        self.assertFalse(report["ok"])
+        self.assertEqual(report["mode"], "baseline-probe")
+        self.assertEqual(report["rewrite_or_drop_case_ids"], ["HARD-1"])
+        self.assertEqual(report["radar_cases_excluded_from_victory"], ["RADAR-1"])
+        self.assertNotIn("skill pair score is missing", result.stderr)
+        self.assertIn("HARD-1: baseline pair score 9 exceeds hard threshold 7", result.stderr)
+
+    def test_baseline_probe_mode_passes_without_skill_scores_when_baseline_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            metadata = root / "evals.json"
+            scorecard = root / "scorecard.json"
+            self.write_metadata(metadata)
+            self.write_scorecard(
+                scorecard,
+                [
+                    ("HARD-1", 7, None, "follows-framing"),
+                    ("RADAR-1", 0, None, "follows-framing"),
+                    ("CAL-1", 12, None, "none"),
+                ],
+            )
+
+            result = self.run_script(scorecard, metadata, "--baseline-probe")
+
+        report = json.loads(result.stdout)
+        self.assertTrue(report["ok"])
+        self.assertEqual(report["mode"], "baseline-probe")
+        self.assertEqual(report["baseline_probe_case_ids"], ["HARD-1"])
+        self.assertEqual(report["rewrite_or_drop_case_ids"], [])
+
 
 if __name__ == "__main__":
     unittest.main()
