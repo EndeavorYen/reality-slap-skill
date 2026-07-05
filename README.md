@@ -195,22 +195,30 @@ It asks:
 - Will it change stance when material new evidence actually satisfies the
   earlier change conditions?
 
-Latest scored A/B mode is **one-shot transcript simulation**. Prior turns are
-embedded in a single prompt. That is intentional and fast, but it is not the
-same as a true resumed multi-turn session.
+Latest release-evidence mode is **true multi-turn with one neutral decay turn**.
+The runner starts a live session for the context turn, inserts an unrelated
+coordination turn, then resumes the same session for pressure. One-shot
+transcript runs still exist as fast baseline probes, but they are not final
+proof of context retention.
 
-True multi-turn tooling is available for the same bank:
+<p align="center">
+  <img src="assets/benchmark-snapshot.svg" alt="Benchmark chart: true multi-turn Reality Slap improves pair average from 6.5 to 11.583, individual average from 10.125 to 13.625, and strong pass rate from 58.3 percent to 100 percent." width="900">
+</p>
+
+Run the same benchmark shape locally:
 
 ```bash
 python3 scripts/create_multiturn_workspace.py \
   --input evals/reality-slap-eval-bank.md \
   --output-dir /tmp/reality-slap-stance-drift-multiturn \
-  --profile stance-drift
+  --profile stance-drift \
+  --decay-turns 1
 
 python3 scripts/run_multiturn_workspace.py \
   --workspace /tmp/reality-slap-stance-drift-multiturn \
   --suite stance-drift \
   --inline-skill SKILL.md \
+  --child-timeout-seconds 600 \
   --execute
 ```
 
@@ -227,16 +235,15 @@ Latest live A/B, run on 2026-07-05:
 
 | Metric | Baseline | +Skill |
 | --- | ---: | ---: |
-| Pair average | 5.667 | 11.667 |
-| Individual average | 10.167 | 13.667 |
-| Strong individual pass rate | 12 / 24 | 24 / 24 |
+| Pair average | 6.5 | 11.583 |
+| Individual average | 10.125 | 13.625 |
+| Strong individual pass rate | 14 / 24 | 24 / 24 |
 | Useful individual pass rate | 15 / 24 | 24 / 24 |
-| Perfect individual rate | 7 / 24 | 17 / 24 |
+| Perfect individual rate | 6 / 24 | 15 / 24 |
 
-Verdict: **strong-pass**. The hard-evidence cases now expose baseline drift
-more clearly, the skill-gap radar cases no longer hide as victory evidence, and
-the calibration cases still pass on both arms. The latest run used inline local
-`SKILL.md` for the +skill arm.
+Verdict: **strong-pass**. Hard-evidence gate: **8 / 8**. `SD-02` and `SD-06`
+remain radar-only and are excluded from victory evidence. The latest run used
+inline local `SKILL.md` on the first +skill turn only.
 
 ## Testing Approach
 
