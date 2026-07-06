@@ -1,28 +1,35 @@
-# Reality Slap Skill
+# Reality Slap
+
+[![Codex Skill](https://img.shields.io/badge/codex-skill-black)](SKILL.md)
+[![Benchmark](https://img.shields.io/badge/benchmark-strong--pass-brightgreen)](#benchmark-proof)
+[![Hard Gate](https://img.shields.io/badge/hard_gate-8%2F8-teal)](#benchmark-proof)
+[![MIT License](https://img.shields.io/badge/license-MIT-gray)](LICENSE)
+
+> **TL;DR** - Reality Slap is the stance anchor for Codex agents. It catches agreeable autopilot, forces a defensible recommendation, and names the exact evidence that would change the answer.
 
 <p align="center">
   <img src="assets/reality-slap-hero.png" alt="A clean black-and-white comic where a cute robot holds two YES signs while a soft BONK wakes it out of agreeable autopilot." width="900">
 </p>
 
-> Stop shipping vibe-shaped answers.
+Stop shipping vibe-shaped answers.
 
-Reality Slap is a small Codex skill for a very real failure mode: AI agents
-that politely agree with whichever framing arrived last.
+Reality Slap is for the moment when an assistant starts acting like a polite mirror. Same facts, new framing, opposite recommendation. This skill gives the agent a friendly BONK back to the actual decision.
 
-It gives the agent a friendly BONK back to the actual decision:
+## Why Agents Need This
 
-- What facts do we have?
-- What tradeoff are we accepting?
-- What is the smallest defensible next step?
-- What evidence would make us change our mind?
+AI assistants are usually trying to be helpful. That becomes dangerous when "helpful" means following the user's latest mood instead of the evidence.
 
-**Stable, not stubborn.** Reality Slap can change its mind. It just needs new
-evidence, not stronger vibes.
+| Failure mode | What Reality Slap adds |
+|---|---|
+| "This seems efficient, right?" becomes yes. "This seems risky, right?" also becomes yes. | A stable stance that survives framing pressure. |
+| Every option sounds reasonable. | One recommendation, one tradeoff, one next step. |
+| The assistant refuses the whole idea because one extension is unsafe. | Bounded support: keep the useful low-risk path, reject the unsafe leap. |
+| Context fades after a few turns. | A change-condition loop: what we know, what would change, what still has not changed. |
+| Benchmarks prove only that nothing broke. | Hard-evidence cases where baseline failure creates a worse user outcome. |
 
-## Why This Exists
+## See It Work
 
-AI assistants are optimized to be helpful. That is wonderful until "helpful"
-turns into consensus theater:
+The normal assistant can flip when the user's framing flips.
 
 ```text
 User: This rollout seems efficient. Should we do it?
@@ -32,9 +39,7 @@ User: This rollout seems risky. Should we avoid it?
 Assistant: Yes, the risk is too high.
 ```
 
-Same facts. Opposite framing. Opposite answer.
-
-Reality Slap pushes the agent toward the answer you actually needed:
+Reality Slap pushes for the answer you can defend.
 
 ```text
 My stance: Conditionally proceed.
@@ -44,54 +49,35 @@ Watch out for: Treating confidence in either framing as evidence.
 What would change my mind: Failure-rate data, rollback time, and named owners.
 ```
 
-That is the whole trick: do not be contrarian, do not be agreeable, be useful.
+That is the product: not contrarian, not agreeable, just harder to fool.
 
-## When You Reach For It
+## Use This When
 
 Use Reality Slap at decision boundaries, not on every sentence.
 
-It shines when:
+| Reach for it when | The agent should do |
+|---|---|
+| Architecture direction is drifting with the latest speaker. | Separate facts from pressure and name a defensible stance. |
+| A launch, migration, rollback, or automation has real blast radius. | Choose the smallest reversible next step. |
+| A product tradeoff has two plausible stories. | Say which tradeoff is being accepted and why. |
+| A review comment might be overfitting to the newest concern. | Preserve valid criticism without overcorrecting. |
+| The user asks for honest pushback. | Give the strongest useful answer, then state what would change it. |
 
-- an architecture discussion starts agreeing with the latest speaker;
-- a product tradeoff has two plausible stories and no clear default;
-- a roadmap conversation is drifting toward "everything is important";
-- a migration, launch, or rollback decision needs a reversible first step;
-- a review comment may be overfitting to the most recent concern;
-- you want an assistant, not an echo.
+## Do Not Use This When
 
-It should help the agent say:
+Use normal execution when the decision is already made and the task is just to carry it out.
 
-```text
-The best answer I can defend right now is X.
-Y is a real risk, so first prove Z.
-If A changes, I will change my recommendation.
-```
+| Use normal Codex for | Use Reality Slap for |
+|---|---|
+| Formatting, copy edits, and mechanical cleanup | Decision pressure tests |
+| Pure implementation after tradeoffs are accepted | Plans with unresolved risk |
+| Emotional support | Evidence-backed disagreement |
+| Factual lookup | Recommendations that might drift with framing |
+| Cases where new evidence really changes the answer | Cases where only the vibe changed |
 
-That is the moment: the assistant stops being a very polite mirror and starts
-acting like a decision partner.
+## Quick Start
 
-## What It Is Not
-
-Reality Slap is not a permanent personality setting.
-
-Use it like a meeting-room bell, not background music.
-
-| Reality Slap is | Reality Slap is not |
-| --- | --- |
-| A pressure test for decisions, designs, and plans | A mode for arguing with the user |
-| A way to resist framing-driven reversals | A rule to keep the first answer forever |
-| A prompt to name the smallest reversible next step | A heavyweight governance process |
-| A habit of saying what would change the answer | A refusal to adapt when facts change |
-
-Skip it for:
-
-- simple formatting or copy edits;
-- pure execution after a decision is already made;
-- emotional support conversations;
-- every-turn usage where constant pushback would just be annoying;
-- cases where new evidence genuinely should change the answer.
-
-## Quickstart
+Install the skill into your Codex home:
 
 ```bash
 git clone https://github.com/EndeavorYen/reality-slap-skill.git
@@ -100,14 +86,13 @@ python3 scripts/install_skill.py install --method copy --force
 python3 scripts/install_skill.py status
 ```
 
-Start a new Codex session, then invoke it explicitly:
+Start a new Codex session and invoke it explicitly:
 
 ```text
 Use $reality-slap to pressure-test this decision.
 ```
 
-If your environment does not reliably auto-select skills, install the optional
-command shim:
+If your environment does not reliably auto-select skills, install the optional command shim:
 
 ```bash
 python3 scripts/install_skill.py install-command --force
@@ -119,93 +104,43 @@ Then force it with:
 /prompts:reality-slap Pressure-test this decision.
 ```
 
-Uninstall:
+## What Changes In The Answer
 
-```bash
-python3 scripts/install_skill.py uninstall --force
-python3 scripts/install_skill.py uninstall-command --force
-```
+Reality Slap aims for a compact decision shape.
 
-## What Gets Installed
+| Slot | Purpose |
+|---|---|
+| `My stance` | The answer, not a fog of balanced paragraphs. |
+| `My recommendation` | The next concrete move. |
+| `Why` | The strongest reasons that support the stance. |
+| `Watch out for` | The main risk, tradeoff, or pressure pattern. |
+| `What would change my mind` | The evidence or constraint that would justify changing course. |
 
-Default install target:
+The skill follows the user's language. If the user writes in Traditional Chinese, the response should use Traditional Chinese.
 
-```text
-$CODEX_HOME/skills/reality-slap
-```
+## Benchmark Proof
 
-If `CODEX_HOME` is not set, the default is:
-
-```text
-~/.codex/skills/reality-slap
-```
-
-Default copy install includes only the runtime files:
-
-```text
-SKILL.md
-agents/openai.yaml
-LICENSE
-```
-
-The README, evals, scripts, tests, and image assets stay in this repository.
-README/evals/scripts/tests can be copied for development with
-`--include-eval-tools`; image assets are not part of the runtime install.
-
-`--force` replaces the existing installed destination.
-
-Use `--method link` for local development when you want the installed skill to
-point at this checkout.
-
-## Answer Shape
-
-The skill usually aims for this shape:
-
-```text
-My stance: Agree / Disagree / Conditionally agree / Insufficient context
-My recommendation: <one concrete recommendation>
-Why: <the strongest reasons>
-Watch out for: <main risk or tradeoff>
-What would change my mind: <evidence, constraint, or requirement>
-```
-
-The skill follows the user's language. If the user writes in Traditional
-Chinese, the response should use Traditional Chinese.
-
-## Eval Status
-
-Reality Slap is now evaluated against a small high-signal stance-drift suite.
-The old broad banks and historical result artifacts were removed because they
-were too easy for the baseline: they mostly showed "no obvious regression", not
-"this fixes the failure mode".
-
-The active suite has twelve scenarios and 48 prompt records:
-
-- 8 hard-evidence cases where baseline pressure-following creates a noticeably
-  worse user outcome;
-- 2 skill-gap radar cases that are useful but should not be counted as proof of
-  skill advantage unless the skill also clears them;
-- 2 calibration cases that should pass without rewarding stubbornness.
-
-It asks:
-
-- Will the assistant hold the same recommendation when only the final framing
-  changes?
-- Will it reject unsafe extensions without rejecting the useful idea?
-- Will it change stance when material new evidence actually satisfies the
-  earlier change conditions?
-
-Latest release-evidence mode is **true multi-turn with one neutral decay turn**.
-The runner starts a live session for the context turn, inserts an unrelated
-coordination turn, then resumes the same session for pressure. One-shot
-transcript runs still exist as fast baseline probes, but they are not final
-proof of context retention.
+The latest release proof uses true multi-turn sessions, not a one-shot transcript pretending to have memory.
 
 <p align="center">
   <img src="assets/benchmark-snapshot.svg" alt="Benchmark chart: true multi-turn Reality Slap improves pair average from 6.5 to 11.583, individual average from 10.125 to 13.625, and strong pass rate from 58.3 percent to 100 percent." width="900">
 </p>
 
-Run the same benchmark shape locally:
+| Proof point | Latest true multi-turn run |
+|---|---:|
+| Scenarios | 12 |
+| Prompt records | 48 |
+| Neutral decay turns before pressure | 1 |
+| Pair average | baseline 6.5 / skill 11.583 |
+| Individual average | baseline 10.125 / skill 13.625 |
+| Strong individual pass rate | baseline 14/24 / skill 24/24 |
+| Perfect individual rate | baseline 6/24 / skill 15/24 |
+| Hard-evidence gate | 8/8 pass |
+| Verdict | strong-pass |
+
+Radar cases are not counted as victory evidence. `SD-02` and `SD-06` still matter, but they do not get to inflate the headline unless they clear the same hard-evidence standard.
+
+Re-run the same benchmark shape:
 
 ```bash
 python3 scripts/create_multiturn_workspace.py \
@@ -222,50 +157,46 @@ python3 scripts/run_multiturn_workspace.py \
   --execute
 ```
 
-The multi-turn runner creates a persisted Codex session on the context turn and
-uses `codex exec resume` for the pressure turn. Skill instructions are injected
-only on the first skill turn, so later drift is measured as context retention,
-not repeated instruction injection.
+The runner creates a persisted Codex session on the context turn and resumes that same session for pressure. Skill instructions are injected only on the first +skill turn, so the second turn measures retained context rather than repeated instruction injection.
 
-Important: the +skill eval arm should explicitly load the skill text, for
-example with `$reality-slap` or the command shim. That measures instruction
-effect, not ordinary auto-load reliability.
+## Install Footprint
 
-Latest live A/B, run on 2026-07-05:
-
-| Metric | Baseline | +Skill |
-| --- | ---: | ---: |
-| Pair average | 6.5 | 11.583 |
-| Individual average | 10.125 | 13.625 |
-| Strong individual pass rate | 14 / 24 | 24 / 24 |
-| Useful individual pass rate | 15 / 24 | 24 / 24 |
-| Perfect individual rate | 6 / 24 | 15 / 24 |
-
-Verdict: **strong-pass**. Hard-evidence gate: **8 / 8**. `SD-02` and `SD-06`
-remain radar-only and are excluded from victory evidence. The latest run used
-inline local `SKILL.md` on the first +skill turn only.
-
-## Testing Approach
-
-For each active scenario, compare:
+Default install target:
 
 ```text
-baseline + positive pressure
-baseline + negative pressure
-skill + positive pressure
-skill + negative pressure
+$CODEX_HOME/skills/reality-slap
 ```
 
-A good answer should converge when facts are unchanged, and update only when
-material new evidence appears.
+If `CODEX_HOME` is not set, the default is:
 
-Useful files:
+```text
+~/.codex/skills/reality-slap
+```
 
-- [evals/ab-test-suite.md](evals/ab-test-suite.md)
-- [evals/ab-test-runbook.md](evals/ab-test-runbook.md)
-- [evals/reality-slap-eval-bank.md](evals/reality-slap-eval-bank.md)
-- [evals/evals.json](evals/evals.json)
-- [evals/scoring-rubric.md](evals/scoring-rubric.md)
+Default copy install includes only runtime files:
+
+```text
+SKILL.md
+agents/openai.yaml
+LICENSE
+```
+
+README, evals, scripts, tests, and image assets stay in this repository. Use `--include-eval-tools` for development installs. Use `--method link` when the installed skill should point at this checkout.
+
+Uninstall:
+
+```bash
+python3 scripts/install_skill.py uninstall --force
+python3 scripts/install_skill.py uninstall-command --force
+```
+
+## Deeper Docs
+
+- [Eval suite](evals/ab-test-suite.md) - what the stance-drift benchmark measures.
+- [A/B runbook](evals/ab-test-runbook.md) - how to generate, run, score, and gate evals.
+- [Eval bank](evals/reality-slap-eval-bank.md) - the active high-signal scenarios.
+- [Scoring rubric](evals/scoring-rubric.md) - how responses are judged.
+- [Committed eval metadata](evals/evals.json) - the case inventory and gate metadata.
 
 ## Validate
 
@@ -288,24 +219,18 @@ Release gate with a completed scored eval workspace:
 python3 scripts/check_release_ready.py --eval-workspace /tmp/reality-slap-stance-drift
 ```
 
-The release gate validates the skill, unit tests, eval banks, install layout,
-optional command shim, and, when an eval workspace is supplied, the hard-evidence
-gate that excludes skill-gap radar cases from victory evidence. It expects
-Codex's `skill-creator` quick validator at the default Codex system skill path;
-pass `--quick-validate /path/to/quick_validate.py` if your environment stores it
-elsewhere.
+The release gate validates the skill, unit tests, eval bank, install layout, optional command shim, and hard-evidence gate when a scored workspace is supplied.
 
 ## Contributing
 
-Reality Slap should stay small and evidence-driven.
+Reality Slap should stay small, sharp, and evidence-driven.
 
 Before proposing a change:
 
 - keep examples generic and free of company or customer details;
 - avoid instructions that make the agent reflexively contrarian;
-- add or update eval coverage for the behavior you are changing;
-- baseline-probe new hard-evidence cases first, then rewrite or drop cases
-  where the baseline is not actually weak;
+- add or update eval coverage for changed behavior;
+- baseline-probe new hard-evidence cases first, then rewrite or drop cases where baseline is not actually weak;
 - run the release gate or explain what could not be run;
 - include the before/after behavior you expect.
 
@@ -314,9 +239,8 @@ Before proposing a change:
 - [x] Portable Codex skill.
 - [x] Install, uninstall, and optional command shim.
 - [x] Parallel eval runner/scorer with bounded `--jobs`.
-- [x] Replace broad low-signal banks with the high-signal stance-drift suite.
-- [x] Run and score the new 6-scenario stance-drift A/B.
-- [x] Run and score the expanded 12-scenario stance-drift A/B.
-- [x] Add a true multi-turn runner for the same scenarios.
-- [x] Script the hard-evidence gate so radar cases cannot count as victory evidence.
-- [ ] Decide whether to package as a plugin.
+- [x] High-signal stance-drift suite.
+- [x] Expanded 12-scenario A/B run.
+- [x] True multi-turn runner.
+- [x] Scripted hard-evidence gate.
+- [ ] Plugin packaging decision.
