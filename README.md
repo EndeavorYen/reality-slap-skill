@@ -78,6 +78,13 @@ Reality Slap materially improved stance stability in the release benchmark. In t
   <img src="assets/same-model-roleplay-result.svg" alt="Same-model roleplay pilot card: mean quality was 13.833 versus 13.958 out of 14; complete critical boundaries increased modestly from 20/24 to 23/24; harmful-compromise flags were 0/24 in both arms. Verdict: better boundaries, no demonstrated reduction in harmful consensus." width="900">
 </p>
 
+| Metric | Naive consensus | + Reality Slap |
+|---|---:|---:|
+| Semantic decisions judged correct | 24/24 | 24/24 |
+| Harmful compromise flags | 0/24 | 0/24 |
+| Mean quality | 13.833/14 | 13.958/14 |
+| Complete critical boundaries | 20/24 | 23/24 |
+
 [Read the detailed same-model roleplay result](evals/same-model-roleplay-ab-2026-07-10.md). The pilot simulated three roles inside one model invocation; it does not establish that Reality Slap creates independent reasoning diversity or eliminates same-model compromise.
 
 The [committed eval metadata](evals/evals.json) records the full stance-drift scorecard, case roles, gate thresholds, and roleplay result. Radar cases `SD-02` and `SD-06` are excluded from victory evidence.
