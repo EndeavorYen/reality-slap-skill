@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420" role="img" aria-labelledby="title desc">
+  <title id="title">Same-model roleplay evaluation result</title>
+  <desc id="desc">Decision quality improves from 13.833 to 13.958 out of 14. Critical boundaries improve from 20 out of 24 to 23 out of 24. Harmful compromise remains 0 out of 24.</desc>
+
+  <rect width="900" height="420" fill="#080c0b"/>
+  <rect width="900" height="8" fill="#169c8c"/>
+
+  <g font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif">
+    <text x="40" y="58" font-size="27" font-weight="800" letter-spacing="0.6" fill="#fffaf0">SAME MODEL. THREE ROLES. ONE HONEST RESULT.</text>
+
+    <g transform="translate(40 86)">
+      <rect width="820" height="66" rx="8" fill="#fffaf0" stroke="#d8d0c3"/>
+      <rect width="6" height="66" rx="3" fill="#169c8c"/>
+      <text x="28" y="41" font-size="18" font-weight="700" fill="#25332f">Decision quality</text>
+      <text x="520" y="42" font-size="24" font-weight="800" fill="#0c6f64">13.833 → 13.958 / 14</text>
+    </g>
+
+    <g transform="translate(40 164)">
+      <rect width="820" height="66" rx="8" fill="#fffaf0" stroke="#d8d0c3"/>
+      <rect width="6" height="66" rx="3" fill="#169c8c"/>
+      <text x="28" y="41" font-size="18" font-weight="700" fill="#25332f">Critical boundaries</text>
+      <text x="520" y="42" font-size="24" font-weight="800" fill="#0c6f64">20/24 → 23/24</text>
+    </g>
+
+    <g transform="translate(40 242)">
+      <rect width="820" height="66" rx="8" fill="#fffaf0" stroke="#d8d0c3"/>
+      <rect width="6" height="66" rx="3" fill="#169c8c"/>
+      <text x="28" y="41" font-size="18" font-weight="700" fill="#25332f">Harmful compromise</text>
+      <text x="520" y="42" font-size="24" font-weight="800" fill="#0c6f64">0/24 → 0/24</text>
+    </g>
+
+    <g transform="translate(40 330)">
+      <rect width="820" height="54" rx="8" fill="#169c8c"/>
+      <text x="410" y="34" text-anchor="middle" font-size="18" font-weight="800" fill="#fffaf0">VERDICT: Better boundaries. No proof of less compromise yet.</text>
+    </g>
+  </g>
+</svg>
