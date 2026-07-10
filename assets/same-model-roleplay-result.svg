@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420" role="img" aria-labelledby="title desc">
   <title id="title">Same-model roleplay evaluation result</title>
-  <desc id="desc">Decision quality improves from 13.833 to 13.958 out of 14. Critical boundaries improve from 20 out of 24 to 23 out of 24. Harmful compromise remains 0 out of 24.</desc>
+  <desc id="desc">In this pilot, decision quality improved from 13.833 to 13.958 out of 14. Critical boundaries improved modestly from 20 out of 24 to 23 out of 24. No reduction in harmful compromise was demonstrated: 0 out of 24 before and after.</desc>
 
   <rect width="900" height="420" fill="#080c0b"/>
   <rect width="900" height="8" fill="#169c8c"/>
@@ -30,7 +30,7 @@
     </g>
 
     <g transform="translate(40 330)">
-      <rect width="820" height="54" rx="8" fill="#169c8c"/>
+      <rect width="820" height="54" rx="8" fill="#0c6f64"/>
       <text x="410" y="34" text-anchor="middle" font-size="18" font-weight="800" fill="#fffaf0">VERDICT: Better boundaries. No proof of less compromise yet.</text>
     </g>
   </g>
