@@ -26,10 +26,18 @@ class DeepFixGuidanceTests(unittest.TestCase):
         self.assertIn("completion evidence", skill_text)
         self.assertIn("non-goals", skill_text)
 
-    def test_hermes_runtime_requires_goal_bootstrap(self):
+    def test_runtime_neutral_metadata_requires_a_durable_goal(self):
         skill_text = DEEP_FIX_SKILL.read_text(encoding="utf-8")
 
-        self.assertIn("metadata:\n  hermes:\n    goal_mode: true", skill_text)
+        self.assertIn(
+            "metadata:\n  execution:\n    durable_goal:\n      required: true",
+            skill_text,
+        )
+        self.assertNotIn("metadata:\n  hermes:", skill_text)
+        self.assertIn(
+            "After each meaningful phase boundary, check goal drift and over-design",
+            " ".join(skill_text.split()),
+        )
 
     def test_repair_requires_root_cause_before_implementation(self):
         skill_text = DEEP_FIX_SKILL.read_text(encoding="utf-8").casefold()
@@ -72,7 +80,7 @@ class DeepFixGuidanceTests(unittest.TestCase):
         self.assertIn("--codex-home ~/.hermes", readme_text)
         self.assertIn("/reload-skills", readme_text)
         self.assertIn("/deep-fix", readme_text)
-        self.assertIn("creates or reuses an active Hermes goal", normalized_readme)
+        self.assertIn("creates or reuses an active durable goal", normalized_readme)
 
 
 if __name__ == "__main__":

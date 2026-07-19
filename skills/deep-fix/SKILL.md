@@ -2,8 +2,16 @@
 name: deep-fix
 description: Use when a long, repeated, or high-impact repair keeps drifting, revisiting the same blocker, expanding into minor work, or needs root-cause execution with explicit completion proof.
 metadata:
-  hermes:
-    goal_mode: true
+  execution:
+    durable_goal:
+      required: true
+      constraints:
+        - >-
+          After each meaningful phase boundary, check goal drift and over-design,
+          perform a concise self-review, and correct course before continuing when needed.
+        - >-
+          Each checkpoint must state Goal drift, Over-design, User-visible progress,
+          Weakest remaining proof, Decision, and Next.
 ---
 
 # Deep Fix
@@ -14,10 +22,11 @@ checkpoint; do not turn it into the implementer.
 
 ## Durable Goal Contract
 
-Hermes atomically creates or reuses one durable goal before loading this skill.
-Other runtimes should create or refresh one durable goal when goal tools are
-available. Explicit `$deep-fix` or `/deep-fix` invocation counts as a request to
-set that goal. Reuse a matching active goal instead of creating a parallel one.
+Runtimes with durable-goal support should atomically create or reuse one goal
+before loading this skill. The frontmatter contract is runtime-neutral; hosts
+may implement it directly or follow these instructions through their own goal
+tools. Explicit `$deep-fix` or `/deep-fix` invocation counts as a request to set
+that goal. Reuse a matching active goal instead of creating a parallel one.
 
 Lock these fields before changing production behavior:
 
