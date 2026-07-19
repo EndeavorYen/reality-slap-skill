@@ -21,6 +21,13 @@ COMMAND_PROMPT_REQUIRED_SNIPPETS = (
     "Use $reality-slap",
     "$ARGUMENTS",
 )
+DEEP_FIX_RUNTIME_REQUIRED_FILES = ("SKILL.md", "agents/openai.yaml", "LICENSE")
+DEEP_FIX_COMMAND_PROMPT_REQUIRED_SNIPPETS = (
+    "description:",
+    "argument-hint:",
+    "Use $deep-fix",
+    "$ARGUMENTS",
+)
 
 
 def command_record(name, command):
@@ -99,6 +106,38 @@ def release_commands(
                 python,
                 root / "scripts" / "install_skill.py",
                 "install-command",
+                "--codex-home",
+                codex_home,
+                "--force",
+            ],
+        ),
+        command_record(
+            "deep-fix-install",
+            [
+                python,
+                root / "scripts" / "install_skill.py",
+                "install-deep-fix",
+                "--method",
+                "copy",
+                "--codex-home",
+                codex_home,
+                "--force",
+            ],
+        ),
+        command_record(
+            "installed-deep-fix-validator",
+            [
+                python,
+                quick_validate,
+                Path(codex_home) / "skills" / "deep-fix",
+            ],
+        ),
+        command_record(
+            "deep-fix-uninstall",
+            [
+                python,
+                root / "scripts" / "install_skill.py",
+                "uninstall-deep-fix",
                 "--codex-home",
                 codex_home,
                 "--force",
@@ -185,11 +224,16 @@ def run_command(record, cwd):
     }
 
 
-def inspect_runtime_layout(codex_home):
-    destination = Path(codex_home) / "skills" / "reality-slap"
+def inspect_runtime_layout(
+    codex_home,
+    skill_name="reality-slap",
+    required_files=RUNTIME_REQUIRED_FILES,
+    result_name="installed-runtime-layout",
+):
+    destination = Path(codex_home) / "skills" / skill_name
     missing = [
         relative
-        for relative in RUNTIME_REQUIRED_FILES
+        for relative in required_files
         if not (destination / relative).exists()
     ]
     unexpected_top_level = []
@@ -200,15 +244,15 @@ def inspect_runtime_layout(codex_home):
             if child.name not in RUNTIME_TOP_LEVEL
         )
     else:
-        missing = list(RUNTIME_REQUIRED_FILES)
+        missing = list(required_files)
 
     return {
-        "name": "installed-runtime-layout",
+        "name": result_name,
         "command": ["inspect", str(destination)],
         "returncode": 0 if not missing and not unexpected_top_level else 1,
         "stdout": json.dumps(
             {
-                "required_files": list(RUNTIME_REQUIRED_FILES),
+                "required_files": list(required_files),
                 "missing": missing,
                 "unexpected_top_level": unexpected_top_level,
             },
@@ -220,25 +264,30 @@ def inspect_runtime_layout(codex_home):
     }
 
 
-def inspect_command_prompt(codex_home):
-    prompt_file = Path(codex_home) / "prompts" / "reality-slap.md"
+def inspect_command_prompt(
+    codex_home,
+    command_name="reality-slap",
+    required_snippets=COMMAND_PROMPT_REQUIRED_SNIPPETS,
+    result_name="installed-command-prompt",
+):
+    prompt_file = Path(codex_home) / "prompts" / f"{command_name}.md"
     if prompt_file.exists():
         prompt_text = prompt_file.read_text()
         missing = [
             snippet
-            for snippet in COMMAND_PROMPT_REQUIRED_SNIPPETS
+            for snippet in required_snippets
             if snippet not in prompt_text
         ]
     else:
-        missing = ["prompts/reality-slap.md"]
+        missing = [f"prompts/{command_name}.md"]
 
     return {
-        "name": "installed-command-prompt",
+        "name": result_name,
         "command": ["inspect", str(prompt_file)],
         "returncode": 0 if not missing else 1,
         "stdout": json.dumps(
             {
-                "required_snippets": list(COMMAND_PROMPT_REQUIRED_SNIPPETS),
+                "required_snippets": list(required_snippets),
                 "missing": missing,
             },
             sort_keys=True,
@@ -286,6 +335,23 @@ def run_release_gate(args):
                 results.append(inspect_runtime_layout(codex_home))
             if record["name"] == "command-install":
                 results.append(inspect_command_prompt(codex_home))
+            if record["name"] == "deep-fix-install":
+                results.append(
+                    inspect_runtime_layout(
+                        codex_home,
+                        skill_name="deep-fix",
+                        required_files=DEEP_FIX_RUNTIME_REQUIRED_FILES,
+                        result_name="installed-deep-fix-layout",
+                    )
+                )
+                results.append(
+                    inspect_command_prompt(
+                        codex_home,
+                        command_name="deep-fix",
+                        required_snippets=DEEP_FIX_COMMAND_PROMPT_REQUIRED_SNIPPETS,
+                        result_name="installed-deep-fix-command-prompt",
+                    )
+                )
         failed = [result for result in results if not result["ok"]]
         return {
             "ok": not failed,

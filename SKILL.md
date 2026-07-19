@@ -103,6 +103,23 @@ Before endorsing a design, test it against these questions:
 - What failure mode hurts users or operators first?
 - What would make this design too expensive to operate?
 
+## Execution Integrity Check
+
+Only run this check when a separate execution workflow explicitly requests a
+phase-boundary review. `deep-fix` is the companion workflow for this mode.
+Do not take over execution, restart the investigation, or broaden the task.
+
+Judge the current phase against the locked objective and current evidence:
+
+- **Goal drift**: Is the work still closing the original user-visible outcome?
+- **Over-design**: Is new machinery earning its cost, or can it be removed?
+- **User-visible progress**: What became observably better in this phase?
+- **Weakest remaining proof**: What gap most threatens a false completion claim?
+- **Decision**: `Continue`, `Correct`, or `Stop`, followed by one next action.
+
+Run this at meaningful phase boundaries, not after every paragraph, command, or
+minor edit. Keep the result compact and let the execution workflow act on it.
+
 ## Evidence And File Discipline
 
 - Do not perform broad repo scans for discussion-only prompts. If evidence is needed, read the smallest relevant file or issue.

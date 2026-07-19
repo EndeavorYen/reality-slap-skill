@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install, inspect, or uninstall the Reality Slap Codex skill."""
+"""Install, inspect, or uninstall Reality Slap and its Deep Fix companion."""
 
 import argparse
 import os
@@ -9,6 +9,8 @@ from pathlib import Path
 
 
 SKILL_NAME = "reality-slap"
+DEEP_FIX_NAME = "deep-fix"
+DEEP_FIX_SOURCE = Path("skills") / DEEP_FIX_NAME
 RUNTIME_PATHS = ("SKILL.md", "agents", "LICENSE")
 EVAL_TOOL_PATHS = ("README.md", "evals", "scripts", "tests")
 
@@ -30,6 +32,13 @@ def require_source(source):
     if not (source / "SKILL.md").exists():
         raise SystemExit(f"source does not look like a skill repo: {source}")
     return source
+
+
+def require_deep_fix_source(source):
+    companion = source / DEEP_FIX_SOURCE
+    if not (companion / "SKILL.md").exists():
+        raise SystemExit(f"deep-fix companion is missing from source: {companion}")
+    return companion
 
 
 def describe_destination(destination):
@@ -67,7 +76,18 @@ def write_command_prompt(destination, name, force):
         remove_destination(destination, force=True)
 
     destination.parent.mkdir(parents=True, exist_ok=True)
-    prompt_text = f"""---
+    if name == DEEP_FIX_NAME:
+        prompt_text = f"""---
+description: Execute a root-cause repair with goal and scope checkpoints
+argument-hint: [problem-or-outcome]
+---
+
+Use ${name} to analyze and repair this problem end to end. Lock the user-visible outcome, root cause, completion evidence, and non-goals; execute the highest-leverage work; and run the required phase-boundary checks without pausing for minor findings.
+
+$ARGUMENTS
+"""
+    else:
+        prompt_text = f"""---
 description: Force Reality Slap for decision pressure-testing
 argument-hint: [decision-or-context]
 ---
@@ -76,7 +96,7 @@ Use ${name} to pressure-test this decision or recommendation. Hold the best-supp
 
 $ARGUMENTS
 """
-    destination.write_text(prompt_text)
+    destination.write_text(prompt_text, encoding="utf-8")
 
 
 def copy_path(source, destination):
@@ -97,11 +117,11 @@ def copy_path(source, destination):
         shutil.copy2(source, destination)
 
 
-def install_link(source, destination, force):
+def install_link(source, destination, force, name=SKILL_NAME):
     remove_destination(destination, force)
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.symlink_to(source, target_is_directory=True)
-    return f"installed {SKILL_NAME}: {destination} -> {source}"
+    return f"installed {name}: {destination} -> {source}"
 
 
 def install_copy(source, destination, force, include_eval_tools):
@@ -123,6 +143,48 @@ def install(args):
     else:
         message = install_copy(source, destination, args.force, args.include_eval_tools)
     print(message)
+
+
+def install_deep_fix(args):
+    source = require_source(args.source)
+    companion_source = require_deep_fix_source(source)
+
+    dependency = skill_destination(args.codex_home, SKILL_NAME)
+    dependency_skill = dependency / "SKILL.md"
+    dependency_missing = not dependency.exists() and not dependency.is_symlink()
+    if args.force or dependency_missing:
+        if args.method == "link":
+            print(install_link(source, dependency, args.force, SKILL_NAME))
+        else:
+            print(install_copy(source, dependency, args.force, False))
+    elif not dependency_skill.exists():
+        raise SystemExit(
+            f"{dependency} exists but is not a valid {SKILL_NAME} install"
+        )
+
+    destination = skill_destination(args.codex_home, DEEP_FIX_NAME)
+    if args.method == "link":
+        message = install_link(
+            companion_source,
+            destination,
+            args.force,
+            DEEP_FIX_NAME,
+        )
+    else:
+        remove_destination(destination, args.force)
+        destination.mkdir(parents=True, exist_ok=True)
+        copy_path(companion_source / "SKILL.md", destination / "SKILL.md")
+        copy_path(companion_source / "agents", destination / "agents")
+        copy_path(source / "LICENSE", destination / "LICENSE")
+        message = (
+            f"installed {DEEP_FIX_NAME}: {destination} "
+            f"({describe_destination(destination)})"
+        )
+
+    command_prompt = command_prompt_destination(args.codex_home, DEEP_FIX_NAME)
+    write_command_prompt(command_prompt, DEEP_FIX_NAME, args.force)
+    print(message)
+    print(f"installed {DEEP_FIX_NAME} command: {command_prompt}")
 
 
 def install_command(args):
@@ -153,6 +215,23 @@ def uninstall_command(args):
     destination = command_prompt_destination(args.codex_home, args.name)
     remove_destination(destination, args.force)
     print(f"uninstalled {args.name} command: {destination}")
+
+
+def uninstall_deep_fix(args):
+    destination = skill_destination(args.codex_home, DEEP_FIX_NAME)
+    remove_destination(destination, args.force)
+    command_prompt = command_prompt_destination(args.codex_home, DEEP_FIX_NAME)
+    remove_destination(command_prompt, args.force)
+    print(f"uninstalled {DEEP_FIX_NAME}: {destination}")
+
+
+def status_deep_fix(args):
+    dependency = skill_destination(args.codex_home, SKILL_NAME)
+    destination = skill_destination(args.codex_home, DEEP_FIX_NAME)
+    command_prompt = command_prompt_destination(args.codex_home, DEEP_FIX_NAME)
+    print(f"{SKILL_NAME}: {describe_destination(dependency)}")
+    print(f"{DEEP_FIX_NAME}: {describe_destination(destination)}")
+    print(f"{DEEP_FIX_NAME} command: {describe_destination(command_prompt)}")
 
 
 def build_parser():
@@ -192,6 +271,36 @@ def build_parser():
     )
     uninstall_command_parser.add_argument("--force", action="store_true")
     uninstall_command_parser.set_defaults(func=uninstall_command)
+
+    deep_fix_install_parser = subparsers.add_parser(
+        "install-deep-fix",
+        parents=[common],
+    )
+    deep_fix_install_parser.add_argument(
+        "--source",
+        type=Path,
+        default=Path.cwd(),
+    )
+    deep_fix_install_parser.add_argument(
+        "--method",
+        choices=("link", "copy"),
+        default="copy",
+    )
+    deep_fix_install_parser.add_argument("--force", action="store_true")
+    deep_fix_install_parser.set_defaults(func=install_deep_fix)
+
+    deep_fix_status_parser = subparsers.add_parser(
+        "status-deep-fix",
+        parents=[common],
+    )
+    deep_fix_status_parser.set_defaults(func=status_deep_fix)
+
+    deep_fix_uninstall_parser = subparsers.add_parser(
+        "uninstall-deep-fix",
+        parents=[common],
+    )
+    deep_fix_uninstall_parser.add_argument("--force", action="store_true")
+    deep_fix_uninstall_parser.set_defaults(func=uninstall_deep_fix)
 
     return parser
 

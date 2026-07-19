@@ -109,6 +109,50 @@ python3 scripts/install_skill.py uninstall --force
 python3 scripts/install_skill.py uninstall-command --force
 ```
 
+## Deep Fix companion
+
+Use `deep-fix` when a long or repeated repair needs root-cause execution without
+goal drift or low-value scope growth. Reality Slap stays the independent
+phase-boundary judge; Deep Fix owns execution.
+
+Install the companion, its Reality Slap dependency when missing, and its command
+shim in one step:
+
+```bash
+python3 scripts/install_skill.py install-deep-fix --method copy --force
+python3 scripts/install_skill.py status-deep-fix
+```
+
+Invoke it directly as a skill:
+
+```text
+Use $deep-fix to repair this repeated provider-routing failure.
+```
+
+Or use the command shim:
+
+```text
+/prompts:deep-fix Repair this repeated provider-routing failure.
+```
+
+For Hermes, install into its native skill root and reload the command index:
+
+```bash
+python3 scripts/install_skill.py install-deep-fix --method copy --codex-home ~/.hermes --force
+```
+
+```text
+/reload-skills
+/deep-fix Repair this repeated provider-routing failure.
+```
+
+The checkpoint runs after meaningful implementation phases, not after every
+paragraph or tool call. Uninstalling the companion preserves Reality Slap:
+
+```bash
+python3 scripts/install_skill.py uninstall-deep-fix --force
+```
+
 ## Deeper docs
 
 - [Eval suite](evals/ab-test-suite.md) - what the stance-drift benchmark measures.
@@ -153,4 +197,5 @@ The gate checks the skill, tests, eval bank, install layout, command shim, and s
 - [x] Expanded 12-scenario A/B run.
 - [x] True multi-turn runner.
 - [x] Scripted hard-evidence gate.
+- [x] Explicit Deep Fix companion for drift-resistant root-cause execution.
 - [ ] Plugin packaging decision.

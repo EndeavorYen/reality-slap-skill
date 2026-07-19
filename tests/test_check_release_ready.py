@@ -46,6 +46,9 @@ class CheckReleaseReadyTests(unittest.TestCase):
         self.assertIn("copy-install", names)
         self.assertIn("installed-skill-validator", names)
         self.assertIn("command-install", names)
+        self.assertIn("deep-fix-install", names)
+        self.assertIn("installed-deep-fix-validator", names)
+        self.assertIn("deep-fix-uninstall", names)
         self.assertIn("command-uninstall", names)
         self.assertIn("copy-uninstall", names)
 
