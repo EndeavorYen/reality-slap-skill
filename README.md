@@ -146,6 +146,10 @@ python3 scripts/install_skill.py install-deep-fix --method copy --codex-home ~/.
 /deep-fix Repair this repeated provider-routing failure.
 ```
 
+On a compatible Hermes runtime, `/deep-fix <objective>` creates or reuses an
+active Hermes goal before the skill is loaded. If that atomic goal bootstrap
+fails, Hermes stops instead of running a prompt-only imitation of goal mode.
+
 The checkpoint runs after meaningful implementation phases, not after every
 paragraph or tool call. Uninstalling the companion preserves Reality Slap:
 

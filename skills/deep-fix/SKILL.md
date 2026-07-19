@@ -1,6 +1,9 @@
 ---
 name: deep-fix
 description: Use when a long, repeated, or high-impact repair keeps drifting, revisiting the same blocker, expanding into minor work, or needs root-cause execution with explicit completion proof.
+metadata:
+  hermes:
+    goal_mode: true
 ---
 
 # Deep Fix
@@ -11,9 +14,10 @@ checkpoint; do not turn it into the implementer.
 
 ## Durable Goal Contract
 
-At the start, create or refresh one durable goal when goal tools are available.
-Explicit `$deep-fix` or `/deep-fix` invocation counts as a request to set that
-goal. Reuse a matching active goal instead of creating a parallel one.
+Hermes atomically creates or reuses one durable goal before loading this skill.
+Other runtimes should create or refresh one durable goal when goal tools are
+available. Explicit `$deep-fix` or `/deep-fix` invocation counts as a request to
+set that goal. Reuse a matching active goal instead of creating a parallel one.
 
 Lock these fields before changing production behavior:
 

@@ -26,6 +26,11 @@ class DeepFixGuidanceTests(unittest.TestCase):
         self.assertIn("completion evidence", skill_text)
         self.assertIn("non-goals", skill_text)
 
+    def test_hermes_runtime_requires_goal_bootstrap(self):
+        skill_text = DEEP_FIX_SKILL.read_text(encoding="utf-8")
+
+        self.assertIn("metadata:\n  hermes:\n    goal_mode: true", skill_text)
+
     def test_repair_requires_root_cause_before_implementation(self):
         skill_text = DEEP_FIX_SKILL.read_text(encoding="utf-8").casefold()
 
@@ -62,10 +67,12 @@ class DeepFixGuidanceTests(unittest.TestCase):
 
     def test_readme_documents_the_native_hermes_slash_entry(self):
         readme_text = README.read_text(encoding="utf-8")
+        normalized_readme = " ".join(readme_text.split())
 
         self.assertIn("--codex-home ~/.hermes", readme_text)
         self.assertIn("/reload-skills", readme_text)
         self.assertIn("/deep-fix", readme_text)
+        self.assertIn("creates or reuses an active Hermes goal", normalized_readme)
 
 
 if __name__ == "__main__":
