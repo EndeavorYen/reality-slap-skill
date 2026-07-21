@@ -1,5 +1,6 @@
 __pycache__/
 *.py[cod]
+.worktrees/
 evals/results/**/child-logs/
 evals/results/**/scoring-child-logs/
 evals/results/**/run-events.jsonl
