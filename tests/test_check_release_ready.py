@@ -52,6 +52,18 @@ class CheckReleaseReadyTests(unittest.TestCase):
         self.assertIn("command-uninstall", names)
         self.assertIn("copy-uninstall", names)
 
+    def test_release_gate_has_no_second_deep_fix_command_entry(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = self.run_checker(
+                "--skip-tests",
+                "--codex-home",
+                str(Path(tmp) / "codex-home"),
+            )
+
+        report = json.loads(result.stdout)
+        names = [result["name"] for result in report["results"]]
+        self.assertNotIn("installed-deep-fix-command-prompt", names)
+
     def test_dry_run_can_skip_unit_tests(self):
         result = self.run_checker("--dry-run", "--skip-tests")
 

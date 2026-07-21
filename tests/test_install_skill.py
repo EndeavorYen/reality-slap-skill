@@ -87,7 +87,37 @@ class InstallSkillTests(unittest.TestCase):
             self.assertIn("pass --force", result.stderr)
             self.assertEqual(prompt_file.read_text(), "keep me\n")
 
-    def test_install_deep_fix_installs_companion_dependency_and_command(self):
+    def test_install_command_rejects_a_second_deep_fix_entry(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            codex_home = Path(tmp) / "codex-home"
+
+            result = self.run_installer_raw(
+                codex_home,
+                "install-command",
+                "--name",
+                "deep-fix",
+                "--force",
+            )
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("Use $deep-fix as the single entry", result.stderr)
+            self.assertFalse((codex_home / "prompts" / "deep-fix.md").exists())
+
+    def test_install_deep_fix_checks_legacy_entry_before_writing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            codex_home = Path(tmp) / "codex-home"
+            legacy_prompt = codex_home / "prompts" / "deep-fix.md"
+            legacy_prompt.parent.mkdir(parents=True)
+            legacy_prompt.write_text("legacy\n")
+
+            result = self.run_installer_raw(codex_home, "install-deep-fix")
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("pass --force to remove it", result.stderr)
+            self.assertFalse((codex_home / "skills" / "deep-fix").exists())
+            self.assertEqual(legacy_prompt.read_text(), "legacy\n")
+
+    def test_install_deep_fix_installs_one_skill_entry(self):
         with tempfile.TemporaryDirectory() as tmp:
             codex_home = Path(tmp) / "codex-home"
 
@@ -99,17 +129,15 @@ class InstallSkillTests(unittest.TestCase):
                 "--force",
             )
 
-            reality_slap = codex_home / "skills" / "reality-slap"
             deep_fix = codex_home / "skills" / "deep-fix"
-            prompt_file = codex_home / "prompts" / "deep-fix.md"
             self.assertIn("installed deep-fix", result.stdout)
-            self.assertTrue((reality_slap / "SKILL.md").exists())
+            self.assertFalse((codex_home / "skills" / "reality-slap").exists())
             self.assertTrue((deep_fix / "SKILL.md").exists())
             self.assertTrue((deep_fix / "agents" / "openai.yaml").exists())
             self.assertTrue((deep_fix / "LICENSE").exists())
-            self.assertIn("Use $deep-fix", prompt_file.read_text())
+            self.assertFalse((codex_home / "prompts" / "deep-fix.md").exists())
 
-    def test_force_install_deep_fix_refreshes_reality_slap_dependency(self):
+    def test_force_install_deep_fix_does_not_touch_reality_slap(self):
         with tempfile.TemporaryDirectory() as tmp:
             codex_home = Path(tmp) / "codex-home"
             dependency_skill = (
@@ -126,14 +154,14 @@ class InstallSkillTests(unittest.TestCase):
                 "--force",
             )
 
-            self.assertIn(
-                "Execution Integrity Check",
-                dependency_skill.read_text(),
-            )
+            self.assertEqual(dependency_skill.read_text(), "stale reality slap\n")
 
     def test_uninstall_deep_fix_preserves_reality_slap_dependency(self):
         with tempfile.TemporaryDirectory() as tmp:
             codex_home = Path(tmp) / "codex-home"
+            dependency_skill = codex_home / "skills" / "reality-slap" / "SKILL.md"
+            dependency_skill.parent.mkdir(parents=True)
+            dependency_skill.write_text("keep me\n")
             self.run_installer(
                 codex_home,
                 "install-deep-fix",
@@ -149,7 +177,7 @@ class InstallSkillTests(unittest.TestCase):
             )
 
             self.assertIn("uninstalled deep-fix", result.stdout)
-            self.assertTrue((codex_home / "skills" / "reality-slap").exists())
+            self.assertEqual(dependency_skill.read_text(), "keep me\n")
             self.assertFalse((codex_home / "skills" / "deep-fix").exists())
             self.assertFalse((codex_home / "prompts" / "deep-fix.md").exists())
 

@@ -1,6 +1,6 @@
 interface:
   display_name: "Deep Fix"
-  short_description: "Execute root-cause repairs without scope drift"
-  default_prompt: "Use $deep-fix to repair this problem end to end with phase checkpoints."
+  short_description: "Fix one problem without scope drift"
+  default_prompt: "Use $deep-fix to fix one problem with the smallest correct patch."
 policy:
   allow_implicit_invocation: false

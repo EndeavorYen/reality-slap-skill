@@ -1,92 +1,81 @@
 ---
 name: deep-fix
-description: Use when a long, repeated, or high-impact repair keeps drifting, revisiting the same blocker, expanding into minor work, or needs root-cause execution with explicit completion proof.
+description: Use only when explicitly invoked to fix one problem with a smallest-patch, root-cause workflow and a hard stop after two no-evidence loops.
 metadata:
   execution:
     durable_goal:
       required: true
       constraints:
         - >-
-          After each meaningful phase boundary, check goal drift and over-design,
-          perform a concise self-review, and correct course before continuing when needed.
+          Fix one user-visible problem with the smallest correct patch.
         - >-
-          Each checkpoint must state Goal drift, Over-design, User-visible progress,
-          Weakest remaining proof, Decision, and Next.
+          Stop after two consecutive repair loops add no new evidence.
 ---
 
 # Deep Fix
 
-Use this skill only when explicitly invoked. It is an execution workflow for a
-real repair, not a longer planning response. Keep Reality Slap as the independent
-checkpoint; do not turn it into the implementer.
+Use this skill only when explicitly invoked as `$deep-fix`. It is one bounded
+workflow for one real repair, not a broad cleanup or a longer planning response.
+It is the complete repair workflow. Do not load overlapping repair workflow skills
+unless the user explicitly invoked them or higher-priority instructions require it.
 
-## Durable Goal Contract
+## One Repair Contract
 
 Runtimes with durable-goal support should atomically create or reuse one goal
-before loading this skill. The frontmatter contract is runtime-neutral; hosts
-may implement it directly or follow these instructions through their own goal
-tools. Explicit `$deep-fix` or `/deep-fix` invocation counts as a request to set
-that goal. Reuse a matching active goal instead of creating a parallel one.
+before loading this skill. Explicit `$deep-fix` invocation counts as a request
+to set that goal. Reuse a matching active goal instead of creating another one.
 
-Lock these fields before changing production behavior:
+Fix one user-visible problem. Before changing production behavior, lock:
 
-- **User-visible outcome**: what will become observably better.
-- **Current evidence**: the smallest reproduction, logs, or artifact proving the defect.
-- **Completion evidence**: focused test, wider regression check, runtime or live smoke, and deliverable when applicable.
-- **Non-goals**: adjacent improvements that do not need to ship for this outcome.
+- the problem the user will observe as fixed;
+- the smallest reproduction or current evidence;
+- the focused test or check that will prove completion;
+- unrelated work that must not be changed.
 
-Do not redefine success around the easiest passing subset.
+Do not broaden the goal. Report unrelated findings without fixing them.
 
-## Root Cause Before Repair
+## Root Cause Before Repair: One Pass
 
-1. Reproduce the failure with the smallest representative case.
-2. Trace it to the owning layer and compare the last known-good path when available.
-3. State the root-cause hypothesis and the evidence that could disprove it.
-4. Write or update the smallest failing behavior test.
-5. Implement the smallest production change that addresses the owning cause.
+Keep a straight-line repair to three action groups:
+
+1. In one read-only action, inspect only the named or owning files and reproduce
+   the failure. Reuse an existing focused reproduction when one is provided.
+   Use the provided reproduction command exactly. If none is provided, select one
+   runner from the test file; do not probe alternatives. Do not enumerate unrelated
+   files. Identify the root-cause evidence and what would disprove it.
+2. Make the smallest correct production patch for that cause. Report unrelated
+   findings without fixing them.
+3. In one verification action, run the same focused check once, inspect the diff,
+   and stop. Do not repeat an unchanged passing check or reread unchanged evidence.
+
+This runs the focused proof once before and once after the patch.
+
+Run the full test suite only when it is necessary for the changed behavior or
+repository release policy, and run it once. Prevent generated test artifacts when
+the supplied runner supports it. Do not spend a repair loop cleaning harmless
+generated artifacts.
 
 Do not present a workaround as a root-cause fix. A temporary mitigation must be
-named as temporary and must not close the goal.
+named as temporary and must not close the goal. Do not silently add retries,
+abstractions, compatibility work, dependency upgrades, public API changes, or
+fixes for pre-existing failures.
 
-## Execution Loop
+Stop when two consecutive repair loops add no new evidence or effective change.
+Disproving a root-cause hypothesis counts as new evidence; rereading files,
+restating the hypothesis, and rerunning an unchanged check do not.
 
-- Work on the highest-leverage unresolved requirement.
-- Keep at most one implementation phase active.
-- Park minor findings unless they block correctness, proof, or the user-visible outcome.
-- Prefer an existing extension point over new framework machinery.
-- Continue autonomously through implementation and verification unless approval,
-  credentials, safety, or an irreversible action requires the user.
+## Exception Checkpoint
 
-## Phase Boundary Checkpoint
-
-Apply Reality Slap's **Execution Integrity Check** after a meaningful phase, not
-after every paragraph, tool call, or tiny edit. Required boundaries are:
-
-- after the root cause is supported;
-- after the first behavior change passes its focused test;
-- before adding scope, retries, abstractions, or compatibility layers;
-- before claiming completion.
-
-Use this compact checkpoint:
+Do not emit a checkpoint on a straight-line repair. Emit one only before entering
+a second repair loop, or when stopping for a blocker or scope drift:
 
 ```text
-Goal drift: No / Yes - <evidence>
-Over-design: No / Yes - <work to remove or avoid>
-User-visible progress: <what measurably improved>
-Weakest remaining proof: <highest-risk gap>
-Decision: Continue / Correct / Stop
-Next: <single highest-leverage action>
+Progress: <new evidence or effective change> | Scope: OK / Drift | Decision: Continue / Stop | Next: <one action>
 ```
 
-If the decision is `Correct`, update the plan and immediately act on the
-correction. Do not ask the user to repeat the command.
+If scope is `Drift`, stop and report what would require the user to expand the
+goal.
 
-## Stop And Completion Rules
-
-- Stop expanding when two repair loops add no new quality, reliability, or proof.
-- Escalate a real setup or authorization blocker with the exact missing prerequisite.
-- Do not mark complete from intent, documents, stale artifacts, or a partial green test.
-- Completion requires current evidence for every locked completion condition.
-- Run the focused test, relevant wider suite, and the smallest practical runtime
-  or live smoke when the behavior depends on live wiring.
-- Report the outcome, proof, and any residual risk briefly; do not narrate every attempt.
+Complete only when the focused proof is current and the user-visible problem is
+fixed. Report the fix, proof, and residual risk briefly. If blocked, report the
+exact missing prerequisite. Do not narrate every attempt.

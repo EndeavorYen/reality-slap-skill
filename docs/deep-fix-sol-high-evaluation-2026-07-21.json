@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "date": "2026-07-21",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "high",
+  "skill_sha256": "b37cf1446298594c8e0bbed8583168a4375371ec2048f3557079ddf4602160d7",
+  "paired_runs": [
+    {
+      "run": 1,
+      "baseline": {"thread_id": "019f8539-5ed0-7a50-af02-1d364a800aa1", "wall_seconds": 70.681, "input_tokens": 274683, "cached_input_tokens": 235520, "output_tokens": 2475, "reasoning_tokens": 633, "correct": true, "changed_files": ["pricing.py"], "inspected_unrelated_legacy": true, "ran_unrelated_legacy": true},
+      "deep_fix": {"thread_id": "019f8539-5bef-7c60-8400-6c3783887d95", "wall_seconds": 46.670, "input_tokens": 133299, "cached_input_tokens": 102400, "output_tokens": 1701, "reasoning_tokens": 893, "correct": true, "changed_files": ["pricing.py"], "inspected_unrelated_legacy": false, "ran_unrelated_legacy": false}
+    },
+    {
+      "run": 2,
+      "baseline": {"thread_id": "019f853b-00e7-7133-afa2-6b8e63e46679", "wall_seconds": 67.936, "input_tokens": 247374, "cached_input_tokens": 219136, "output_tokens": 1958, "reasoning_tokens": 513, "correct": true, "changed_files": ["pricing.py"], "inspected_unrelated_legacy": true, "ran_unrelated_legacy": false},
+      "deep_fix": {"thread_id": "019f853a-f505-7813-8dbe-799b87782f50", "wall_seconds": 43.731, "input_tokens": 132206, "cached_input_tokens": 102400, "output_tokens": 1253, "reasoning_tokens": 614, "correct": true, "changed_files": ["pricing.py"], "inspected_unrelated_legacy": false, "ran_unrelated_legacy": false}
+    },
+    {
+      "run": 3,
+      "baseline": {"thread_id": "019f853c-bf3c-7973-bab5-0616c96d0819", "wall_seconds": 73.555, "input_tokens": 294317, "cached_input_tokens": 252928, "output_tokens": 2690, "reasoning_tokens": 795, "correct": true, "changed_files": ["pricing.py"], "inspected_unrelated_legacy": true, "ran_unrelated_legacy": false},
+      "deep_fix": {"thread_id": "019f853c-a794-7f91-b601-9600ee6081d1", "wall_seconds": 40.402, "input_tokens": 132935, "cached_input_tokens": 102400, "output_tokens": 1533, "reasoning_tokens": 617, "correct": true, "changed_files": ["pricing.py"], "inspected_unrelated_legacy": false, "ran_unrelated_legacy": false}
+    }
+  ],
+  "median": {
+    "baseline": {"wall_seconds": 70.681, "input_tokens": 274683, "output_tokens": 2475, "reasoning_tokens": 633},
+    "deep_fix": {"wall_seconds": 43.731, "input_tokens": 132935, "output_tokens": 1533, "reasoning_tokens": 617},
+    "deep_fix_reduction_percent": {"wall_seconds": 38.13, "input_tokens": 51.60, "output_tokens": 38.06, "reasoning_tokens": 2.53}
+  },
+  "blocked_smoke": {
+    "thread_id": "019f8540-73b9-7ea2-9605-ea1bcb584ffa",
+    "input_tokens": 77877,
+    "cached_input_tokens": 59648,
+    "output_tokens": 1107,
+    "reasoning_tokens": 673,
+    "changed_files": [],
+    "exact_blocker_reported": true
+  }
+}
