@@ -3,6 +3,7 @@
 [![Codex Skill](https://img.shields.io/badge/codex-skill-black)](SKILL.md)
 [![Benchmark](https://img.shields.io/badge/benchmark-strong--pass-brightgreen)](#proof-without-hype)
 [![Hard Gate](https://img.shields.io/badge/hard_gate-8%2F8-teal)](#proof-without-hype)
+[![Deep Fix A/B](https://img.shields.io/badge/deep_fix-38%25_faster-blueviolet)](#deep-fix-companion)
 [![MIT License](https://img.shields.io/badge/license-MIT-gray)](LICENSE)
 
 > **TL;DR** - Reality Slap keeps Codex recommendations anchored to evidence instead of the user's latest framing. It returns a clear stance, the next move, the main risk, and the evidence that would justify changing course.
@@ -12,6 +13,16 @@
 </p>
 
 **Keep the decision tied to evidence when the framing changes.**
+
+## Deep repair without deep wandering.
+
+Deep Fix gives long-running repairs a bounded fast path: one problem, three action groups, then stop.
+
+| **38% faster** | **52% fewer input tokens** | **3/3 correct one-file repairs** | **0 file changes when blocked** |
+|---|---|---|---|
+| Median wall time | Median input context | Same correct minimal patch | Exact blocker, no fake fix |
+
+_Controlled `gpt-5.6-sol`, `high` fixture with three paired runs. [See the evidence](#deep-fix-companion)._
 
 ## See the difference
 
@@ -111,7 +122,8 @@ python3 scripts/install_skill.py uninstall-command --force
 
 ## Deep Fix companion
 
-Use `deep-fix` when a repair needs root-cause execution without scope drift.
+Use `deep-fix` when a repair needs root-cause execution without scope drift—or
+when “keep investigating” is becoming the problem.
 
 Install it as one skill entry:
 
@@ -126,14 +138,39 @@ Use the single canonical entry:
 Use $deep-fix <problem>
 ```
 
+The straight-line path uses three action groups:
+
+1. inspect the owning path and run the provided focused reproduction;
+2. make the smallest root-cause production patch;
+3. rerun the same proof, inspect the diff, and stop.
+
+### What the Sol high A/B showed
+
+| Controlled Sol high median | Baseline | Deep Fix | Change |
+|---|---:|---:|---:|
+| Wall time | 70.7s | 43.7s | **38.1% faster** |
+| Input tokens | 274,683 | 132,935 | **51.6% fewer** |
+| Correct one-file repair | 3/3 | 3/3 | Same correctness |
+
+In the controlled fixture, Deep Fix reached the same correct one-line patch while
+avoiding unrelated legacy work. In a separate blocked-path smoke, the permitted
+file could not affect a missing external prerequisite; Deep Fix reported the exact
+blocker, ran no full suite, and changed no files.
+
+[Read the full Deep Fix evaluation](docs/deep-fix-sol-high-evaluation-2026-07-21.md)
+or inspect the [machine-readable results](docs/deep-fix-sol-high-evaluation-2026-07-21.json).
+
+This is evidence for the bounded fast path, not a universal speed guarantee. The
+benchmark used one compact controlled fixture with three paired runs; multi-module
+and flaky failures are not yet validated.
+
 On a runtime that supports the neutral durable-goal metadata, Deep Fix creates
 or reuses an active durable goal before the skill is loaded. The stored goal
 includes its phase checkpoint discipline; a host should stop if atomic goal
 bootstrap fails instead of running a prompt-only imitation of goal mode.
 
-It fixes one user-visible problem with the smallest correct patch, runs focused
-verification first, and stops after two consecutive repair loops add no new
-evidence. Unrelated findings are reported without being fixed.
+Outside the straight-line path, it still stops after two consecutive repair loops
+add no new evidence. Unrelated findings are reported without being fixed.
 
 Uninstalling Deep Fix does not change an existing Reality Slap installation:
 

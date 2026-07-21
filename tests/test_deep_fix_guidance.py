@@ -95,6 +95,29 @@ class DeepFixGuidanceTests(unittest.TestCase):
         self.assertNotIn("/prompts:deep-fix", readme_text)
         self.assertNotIn("/deep-fix Repair", readme_text)
 
+    def test_readme_surfaces_deep_fix_benchmark_without_overclaiming(self):
+        readme_text = README.read_text(encoding="utf-8")
+
+        for proof in (
+            "Deep repair without deep wandering.",
+            "38% faster",
+            "52% fewer input tokens",
+            "3/3 correct one-file repairs",
+            "0 file changes when blocked",
+            "three action groups",
+            "controlled fixture",
+        ):
+            self.assertIn(proof, readme_text)
+
+        self.assertIn(
+            "docs/deep-fix-sol-high-evaluation-2026-07-21.md",
+            readme_text,
+        )
+        self.assertIn(
+            "docs/deep-fix-sol-high-evaluation-2026-07-21.json",
+            readme_text,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

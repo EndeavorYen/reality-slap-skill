@@ -28,7 +28,7 @@
 - Consumes: `README`, the existing `Path` constant for `README.md`
 - Produces: regression assertions for the Deep Fix proof strip, evidence links, and claim boundary
 
-- [ ] **Step 1: Write the failing README assertions**
+- [x] **Step 1: Write the failing README assertions**
 
 Add this test to `DeepFixGuidanceTests`:
 
@@ -57,7 +57,7 @@ def test_readme_surfaces_deep_fix_benchmark_without_overclaiming(self):
     )
 ```
 
-- [ ] **Step 2: Run the focused test and verify it fails**
+- [x] **Step 2: Run the focused test and verify it fails**
 
 Run:
 
@@ -77,7 +77,7 @@ Expected: FAIL because the new proof-strip copy and evidence links are absent fr
 - Consumes: the committed evaluation values in `docs/deep-fix-sol-high-evaluation-2026-07-21.{md,json}`
 - Produces: a scan-friendly README proof strip and a detailed Deep Fix evidence section
 
-- [ ] **Step 1: Add the hero-adjacent proof strip**
+- [x] **Step 1: Add the hero-adjacent proof strip**
 
 Insert after the hero positioning line:
 
@@ -93,7 +93,7 @@ Deep Fix gives long-running repairs a bounded fast path: one problem, three acti
 _Controlled `gpt-5.6-sol`, `high` fixture; three paired runs. [See the evidence](#deep-fix-companion)._
 ```
 
-- [ ] **Step 2: Replace the Deep Fix explanation with workflow and results**
+- [x] **Step 2: Replace the Deep Fix explanation with workflow and results**
 
 Keep the install and invocation commands, then add:
 
@@ -114,7 +114,7 @@ The straight-line path uses three action groups:
 Follow the table with the blocked-path result, the controlled-fixture limitation,
 and links to both evaluation artifacts.
 
-- [ ] **Step 3: Run the focused test and verify it passes**
+- [x] **Step 3: Run the focused test and verify it passes**
 
 Run:
 
@@ -134,7 +134,7 @@ Expected: 11 tests pass.
 - Consumes: the completed README and guidance test changes
 - Produces: a release-gate result and a reviewable Git commit
 
-- [ ] **Step 1: Run the complete release gate**
+- [x] **Step 1: Run the complete release gate**
 
 Run:
 
@@ -144,7 +144,7 @@ rtk python3 scripts/check_release_ready.py
 
 Expected: `ok: true` and 140 unit tests passing.
 
-- [ ] **Step 2: Review claims and diff hygiene**
+- [x] **Step 2: Review claims and diff hygiene**
 
 Run:
 
@@ -155,7 +155,7 @@ rtk git diff -- README.md tests/test_deep_fix_guidance.py
 
 Expected: no whitespace errors; every headline number matches the committed evaluation report; `.agent-lab/` remains untouched.
 
-- [ ] **Step 3: Commit the README proof update**
+- [x] **Step 3: Commit the README proof update**
 
 Run:
 
