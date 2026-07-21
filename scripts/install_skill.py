@@ -76,18 +76,7 @@ def write_command_prompt(destination, name, force):
         remove_destination(destination, force=True)
 
     destination.parent.mkdir(parents=True, exist_ok=True)
-    if name == DEEP_FIX_NAME:
-        prompt_text = f"""---
-description: Execute a root-cause repair with goal and scope checkpoints
-argument-hint: [problem-or-outcome]
----
-
-Use ${name} to analyze and repair this problem end to end. Lock the user-visible outcome, root cause, completion evidence, and non-goals; execute the highest-leverage work; and run the required phase-boundary checks without pausing for minor findings.
-
-$ARGUMENTS
-"""
-    else:
-        prompt_text = f"""---
+    prompt_text = f"""---
 description: Force Reality Slap for decision pressure-testing
 argument-hint: [decision-or-context]
 ---
@@ -148,18 +137,11 @@ def install(args):
 def install_deep_fix(args):
     source = require_source(args.source)
     companion_source = require_deep_fix_source(source)
-
-    dependency = skill_destination(args.codex_home, SKILL_NAME)
-    dependency_skill = dependency / "SKILL.md"
-    dependency_missing = not dependency.exists() and not dependency.is_symlink()
-    if args.force or dependency_missing:
-        if args.method == "link":
-            print(install_link(source, dependency, args.force, SKILL_NAME))
-        else:
-            print(install_copy(source, dependency, args.force, False))
-    elif not dependency_skill.exists():
+    legacy_command = command_prompt_destination(args.codex_home, DEEP_FIX_NAME)
+    if (legacy_command.exists() or legacy_command.is_symlink()) and not args.force:
         raise SystemExit(
-            f"{dependency} exists but is not a valid {SKILL_NAME} install"
+            f"{legacy_command} is a legacy deep-fix command; "
+            "pass --force to remove it"
         )
 
     destination = skill_destination(args.codex_home, DEEP_FIX_NAME)
@@ -181,13 +163,13 @@ def install_deep_fix(args):
             f"({describe_destination(destination)})"
         )
 
-    command_prompt = command_prompt_destination(args.codex_home, DEEP_FIX_NAME)
-    write_command_prompt(command_prompt, DEEP_FIX_NAME, args.force)
+    remove_destination(legacy_command, args.force)
     print(message)
-    print(f"installed {DEEP_FIX_NAME} command: {command_prompt}")
 
 
 def install_command(args):
+    if args.name == DEEP_FIX_NAME:
+        raise SystemExit("Use $deep-fix as the single entry; no command shim is installed")
     destination = command_prompt_destination(args.codex_home, args.name)
     write_command_prompt(destination, args.name, args.force)
     print(f"installed {args.name} command: {destination}")
@@ -226,12 +208,8 @@ def uninstall_deep_fix(args):
 
 
 def status_deep_fix(args):
-    dependency = skill_destination(args.codex_home, SKILL_NAME)
     destination = skill_destination(args.codex_home, DEEP_FIX_NAME)
-    command_prompt = command_prompt_destination(args.codex_home, DEEP_FIX_NAME)
-    print(f"{SKILL_NAME}: {describe_destination(dependency)}")
     print(f"{DEEP_FIX_NAME}: {describe_destination(destination)}")
-    print(f"{DEEP_FIX_NAME} command: {describe_destination(command_prompt)}")
 
 
 def build_parser():

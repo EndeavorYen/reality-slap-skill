@@ -22,12 +22,6 @@ COMMAND_PROMPT_REQUIRED_SNIPPETS = (
     "$ARGUMENTS",
 )
 DEEP_FIX_RUNTIME_REQUIRED_FILES = ("SKILL.md", "agents/openai.yaml", "LICENSE")
-DEEP_FIX_COMMAND_PROMPT_REQUIRED_SNIPPETS = (
-    "description:",
-    "argument-hint:",
-    "Use $deep-fix",
-    "$ARGUMENTS",
-)
 
 
 def command_record(name, command):
@@ -342,14 +336,6 @@ def run_release_gate(args):
                         skill_name="deep-fix",
                         required_files=DEEP_FIX_RUNTIME_REQUIRED_FILES,
                         result_name="installed-deep-fix-layout",
-                    )
-                )
-                results.append(
-                    inspect_command_prompt(
-                        codex_home,
-                        command_name="deep-fix",
-                        required_snippets=DEEP_FIX_COMMAND_PROMPT_REQUIRED_SNIPPETS,
-                        result_name="installed-deep-fix-command-prompt",
                     )
                 )
         failed = [result for result in results if not result["ok"]]

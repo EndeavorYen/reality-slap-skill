@@ -111,39 +111,19 @@ python3 scripts/install_skill.py uninstall-command --force
 
 ## Deep Fix companion
 
-Use `deep-fix` when a long or repeated repair needs root-cause execution without
-goal drift or low-value scope growth. Reality Slap stays the independent
-phase-boundary judge; Deep Fix owns execution.
+Use `deep-fix` when a repair needs root-cause execution without scope drift.
 
-Install the companion, its Reality Slap dependency when missing, and its command
-shim in one step:
+Install it as one skill entry:
 
 ```bash
 python3 scripts/install_skill.py install-deep-fix --method copy --force
 python3 scripts/install_skill.py status-deep-fix
 ```
 
-Invoke it directly as a skill:
+Use the single canonical entry:
 
 ```text
-Use $deep-fix to repair this repeated provider-routing failure.
-```
-
-Or use the command shim:
-
-```text
-/prompts:deep-fix Repair this repeated provider-routing failure.
-```
-
-For Hermes, install into its native skill root and reload the command index:
-
-```bash
-python3 scripts/install_skill.py install-deep-fix --method copy --codex-home ~/.hermes --force
-```
-
-```text
-/reload-skills
-/deep-fix Repair this repeated provider-routing failure.
+Use $deep-fix <problem>
 ```
 
 On a runtime that supports the neutral durable-goal metadata, Deep Fix creates
@@ -151,8 +131,11 @@ or reuses an active durable goal before the skill is loaded. The stored goal
 includes its phase checkpoint discipline; a host should stop if atomic goal
 bootstrap fails instead of running a prompt-only imitation of goal mode.
 
-The checkpoint runs after meaningful implementation phases, not after every
-paragraph or tool call. Uninstalling the companion preserves Reality Slap:
+It fixes one user-visible problem with the smallest correct patch, runs focused
+verification first, and stops after two consecutive repair loops add no new
+evidence. Unrelated findings are reported without being fixed.
+
+Uninstalling Deep Fix does not change an existing Reality Slap installation:
 
 ```bash
 python3 scripts/install_skill.py uninstall-deep-fix --force
