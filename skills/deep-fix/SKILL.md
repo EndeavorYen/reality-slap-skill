@@ -46,7 +46,11 @@ For the current ledger item, keep a straight-line repair to three action groups:
    Use the provided reproduction command exactly. If none is provided, select one
    runner from the test file; do not probe alternatives. Do not enumerate unrelated
    files. Identify the root-cause evidence and what would disprove it.
-2. Make the smallest correct production patch for that cause.
+   If the evidence does not reproduce the current item, make no production
+   change, mark it `not-reproduced`, record the evidence, and continue to the next
+   independent item.
+2. For a reproduced item, make the smallest correct production patch for that
+   cause.
 3. In one verification action, run the same focused check once, inspect the diff,
    assign the item status, and continue to the next independent item. Do not
    repeat an unchanged passing check or reread unchanged evidence.
@@ -62,9 +66,10 @@ cleaning harmless generated artifacts.
 
 ## Scope Admission Gate
 
-Change unlisted work only when evidence proves it is a required dependency of a
-ledger item because it is the shared root cause, prevents a correct result or a
-security failure or data loss, or is required for a meaningful completion proof.
+Change unlisted work only when evidence proves it is a required dependency of the
+current named ledger outcome because omitting it would make the current named
+outcome incorrect, directly introduce or worsen a security or data-loss defect in
+that outcome, or make that outcome's completion proof meaningless.
 
 Keep cosmetic cleanup, naming changes, abstractions, dependency upgrades,
 pre-existing failures, speculative performance work, and architectural redesign

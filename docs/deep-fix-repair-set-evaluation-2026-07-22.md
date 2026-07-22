@@ -21,9 +21,24 @@ fixtures, failing `unittest` checks, and one unrelated untested legacy helper.
 A fresh `gpt-5.6-sol` agent at `high` reasoning read the candidate Deep Fix skill
 and received only the workspace, ordered problem list, and focused command. The
 prompt did not identify the expected production patch or planted minor helper.
+The shared-outcome scenario used an opaque `case-b` workspace and task name so
+the agent had to discover the common helper from raw code and tests; an earlier
+run whose workspace name exposed the scenario classification was discarded.
 
 The reviewer then ignored the agent's self-report and independently checked the
 Git diff, focused test output, test-file integrity, and planted helper.
+
+The [machine-readable record](deep-fix-repair-set-evaluation-2026-07-22.json)
+publishes each exact prompt, focused command, task name, baseline commit, returned
+ordered ledger, and independent review evidence. The final artifacts prove the
+requested outcomes and scope preservation; internal tool-call order was not
+instrumented and is therefore not claimed as independently observed.
+
+| Selected task | Baseline | Focused command |
+|---|---|---|
+| `/root/eval_independent` | `c79ba6e` | `python3 -m unittest test_app` |
+| `/root/eval_case_b` | `2e0837d` | `python3 -m unittest test_catalog` |
+| `/root/eval_blocked_continue` | `e1f9c71` | three named `test_service` item commands |
 
 ## Results
 

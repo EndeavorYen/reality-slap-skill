@@ -1,3 +1,4 @@
+import json
 import unittest
 from pathlib import Path
 
@@ -7,6 +8,7 @@ DEEP_FIX_SKILL = ROOT / "skills" / "deep-fix" / "SKILL.md"
 REALITY_SLAP_SKILL = ROOT / "SKILL.md"
 DEEP_FIX_AGENT = ROOT / "skills" / "deep-fix" / "agents" / "openai.yaml"
 README = ROOT / "README.md"
+REPAIR_SET_EVAL = ROOT / "docs" / "deep-fix-repair-set-evaluation-2026-07-22.json"
 
 
 class DeepFixGuidanceTests(unittest.TestCase):
@@ -40,13 +42,29 @@ class DeepFixGuidanceTests(unittest.TestCase):
         self.assertIn("same prerequisite blocks the remaining ledger", skill_text)
 
     def test_unlisted_work_requires_proven_scope_admission(self):
-        skill_text = DEEP_FIX_SKILL.read_text(encoding="utf-8").casefold()
+        skill_text = " ".join(
+            DEEP_FIX_SKILL.read_text(encoding="utf-8").casefold().split()
+        )
 
         self.assertIn("required dependency", skill_text)
-        self.assertIn("shared root cause", skill_text)
-        self.assertIn("security failure or data loss", skill_text)
+        self.assertIn("omitting it would make the current named outcome incorrect", skill_text)
+        self.assertIn(
+            "directly introduce or worsen a security or data-loss defect in that outcome",
+            skill_text,
+        )
+        self.assertIn("make that outcome's completion proof meaningless", skill_text)
         self.assertIn("when necessity is ambiguous, do not fix it", skill_text)
         self.assertIn("architectural redesign", skill_text)
+
+    def test_not_reproduced_item_is_not_patched_speculatively(self):
+        skill_text = " ".join(
+            DEEP_FIX_SKILL.read_text(encoding="utf-8").casefold().split()
+        )
+
+        self.assertIn("if the evidence does not reproduce the current item", skill_text)
+        self.assertIn("make no production change", skill_text)
+        self.assertIn("mark it `not-reproduced`", skill_text)
+        self.assertIn("continue to the next independent item", skill_text)
 
     def test_runtime_neutral_metadata_requires_a_durable_goal(self):
         skill_text = DEEP_FIX_SKILL.read_text(encoding="utf-8")
@@ -164,6 +182,18 @@ class DeepFixGuidanceTests(unittest.TestCase):
             "docs/deep-fix-repair-set-evaluation-2026-07-22.json",
             readme_text,
         )
+
+        evaluation = json.loads(REPAIR_SET_EVAL.read_text(encoding="utf-8"))
+        self.assertEqual(evaluation["summary"]["scenarios_passed"], 3)
+        self.assertEqual(evaluation["summary"]["fixable_outcomes_fixed"], 8)
+        self.assertEqual(evaluation["summary"]["exact_blockers_reported"], 1)
+        self.assertEqual(evaluation["summary"]["planted_minor_changes"], 0)
+        self.assertEqual(len(evaluation["scenarios"]), 3)
+        for scenario in evaluation["scenarios"]:
+            self.assertIn("exact_prompt", scenario)
+            self.assertIn("focused_commands", scenario)
+            self.assertIn("agent_result", scenario)
+            self.assertIn("review_evidence", scenario)
 
 
 if __name__ == "__main__":

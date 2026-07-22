@@ -17,8 +17,8 @@
 
 ## Deep repair without deep wandering.
 
-Deep Fix now freezes an ordered repair set, fixes each requested outcome, and
-stops before minor cleanup becomes the mission.
+Deep Fix now freezes an ordered repair set, processes each requested outcome,
+fixes each fixable one, and stops before minor cleanup becomes the mission.
 
 | **3/3 repair-set scenarios** | **8/8 fixable outcomes** | **1/1 exact blocker** | **0/3 planted minor changes** |
 |---|---|---|---|
@@ -151,9 +151,10 @@ each item in user order with three action groups:
 
 An independently blocked item does not prevent later requested items from being
 fixed. Unlisted work is changed only when evidence proves it is a required
-dependency for correctness, safety, data integrity, or meaningful verification.
-Minor cleanup, speculative abstraction, upgrades, and architectural redesign stay
-report-only.
+dependency of the current named outcome: omitting it would make that outcome
+incorrect, directly introduce or worsen its security or data-loss defect, or make
+its completion proof meaningless. Minor cleanup, speculative abstraction,
+upgrades, and architectural redesign stay report-only.
 
 | Fresh-agent repair-set proof | Result |
 |---|---:|
@@ -166,10 +167,11 @@ report-only.
 [Read the repair-set forward test](docs/deep-fix-repair-set-evaluation-2026-07-22.md)
 or inspect its [machine-readable results](docs/deep-fix-repair-set-evaluation-2026-07-22.json).
 
-This fresh-agent behavioral forward test covers ordered completion and scope
-control on three compact Python fixtures. It does not prove universal behavior
-for long queues, multi-module repositories, flaky failures, or live network
-dependencies.
+This fresh-agent behavioral forward test covers final multi-item completion and
+scope control on three compact Python fixtures. Exact prompts and returned ordered
+ledgers are published, but internal tool-call order was not independently
+instrumented. It does not prove universal behavior for long queues, multi-module
+repositories, flaky failures, or live network dependencies.
 
 ### What the earlier Sol high A/B showed
 
