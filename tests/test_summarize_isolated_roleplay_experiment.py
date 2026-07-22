@@ -181,6 +181,27 @@ class SummarizeIsolatedRoleplayExperimentTests(unittest.TestCase):
             self.assertIn(f"{metrics['gold_correct_cases']}/1", markdown)
         self.assertIn("not-estimable", markdown)
 
+    def test_negative_report_explains_isolation_and_skill_claim_boundaries(self):
+        summary = summarize(self.workspace)
+        summary["verdict"] = "isolation-not-supported"
+        summary["thresholds"]["isolation_diversity"]["passed"] = False
+        summary["skill_effect_under_isolation_verdict"] = "modest-secondary-gain"
+        summary["guardrails"]["passed"] = False
+        summary["judge_disagreements"] = [
+            {
+                "scenario_id": "SD-01",
+                "condition": "shared-control",
+                "fields": ["harmful_compromise"],
+            }
+        ]
+
+        markdown = render_markdown(summary)
+
+        self.assertIn("Separate calls did not increase substantive stance diversity", markdown)
+        self.assertIn("Reality Slap did not increase stance diversity under isolation", markdown)
+        self.assertIn("Guardrails: **FAIL**", markdown)
+        self.assertIn("harmful-compromise contrast is judge-disputed", markdown)
+
     def test_unknown_condition_in_mapping_is_rejected(self):
         path = self.workspace / "judge-mappings.json"
         payload = json.loads(path.read_text(encoding="utf-8"))

@@ -377,6 +377,17 @@ def summarize(workspace):
     else:
         skill_verdict = "no-demonstrated-gain"
     disagreements = judge_disagreements(decoded)
+    if verdict == "isolation-not-supported":
+        claim_boundary = (
+            "Separate calls did not increase substantive first-round stance diversity in this "
+            "12-case, single-model, medium-effort run. This does not prove that isolation can "
+            "never help under other models, prompts, domains, or replications."
+        )
+    else:
+        claim_boundary = (
+            "Any positive isolation finding applies only to substantive first-round stance "
+            "diversity in this 12-case, single-model, medium-effort setup."
+        )
     return {
         "experiment_id": manifest["experiment_id"],
         "status": "complete",
@@ -403,10 +414,7 @@ def summarize(workspace):
             "The medium-effort run is not a controlled comparison with the earlier high-effort pilot.",
             "Separate calls demonstrate only observed context isolation, not human-like independence.",
         ],
-        "claim_boundary": (
-            "Any positive isolation finding applies only to substantive first-round stance diversity "
-            "in this 12-case, single-model, medium-effort setup."
-        ),
+        "claim_boundary": claim_boundary,
     }
 
 
@@ -446,6 +454,38 @@ def render_markdown(summary):
             f"{metrics['complete_critical_boundaries_mean']:.3f} | "
             f"{metrics['quality_score_mean']:.3f} | "
             f"{metrics['harmful_compromise_cases']} |"
+        )
+    harm_disputed = any(
+        "harmful_compromise" in item["fields"]
+        for item in summary["judge_disagreements"]
+    )
+    lines.extend(["", "## Interpretation", ""])
+    if summary["verdict"] == "isolation-not-supported":
+        lines.append(
+            "Separate calls did not increase substantive stance diversity under the "
+            "preregistered rule; both blinded passes failed the isolation threshold."
+        )
+    else:
+        lines.append(
+            "Separate calls cleared the preregistered diversity rule, subject to the "
+            "guardrails and limitations below."
+        )
+    if summary["skill_effect_under_isolation_verdict"] == "modest-secondary-gain":
+        lines.append(
+            "Reality Slap did not increase stance diversity under isolation; it produced only "
+            "a modest secondary boundary/quality gain."
+        )
+    elif summary["skill_effect_under_isolation_verdict"] == "regression":
+        lines.append("Reality Slap regressed the isolated-cell decision guardrails.")
+    else:
+        lines.append("Reality Slap showed no isolated-cell gain on the measured outcomes.")
+    lines.append(
+        f"Guardrails: **{'PASS' if summary['guardrails']['passed'] else 'FAIL'}**."
+    )
+    if harm_disputed:
+        lines.append(
+            "At least one harmful-compromise contrast is judge-disputed, so its count change "
+            "is directional rather than a stable causal result."
         )
     threshold = summary["thresholds"]["isolation_diversity"]
     lines.extend(

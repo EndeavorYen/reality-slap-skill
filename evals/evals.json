@@ -514,5 +514,33 @@
     },
     "conclusion": "modest boundary-completeness improvement; no demonstrated reduction in harmful consensus",
     "claim_boundary": "This pilot does not establish that Reality Slap creates independent reasoning diversity or eliminates same-model compromise."
+  },
+  "latest_isolated_context_roleplay_2x2": {
+    "date": "2026-07-23",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "medium",
+    "design": "12-case shared-vs-isolated by control-vs-skill factorial",
+    "scenario_count": 12,
+    "generation_calls": 120,
+    "blind_judge_calls": 24,
+    "result_json": "evals/isolated-context-roleplay-2x2-2026-07-23.json",
+    "result_markdown": "evals/isolated-context-roleplay-2x2-2026-07-23.md",
+    "verdict": "isolation-not-supported",
+    "skill_effect_under_isolation_verdict": "modest-secondary-gain",
+    "isolation_main_effect": {
+      "mean_unique_stances_delta": -0.083333,
+      "substantive_dissent_rate_delta": -0.083333,
+      "complete_critical_boundaries_delta": 0.0625,
+      "quality_score_delta": 0.125,
+      "harmful_compromise_cases": {"shared": 2, "isolated": 1}
+    },
+    "skill_effect_under_isolation": {
+      "mean_unique_stances_delta": 0.0,
+      "substantive_dissent_rate_delta": -0.041666,
+      "complete_critical_boundaries_delta": 0.125,
+      "quality_score_delta": 0.166666,
+      "harmful_compromise_cases": {"control": 1, "skill": 1}
+    },
+    "claim_boundary": "Separate calls did not increase substantive stance diversity in this 12-case single-model medium-effort run; the result does not prove human-like independence or estimate rare harmful-consensus rates."
   }
 }
