@@ -228,7 +228,7 @@ python3 scripts/run_isolated_roleplay_experiment.py \
   --limit 20
 ```
 
-Expected: 10 initially runnable calls: two shared meetings and six isolated roles; isolated chairs remain dependency-blocked until role outputs exist.
+Expected: 8 initially runnable calls: two shared meetings and six isolated roles; the two isolated chairs remain dependency-blocked until role outputs exist.
 
 - [ ] **Step 7: Commit the runner**
 
