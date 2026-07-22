@@ -4,6 +4,7 @@
 [![Benchmark](https://img.shields.io/badge/benchmark-strong--pass-brightgreen)](#proof-without-hype)
 [![Hard Gate](https://img.shields.io/badge/hard_gate-8%2F8-teal)](#proof-without-hype)
 [![Deep Fix A/B](https://img.shields.io/badge/deep_fix-38%25_faster-blueviolet)](#deep-fix-companion)
+[![Repair Set](https://img.shields.io/badge/repair_set-3%2F3-brightgreen)](#deep-fix-companion)
 [![MIT License](https://img.shields.io/badge/license-MIT-gray)](LICENSE)
 
 > **TL;DR** - Reality Slap keeps Codex recommendations anchored to evidence instead of the user's latest framing. It returns a clear stance, the next move, the main risk, and the evidence that would justify changing course.
@@ -16,13 +17,14 @@
 
 ## Deep repair without deep wandering.
 
-Deep Fix gives long-running repairs a bounded fast path: one problem, three action groups, then stop.
+Deep Fix now freezes an ordered repair set, processes each requested outcome,
+fixes each fixable one, and stops before minor cleanup becomes the mission.
 
-| **38% faster** | **52% fewer input tokens** | **3/3 correct one-file repairs** | **0 file changes when blocked** |
+| **3/3 repair-set scenarios** | **8/8 fixable outcomes** | **1/1 exact blocker** | **0/3 planted minor changes** |
 |---|---|---|---|
-| Median wall time | Median input context | Same correct minimal patch | Exact blocker, no fake fix |
+| Independent + shared + blocked paths | Every fixable requested result | No bypass or fake fix | Scope stayed frozen |
 
-_Controlled `gpt-5.6-sol`, `high` fixture with three paired runs. [See the evidence](#deep-fix-companion)._
+_Fresh-agent behavioral forward test on compact Python fixtures. [See the evidence](#deep-fix-companion)._
 
 ## See the difference
 
@@ -135,16 +137,46 @@ python3 scripts/install_skill.py status-deep-fix
 Use the single canonical entry:
 
 ```text
-Use $deep-fix <problem>
+Use $deep-fix <problem or ordered problem list>
 ```
 
-The straight-line path uses three action groups:
+### Fixed repair queue
+
+Deep Fix freezes the user-supplied list before production edits, then processes
+each item in user order with three action groups:
 
 1. inspect the owning path and run the provided focused reproduction;
 2. make the smallest root-cause production patch;
-3. rerun the same proof, inspect the diff, and stop.
+3. rerun the same proof, assign the item status, and continue.
 
-### What the Sol high A/B showed
+An independently blocked item does not prevent later requested items from being
+fixed. Unlisted work is changed only when evidence proves it is a required
+dependency of the current named outcome: omitting it would make that outcome
+incorrect, directly introduce or worsen its security or data-loss defect, or make
+its completion proof meaningless. Minor cleanup, speculative abstraction,
+upgrades, and architectural redesign stay report-only.
+
+| Fresh-agent repair-set proof | Result |
+|---|---:|
+| Independent requested bugs | 3/3 fixed |
+| Three outcomes, one shared root cause | 3/3 fixed with one changed line |
+| Blocked item followed by independent work | 1/1 exact blocker; next 2/2 fixed |
+| Planted unrelated minor helpers changed | 0/3 |
+| Test files changed | 0/3 |
+
+[Read the repair-set forward test](docs/deep-fix-repair-set-evaluation-2026-07-22.md)
+or inspect its [machine-readable results](docs/deep-fix-repair-set-evaluation-2026-07-22.json).
+
+This fresh-agent behavioral forward test covers final multi-item completion and
+scope control on three compact Python fixtures. Exact prompts and returned ordered
+ledgers are published, but internal tool-call order was not independently
+instrumented. It does not prove universal behavior for long queues, multi-module
+repositories, flaky failures, or live network dependencies.
+
+### What the earlier Sol high A/B showed
+
+Historical single-problem proof: **38% faster**, **52% fewer input tokens**,
+**3/3 correct one-file repairs**, and **0 file changes when blocked**.
 
 | Controlled Sol high median | Baseline | Deep Fix | Change |
 |---|---:|---:|---:|
@@ -169,8 +201,9 @@ or reuses an active durable goal before the skill is loaded. The stored goal
 includes its phase checkpoint discipline; a host should stop if atomic goal
 bootstrap fails instead of running a prompt-only imitation of goal mode.
 
-Outside the straight-line path, it still stops after two consecutive repair loops
-add no new evidence. Unrelated findings are reported without being fixed.
+Outside the straight-line path, each ledger item stops after two consecutive
+repair loops add no new evidence. A blocked item continues to the next independent
+item; unrelated findings remain report-only.
 
 Uninstalling Deep Fix does not change an existing Reality Slap installation:
 
@@ -223,4 +256,5 @@ The gate checks the skill, tests, eval bank, install layout, command shim, and s
 - [x] True multi-turn runner.
 - [x] Scripted hard-evidence gate.
 - [x] Explicit Deep Fix companion for drift-resistant root-cause execution.
+- [x] Fixed Repair Queue for ordered multi-problem repair without scope drift.
 - [ ] Plugin packaging decision.
