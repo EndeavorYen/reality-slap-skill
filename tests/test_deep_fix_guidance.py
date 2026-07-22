@@ -17,14 +17,36 @@ class DeepFixGuidanceTests(unittest.TestCase):
         agent_text = DEEP_FIX_AGENT.read_text(encoding="utf-8")
         self.assertIn('display_name: "Deep Fix"', agent_text)
         self.assertIn("allow_implicit_invocation: false", agent_text)
-        self.assertIn("one problem with the smallest correct patch", agent_text)
+        self.assertIn("one repair set with the smallest correct patches", agent_text)
 
-    def test_repair_contract_locks_one_problem_and_smallest_patch(self):
-        skill_text = DEEP_FIX_SKILL.read_text(encoding="utf-8").casefold()
+    def test_repair_contract_freezes_one_explicit_set_in_user_order(self):
+        skill_text = " ".join(
+            DEEP_FIX_SKILL.read_text(encoding="utf-8").casefold().split()
+        )
 
-        self.assertIn("fix one user-visible problem", skill_text)
+        self.assertIn("one explicit repair set", skill_text)
+        self.assertIn("freeze an ordered repair ledger", skill_text)
+        self.assertIn("process ledger items in user order", skill_text)
         self.assertIn("smallest correct patch", skill_text)
         self.assertIn("report unrelated findings without fixing them", skill_text)
+
+    def test_repair_set_continues_after_independent_blocker(self):
+        skill_text = " ".join(
+            DEEP_FIX_SKILL.read_text(encoding="utf-8").casefold().split()
+        )
+
+        self.assertIn("continue to the next independent item", skill_text)
+        self.assertIn("two-no-evidence stop applies per item", skill_text)
+        self.assertIn("same prerequisite blocks the remaining ledger", skill_text)
+
+    def test_unlisted_work_requires_proven_scope_admission(self):
+        skill_text = DEEP_FIX_SKILL.read_text(encoding="utf-8").casefold()
+
+        self.assertIn("required dependency", skill_text)
+        self.assertIn("shared root cause", skill_text)
+        self.assertIn("security failure or data loss", skill_text)
+        self.assertIn("when necessity is ambiguous, do not fix it", skill_text)
+        self.assertIn("architectural redesign", skill_text)
 
     def test_runtime_neutral_metadata_requires_a_durable_goal(self):
         skill_text = DEEP_FIX_SKILL.read_text(encoding="utf-8")
@@ -35,8 +57,8 @@ class DeepFixGuidanceTests(unittest.TestCase):
         )
         self.assertNotIn("metadata:\n  hermes:", skill_text)
         normalized = " ".join(skill_text.split())
-        self.assertIn("Fix one user-visible problem with the smallest correct patch", normalized)
-        self.assertIn("Stop after two consecutive repair loops add no new evidence", normalized)
+        self.assertIn("Fix one explicit repair set with the smallest correct patches", normalized)
+        self.assertIn("Stop an item after two consecutive repair loops add no new evidence", normalized)
 
     def test_repair_requires_root_cause_before_implementation(self):
         skill_text = DEEP_FIX_SKILL.read_text(encoding="utf-8").casefold()
@@ -58,9 +80,10 @@ class DeepFixGuidanceTests(unittest.TestCase):
             skill_text,
         )
         self.assertIn("two consecutive repair loops add no new evidence", skill_text)
+        self.assertIn("current ledger item", skill_text)
 
     def test_execution_uses_focused_verification_without_default_full_suite(self):
-        skill_text = DEEP_FIX_SKILL.read_text(encoding="utf-8")
+        skill_text = " ".join(DEEP_FIX_SKILL.read_text(encoding="utf-8").split())
 
         self.assertIn("Reuse an existing focused reproduction", skill_text)
         self.assertIn("once before and once after the patch", skill_text)
@@ -68,7 +91,7 @@ class DeepFixGuidanceTests(unittest.TestCase):
         self.assertIn("Run the full test suite only when it is necessary", skill_text)
 
     def test_single_entry_does_not_stack_overlapping_workflow_skills(self):
-        skill_text = DEEP_FIX_SKILL.read_text(encoding="utf-8")
+        skill_text = " ".join(DEEP_FIX_SKILL.read_text(encoding="utf-8").split())
 
         self.assertIn("Do not load overlapping repair workflow skills", skill_text)
         self.assertIn("unless the user explicitly invoked them", skill_text)

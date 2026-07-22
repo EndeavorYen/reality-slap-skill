@@ -1,68 +1,88 @@
 ---
 name: deep-fix
-description: Use only when explicitly invoked to fix one problem with a smallest-patch, root-cause workflow and a hard stop after two no-evidence loops.
+description: Use only when explicitly invoked to fix one explicit repair set in user order with smallest-patch, root-cause loops and a per-item hard stop after two no-evidence loops.
 metadata:
   execution:
     durable_goal:
       required: true
       constraints:
         - >-
-          Fix one user-visible problem with the smallest correct patch.
+          Fix one explicit repair set with the smallest correct patches.
         - >-
-          Stop after two consecutive repair loops add no new evidence.
+          Stop an item after two consecutive repair loops add no new evidence.
 ---
 
 # Deep Fix
 
 Use this skill only when explicitly invoked as `$deep-fix`. It is one bounded
-workflow for one real repair, not a broad cleanup or a longer planning response.
-It is the complete repair workflow. Do not load overlapping repair workflow skills
-unless the user explicitly invoked them or higher-priority instructions require it.
+workflow for one explicit repair set, not a broad cleanup or a longer planning
+response. It is the complete repair workflow. Do not load overlapping repair
+workflow skills unless the user explicitly invoked them or higher-priority
+instructions require it.
 
-## One Repair Contract
+## One Repair-Set Contract
 
 Runtimes with durable-goal support should atomically create or reuse one goal
 before loading this skill. Explicit `$deep-fix` invocation counts as a request
 to set that goal. Reuse a matching active goal instead of creating another one.
 
-Fix one user-visible problem. Before changing production behavior, lock:
+Treat one named problem as a one-item set. For multiple named problems, freeze an
+ordered repair ledger before changing production behavior. For every item, lock:
 
-- the problem the user will observe as fixed;
+- the user-visible outcome that will be fixed;
 - the smallest reproduction or current evidence;
 - the focused test or check that will prove completion;
-- unrelated work that must not be changed.
+- a `pending`, `fixed`, `blocked`, or `not-reproduced` status.
 
-Do not broaden the goal. Report unrelated findings without fixing them.
+Process ledger items in user order. Do not add newly discovered peer items to the
+ledger. Report unrelated findings without fixing them.
 
-## Root Cause Before Repair: One Pass
+## Root Cause Before Repair: Per Item
 
-Keep a straight-line repair to three action groups:
+For the current ledger item, keep a straight-line repair to three action groups:
 
 1. In one read-only action, inspect only the named or owning files and reproduce
    the failure. Reuse an existing focused reproduction when one is provided.
    Use the provided reproduction command exactly. If none is provided, select one
    runner from the test file; do not probe alternatives. Do not enumerate unrelated
    files. Identify the root-cause evidence and what would disprove it.
-2. Make the smallest correct production patch for that cause. Report unrelated
-   findings without fixing them.
+2. Make the smallest correct production patch for that cause.
 3. In one verification action, run the same focused check once, inspect the diff,
-   and stop. Do not repeat an unchanged passing check or reread unchanged evidence.
+   assign the item status, and continue to the next independent item. Do not
+   repeat an unchanged passing check or reread unchanged evidence.
 
-This runs the focused proof once before and once after the patch.
+This runs each focused proof once before and once after the patch. When multiple
+ledger items have one proven shared root cause, patch it once, then run every
+affected item's focused proof before assigning their statuses.
 
 Run the full test suite only when it is necessary for the changed behavior or
-repository release policy, and run it once. Prevent generated test artifacts when
-the supplied runner supports it. Do not spend a repair loop cleaning harmless
-generated artifacts.
+repository release policy, and run it once after the ledger. Prevent generated
+test artifacts when the supplied runner supports it. Do not spend a repair loop
+cleaning harmless generated artifacts.
+
+## Scope Admission Gate
+
+Change unlisted work only when evidence proves it is a required dependency of a
+ledger item because it is the shared root cause, prevents a correct result or a
+security failure or data loss, or is required for a meaningful completion proof.
+
+Keep cosmetic cleanup, naming changes, abstractions, dependency upgrades,
+pre-existing failures, speculative performance work, and architectural redesign
+report-only. When necessity is ambiguous, do not fix it.
 
 Do not present a workaround as a root-cause fix. A temporary mitigation must be
 named as temporary and must not close the goal. Do not silently add retries,
 abstractions, compatibility work, dependency upgrades, public API changes, or
 fixes for pre-existing failures.
 
-Stop when two consecutive repair loops add no new evidence or effective change.
-Disproving a root-cause hypothesis counts as new evidence; rereading files,
-restating the hypothesis, and rerunning an unchanged check do not.
+The two-no-evidence stop applies per item: stop an item when two consecutive
+repair loops add no new evidence or effective change. Disproving a root-cause
+hypothesis counts as new evidence; rereading files, restating the hypothesis, and
+rerunning an unchanged check do not.
+
+If an item is blocked, report its exact missing prerequisite and continue to the
+next independent item. Stop the repair set only when the same prerequisite blocks
+the remaining ledger.
 
 ## Exception Checkpoint
 
@@ -74,8 +94,8 @@ Progress: <new evidence or effective change> | Scope: OK / Drift | Decision: Con
 ```
 
 If scope is `Drift`, stop and report what would require the user to expand the
-goal.
+goal. Every exception checkpoint must identify the current ledger item.
 
-Complete only when the focused proof is current and the user-visible problem is
-fixed. Report the fix, proof, and residual risk briefly. If blocked, report the
-exact missing prerequisite. Do not narrate every attempt.
+Complete only when every ledger item has a current status and each fixed item has
+a current focused proof. Report the ordered results, final suite when required,
+and residual risk briefly. Do not narrate every attempt.

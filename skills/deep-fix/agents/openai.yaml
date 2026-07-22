@@ -1,6 +1,6 @@
 interface:
   display_name: "Deep Fix"
-  short_description: "Fix one problem without scope drift"
-  default_prompt: "Use $deep-fix to fix one problem with the smallest correct patch."
+  short_description: "Fix an ordered repair set without scope drift"
+  default_prompt: "Use $deep-fix to fix one repair set with the smallest correct patches."
 policy:
   allow_implicit_invocation: false
