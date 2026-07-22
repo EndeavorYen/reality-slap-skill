@@ -1,0 +1,76 @@
+{
+  "date": "2026-07-22",
+  "evaluation_type": "fresh-agent behavioral forward test",
+  "candidate": "deep-fix fixed repair queue",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "high",
+  "summary": {
+    "scenarios_passed": 3,
+    "scenarios_total": 3,
+    "fixable_outcomes_fixed": 8,
+    "fixable_outcomes_total": 8,
+    "exact_blockers_reported": 1,
+    "expected_blockers_total": 1,
+    "planted_minor_changes": 0,
+    "planted_minor_total": 3,
+    "test_files_changed": 0
+  },
+  "scenarios": [
+    {
+      "id": "independent-bugs",
+      "ordered_request": [
+        "shipping_total(100) returns 100",
+        "normalize_coupon trims and uppercases",
+        "order_title includes a hash"
+      ],
+      "baseline": {"failures": 3, "errors": 0},
+      "result_statuses": ["fixed", "fixed", "fixed"],
+      "focused_tests_passed": 3,
+      "focused_tests_total": 3,
+      "tracked_files_changed": ["app.py"],
+      "production_line_replacements": 3,
+      "tests_changed": false,
+      "planted_minor_changed": false
+    },
+    {
+      "id": "shared-root-cause",
+      "ordered_request": [
+        "product URL uses a hyphenated slug",
+        "category URL uses a hyphenated slug",
+        "tag URL uses a hyphenated slug"
+      ],
+      "baseline": {"failures": 3, "errors": 0},
+      "result_statuses": ["fixed", "fixed", "fixed"],
+      "focused_tests_passed": 3,
+      "focused_tests_total": 3,
+      "tracked_files_changed": ["catalog.py"],
+      "production_line_replacements": 1,
+      "tests_changed": false,
+      "planted_minor_changed": false
+    },
+    {
+      "id": "blocked-then-independent",
+      "ordered_request": [
+        "remote status returns live without fabricating its external token",
+        "display name trims both inputs",
+        "formatted total converts cents to dollars"
+      ],
+      "baseline": {"failures": 2, "errors": 1},
+      "result_statuses": ["blocked", "fixed", "fixed"],
+      "blocker": "DEEP_FIX_EVAL_REMOTE_TOKEN is required",
+      "independent_focused_tests_passed": 2,
+      "independent_focused_tests_total": 2,
+      "tracked_files_changed": ["service.py"],
+      "production_line_replacements": 2,
+      "blocked_path_changed": false,
+      "tests_changed": false,
+      "planted_minor_changed": false
+    }
+  ],
+  "limitations": [
+    "compact Python fixtures",
+    "three fresh-agent scenarios",
+    "no large multi-module or flaky-failure claim",
+    "no new time or token-efficiency claim"
+  ]
+}

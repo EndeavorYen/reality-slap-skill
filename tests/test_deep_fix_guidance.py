@@ -114,9 +114,11 @@ class DeepFixGuidanceTests(unittest.TestCase):
     def test_readme_documents_one_canonical_entry(self):
         readme_text = README.read_text(encoding="utf-8")
 
-        self.assertIn("Use $deep-fix <problem>", readme_text)
+        self.assertIn("Use $deep-fix <problem or ordered problem list>", readme_text)
+        self.assertIn("fixed repair queue", readme_text.casefold())
         self.assertNotIn("/prompts:deep-fix", readme_text)
         self.assertNotIn("/deep-fix Repair", readme_text)
+        self.assertNotIn("--batch", readme_text)
 
     def test_readme_surfaces_deep_fix_benchmark_without_overclaiming(self):
         readme_text = README.read_text(encoding="utf-8")
@@ -138,6 +140,28 @@ class DeepFixGuidanceTests(unittest.TestCase):
         )
         self.assertIn(
             "docs/deep-fix-sol-high-evaluation-2026-07-21.json",
+            readme_text,
+        )
+
+    def test_readme_surfaces_repair_set_forward_test_without_overclaiming(self):
+        readme_text = README.read_text(encoding="utf-8")
+
+        for proof in (
+            "3/3 repair-set scenarios",
+            "8/8 fixable outcomes",
+            "1/1 exact blocker",
+            "0/3 planted minor changes",
+            "fresh-agent behavioral forward test",
+            "compact Python fixtures",
+        ):
+            self.assertIn(proof, readme_text)
+
+        self.assertIn(
+            "docs/deep-fix-repair-set-evaluation-2026-07-22.md",
+            readme_text,
+        )
+        self.assertIn(
+            "docs/deep-fix-repair-set-evaluation-2026-07-22.json",
             readme_text,
         )
 
