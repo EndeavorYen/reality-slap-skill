@@ -66,6 +66,14 @@ def validate_payload(value, schema, path="$"):
         raise ValueError(f"{path}: value is not in enum")
 
 
+def judge_contract(schema):
+    evaluation = schema["properties"]["evaluations"]["items"]
+    expected_labels = set(evaluation["properties"]["label"]["enum"])
+    normalized = evaluation["properties"]["normalized_role_stances"]["items"]
+    expected_roles = set(normalized["properties"]["role"]["enum"])
+    return expected_labels, expected_roles
+
+
 def validate_record_payload(record, payload):
     schema = json.loads(Path(record["schema_path"]).read_text(encoding="utf-8"))
     validate_payload(payload, schema)
@@ -80,13 +88,13 @@ def validate_record_payload(record, payload):
     if record["kind"] == "judge":
         if payload["scenario_id"] != record["scenario_id"]:
             raise ValueError("$.scenario_id: must match the judge record")
+        expected_labels, expected_roles = judge_contract(schema)
         labels = [item["label"] for item in payload["evaluations"]]
-        if set(labels) != {"A", "B", "C", "D"} or len(set(labels)) != 4:
+        if set(labels) != expected_labels or len(labels) != len(expected_labels):
             raise ValueError("$.evaluations: must contain each opaque label exactly once")
-        expected_roles = {"executive_sponsor", "evidence_reviewer", "delivery_owner"}
         for index, evaluation in enumerate(payload["evaluations"]):
             roles = [item["role"] for item in evaluation["normalized_role_stances"]]
-            if set(roles) != expected_roles or len(set(roles)) != 3:
+            if set(roles) != expected_roles or len(roles) != len(expected_roles):
                 raise ValueError(
                     f"$.evaluations[{index}].normalized_role_stances: "
                     "must contain each role exactly once"

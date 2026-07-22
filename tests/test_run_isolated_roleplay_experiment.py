@@ -17,6 +17,7 @@ from run_isolated_roleplay_experiment import (
     iter_pending_calls,
     render_prompt,
     response_status,
+    validate_record_payload,
     validate_payload,
 )
 
@@ -165,6 +166,108 @@ class RunIsolatedRoleplayExperimentTests(unittest.TestCase):
         Path(record["output_path"]).write_text("ERROR: You've hit your usage limit\n", encoding="utf-8")
 
         self.assertEqual(response_status(record), "invalid")
+
+    def test_judge_validation_derives_eight_labels_from_schema(self):
+        labels = list("ABCDEFGH")
+        schema_path = self.workspace / "schemas" / "eight-label-judge.json"
+        normalized_item = {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "role": {"type": "string", "enum": [
+                    "executive_sponsor", "evidence_reviewer", "delivery_owner"
+                ]},
+                "stance_class": {"type": "string", "enum": ["bounded_alternative"]},
+            },
+            "required": ["role", "stance_class"],
+        }
+        evaluation_item = {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "label": {"type": "string", "enum": labels},
+                "normalized_role_stances": {
+                    "type": "array", "items": normalized_item, "minItems": 3, "maxItems": 3
+                },
+            },
+            "required": ["label", "normalized_role_stances"],
+        }
+        schema = {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "scenario_id": {"type": "string"},
+                "evaluations": {
+                    "type": "array", "items": evaluation_item, "minItems": 8, "maxItems": 8
+                },
+            },
+            "required": ["scenario_id", "evaluations"],
+        }
+        schema_path.write_text(json.dumps(schema) + "\n", encoding="utf-8")
+        record = {"kind": "judge", "scenario_id": "SD-01", "schema_path": str(schema_path)}
+        roles = ["executive_sponsor", "evidence_reviewer", "delivery_owner"]
+        evaluation = lambda label: {
+            "label": label,
+            "normalized_role_stances": [
+                {"role": role, "stance_class": "bounded_alternative"} for role in roles
+            ],
+        }
+
+        validate_record_payload(
+            record,
+            {"scenario_id": "SD-01", "evaluations": [evaluation(label) for label in labels]},
+        )
+
+    def test_judge_validation_rejects_missing_schema_derived_label(self):
+        labels = list("ABCDEFGH")
+        schema_path = self.workspace / "schemas" / "eight-label-minimal.json"
+        role_enum = ["executive_sponsor", "evidence_reviewer", "delivery_owner"]
+        schema = {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "scenario_id": {"type": "string"},
+                "evaluations": {
+                    "type": "array",
+                    "minItems": 8,
+                    "maxItems": 8,
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": False,
+                        "properties": {
+                            "label": {"type": "string", "enum": labels},
+                            "normalized_role_stances": {
+                                "type": "array",
+                                "minItems": 3,
+                                "maxItems": 3,
+                                "items": {
+                                    "type": "object",
+                                    "additionalProperties": False,
+                                    "properties": {
+                                        "role": {"type": "string", "enum": role_enum},
+                                    },
+                                    "required": ["role"],
+                                },
+                            },
+                        },
+                        "required": ["label", "normalized_role_stances"],
+                    },
+                },
+            },
+            "required": ["scenario_id", "evaluations"],
+        }
+        schema_path.write_text(json.dumps(schema) + "\n", encoding="utf-8")
+        record = {"kind": "judge", "scenario_id": "SD-01", "schema_path": str(schema_path)}
+        evaluations = [
+            {
+                "label": label,
+                "normalized_role_stances": [{"role": role} for role in role_enum],
+            }
+            for label in list("ABCDEFG") + ["G"]
+        ]
+
+        with self.assertRaisesRegex(ValueError, "each opaque label exactly once"):
+            validate_record_payload(record, {"scenario_id": "SD-01", "evaluations": evaluations})
 
 
 if __name__ == "__main__":
