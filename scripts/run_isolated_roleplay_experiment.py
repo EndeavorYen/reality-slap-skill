@@ -77,6 +77,20 @@ def validate_record_payload(record, payload):
             raise ValueError("$.roles: must contain each role exactly once")
         if set(second_round_roles) != expected or len(set(second_round_roles)) != 3:
             raise ValueError("$.second_round: must contain each role exactly once")
+    if record["kind"] == "judge":
+        if payload["scenario_id"] != record["scenario_id"]:
+            raise ValueError("$.scenario_id: must match the judge record")
+        labels = [item["label"] for item in payload["evaluations"]]
+        if set(labels) != {"A", "B", "C", "D"} or len(set(labels)) != 4:
+            raise ValueError("$.evaluations: must contain each opaque label exactly once")
+        expected_roles = {"executive_sponsor", "evidence_reviewer", "delivery_owner"}
+        for index, evaluation in enumerate(payload["evaluations"]):
+            roles = [item["role"] for item in evaluation["normalized_role_stances"]]
+            if set(roles) != expected_roles or len(set(roles)) != 3:
+                raise ValueError(
+                    f"$.evaluations[{index}].normalized_role_stances: "
+                    "must contain each role exactly once"
+                )
 
 
 def invalid_marker(text):
