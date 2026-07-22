@@ -121,6 +121,7 @@ class SummarizePrecommittedRoleplayExperimentTests(unittest.TestCase):
         shared_forced_quality_by_pass=(10, 10),
         forced_unique_by_pass=(3, 3),
         harmful_by_pass=(False, False),
+        emergent_quality_by_pass=(10, 10),
     ):
         mappings = self.mappings()
         for record in self.judge_records:
@@ -133,7 +134,7 @@ class SummarizePrecommittedRoleplayExperimentTests(unittest.TestCase):
                 elif forced:
                     quality = shared_forced_quality_by_pass[pass_index]
                 else:
-                    quality = 10
+                    quality = emergent_quality_by_pass[pass_index]
                 unique = forced_unique_by_pass[pass_index] if forced else 1
                 stances = [
                     "requested_extreme", "opposite_extreme", "bounded_alternative"
@@ -277,6 +278,23 @@ class SummarizePrecommittedRoleplayExperimentTests(unittest.TestCase):
         self.assertIn("did not clear the preregistered manipulation check", markdown)
         self.assertIn("did not clear the preregistered quality threshold", markdown)
         self.assertIn("did not clear the preregistered isolation interaction", markdown)
+
+    def test_report_discloses_when_observed_baseline_makes_quality_threshold_unattainable(self):
+        self.write_judgments(
+            isolated_forced_quality_by_pass=(14, 14),
+            shared_forced_quality_by_pass=(14, 14),
+            emergent_quality_by_pass=(14, 14),
+        )
+        summary = summarize(self.workspace)
+
+        quality = summary["thresholds"]["quality_under_isolation"]
+        markdown = render_markdown(summary)
+
+        self.assertEqual(quality["observed_baseline_mean"], 14.0)
+        self.assertEqual(quality["maximum_possible_delta"], 0.0)
+        self.assertFalse(quality["attainable_given_observed_baseline"])
+        self.assertIn("preregistered +0.75 threshold was unattainable", markdown)
+        self.assertIn("cannot rule out smaller gains", markdown)
 
 
 if __name__ == "__main__":

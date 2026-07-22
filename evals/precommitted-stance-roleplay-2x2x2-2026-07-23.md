@@ -8,6 +8,7 @@
 - Isolation interaction on quality: +0.125 / 14.
 - Manipulation: **FAIL**.
 - Decision guardrails: **FAIL**.
+- Observed isolated baseline: 13.875/14; maximum headroom +0.125, so the preregistered +0.75 threshold was unattainable on this judge scale.
 
 ## Condition metrics
 
@@ -85,6 +86,7 @@ The experiment did not clear the preregistered isolation interaction needed to c
 - The four emergent baselines were reused from the immediately preceding same-day run.
 - Eight candidates in one judge packet increase comparison load and possible order effects.
 - Judges may infer forced coverage from visibly opposed content despite opaque labels.
+- The rejudged isolated baseline averaged 13.875/14, leaving only +0.125 headroom; the preregistered +0.75 threshold was unattainable on this judge scale, so the run cannot rule out smaller gains.
 
 ## Claim boundary
 

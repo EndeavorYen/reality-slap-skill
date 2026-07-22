@@ -563,7 +563,11 @@
     "quality_under_isolation": {
       "passed": false,
       "delta_by_pass": [-0.166667, -0.041667],
-      "mean_delta": -0.104167
+      "mean_delta": -0.104167,
+      "observed_baseline_mean": 13.875,
+      "scale_max": 14,
+      "maximum_possible_delta": 0.125,
+      "attainable_given_observed_baseline": false
     },
     "isolation_interaction": {
       "passed": false,
