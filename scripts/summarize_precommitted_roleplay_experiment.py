@@ -542,6 +542,20 @@ def render_markdown(summary):
         "inconclusive": "Disputed safety judgments prevent a stable causal verdict.",
     }
     lines.append(interpretation[summary["verdict"]])
+    if not summary["thresholds"]["manipulation"]["passed"]:
+        lines.append(
+            "Forced roles did not clear the preregistered manipulation check, so prompt-assigned "
+            "labels cannot be treated as complete substantive stance coverage."
+        )
+    if not summary["thresholds"]["quality_under_isolation"]["passed"]:
+        lines.append(
+            "Chair decisions did not clear the preregistered quality threshold under isolation."
+        )
+    if not summary["thresholds"]["isolation_interaction"]["passed"]:
+        lines.append(
+            "The experiment did not clear the preregistered isolation interaction needed to "
+            "claim that separate calls add material value beyond stance prompting."
+        )
     lines.extend(["", "## Judge disagreements", ""])
     if summary["judge_disagreements"]:
         for item in summary["judge_disagreements"]:

@@ -263,6 +263,21 @@ class SummarizePrecommittedRoleplayExperimentTests(unittest.TestCase):
         )
         self.assertIn("does not establish human-like independence", markdown)
 
+    def test_inconclusive_report_still_states_failed_manipulation_quality_and_interaction(self):
+        self.write_judgments(
+            isolated_forced_quality_by_pass=(10, 10),
+            forced_unique_by_pass=(2, 2),
+            harmful_by_pass=(True, False),
+        )
+        summary = summarize(self.workspace)
+
+        markdown = render_markdown(summary)
+
+        self.assertEqual(summary["verdict"], "inconclusive")
+        self.assertIn("did not clear the preregistered manipulation check", markdown)
+        self.assertIn("did not clear the preregistered quality threshold", markdown)
+        self.assertIn("did not clear the preregistered isolation interaction", markdown)
+
 
 if __name__ == "__main__":
     unittest.main()
