@@ -127,6 +127,44 @@
     "evaluator_note": "One Terra five-way judge exhausted three attempts. Three two-candidate fallback calls covered the missing evaluations; all completed, one after a retry. The frozen H/S outputs had burden 22/22 under the earlier two-way evaluation and 17/14 here, exposing candidate-set or fresh-judge format sensitivity.",
     "claim_boundary": "Diagnostic replay reusing the earlier eight cases, drafts, question packets, and H/S outputs. It isolates ledger and direct-effort mechanisms but is not a fresh holdout or general model ranking; exact quality margins are evaluator-format-sensitive."
   },
+  "latest_private_self_eval_pilot": {
+    "status": "live-complete",
+    "date": "2026-07-23",
+    "design": "four fresh cases with single-call Sol-medium direct, generic self-eval, structured private self-eval, and Luna pre-mortem variants",
+    "conditions": {
+      "A": "single Sol-medium Reality Slap decision",
+      "B": "A plus the generic instruction 請自評 and private revision",
+      "C": "A plus structured private constraint and failure-mode self-evaluation",
+      "D": "two Luna-low pre-mortem question calls plus one C-style Sol-medium final decision"
+    },
+    "result_json": "evals/self-eval-pilot-2026-07-23.json",
+    "result_markdown": "evals/self-eval-pilot-2026-07-23.md",
+    "verdict": "no-self-eval-signal__premortem-safety-regression",
+    "self_eval_verdict": "no-self-eval-signal",
+    "premortem_verdict": "premortem-safety-regression",
+    "checklist_agreement": 0.963542,
+    "paired_burden": {
+      "A_vs_B": {"baseline": 9, "treatment": 10},
+      "A_vs_C": {"baseline": 10, "treatment": 10},
+      "B_vs_C": {"baseline": 11, "treatment": 10},
+      "C_vs_D": {"baseline": 10, "treatment": 11}
+    },
+    "end_to_end_credits": {
+      "A": 12.6575,
+      "B": 14.646875,
+      "C": 13.059875,
+      "D": 16.378
+    },
+    "reliability": {
+      "generation_calls": 24,
+      "generation_first_attempt_valid": 24,
+      "judge_calls": 32,
+      "judge_attempts": 35,
+      "judge_first_attempt_valid": 29
+    },
+    "root_cause_note": "Generic self-evaluation increased reasoning and output work but rewrote away useful controls in one case. Luna questions surfaced a required customer-communication issue that the main model still omitted, exposing a discovery-to-disposition gap.",
+    "claim_boundary": "Fresh four-case diagnostic screen with one generation sample per condition. It rejects the claimed large improvement but does not estimate a stable general effect size."
+  },
   "latest_live_ab": {
     "date": "2026-07-05",
     "workspace": "/tmp/reality-slap-full-decay-ab-20260705",

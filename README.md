@@ -174,6 +174,38 @@ or inspect the [machine-readable result](evals/question-swarm-ledger-replay-2026
 This was a diagnostic reuse of the same eight cases and frozen H/S artifacts,
 not a fresh holdout or a general model ranking.
 
+### Does “請自評” improve a strong model?
+
+A fresh four-case pilot compared one Sol-medium Reality Slap call against the
+same call with generic self-evaluation, structured private self-evaluation, and
+two Luna-low pre-mortem question calls. Every increment was judged in a blind
+two-candidate PK by Sol-medium and Terra-high.
+
+| Pair | Defect burden | Treatment cost | Result |
+|---|---:|---:|---|
+| Direct A → generic `請自評` B | 9 → 10 | +15.7% | fail |
+| Direct A → structured private C | 10 → 10 | +3.2% | fail |
+| Generic B → structured C | 11 → 10 | C was cheaper | fail: only 9.1% reduction |
+| Structured C → Luna pre-mortem D | 10 → 11 | +25.4% vs C | safety regression |
+
+The generic prompt used 3.36× A's reasoning tokens and 1.39× its output tokens,
+but did not improve the decisions. In one case its rewrite removed useful
+exception-expiry controls already present in A. Structured private
+self-evaluation was more efficient and mixed—two cases better, one unchanged,
+one worse—but did not reduce aggregate burden.
+
+The Luna questions found a customer-communication requirement that the Sol
+answer still omitted. External discovery therefore did not guarantee
+main-model adoption; the bottleneck moved from finding an issue to disposing it
+correctly. Two-candidate evaluation was operationally better than the earlier
+five-candidate format (29/32 first-attempt valid, 32/32 eventual), although raw
+total scores remained judge-sensitive.
+
+[Read the private self-evaluation pilot](evals/self-eval-pilot-2026-07-23.md)
+or inspect the [machine-readable result](evals/self-eval-pilot-2026-07-23.json).
+This rejects the claimed large improvement on four fresh cases; it is not a
+stable general effect-size estimate.
+
 ### Same-model roleplay remains limited
 
 In the same-model roleplay pilot, Reality Slap improved boundary completeness

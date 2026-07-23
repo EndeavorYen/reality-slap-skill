@@ -455,6 +455,7 @@ def render_prompt(record, records_by_id, manifest):
     prompt = Path(record["prompt_path"]).read_text(encoding="utf-8").rstrip()
     if not record.get("depends_on"):
         return prompt
+    has_challenge_packet = CHALLENGE_PACKET_MARKER in prompt
     for call_id in record["depends_on"]:
         dependency = records_by_id.get(call_id)
         if dependency is None or response_status(dependency, records_by_id, manifest) != "complete":
@@ -474,6 +475,8 @@ def render_prompt(record, records_by_id, manifest):
             ),
         )
     if DRAFT_MARKER in Path(record["prompt_path"]).read_text(encoding="utf-8"):
+        return prompt
+    if has_challenge_packet:
         return prompt
     if DEPENDENCY_PACKET_MARKER not in prompt:
         raise ValueError(f"dependency marker missing: {record['call_id']}")

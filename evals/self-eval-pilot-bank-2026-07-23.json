@@ -1,0 +1,270 @@
+{
+  "experiment_id": "private-self-eval-pilot-20260723",
+  "seed": 20260726,
+  "cases": [
+    {
+      "case_id": "SE-01",
+      "title": "Certificate rotation for intermittently connected gateways",
+      "domain": "platform-architecture",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "IoT platform lead",
+        "objective": "Rotate a fleet certificate before expiry without permanently stranding intermittently connected gateways or preserving trust in a compromised key.",
+        "facts": [
+          "The current fleet certificate expires in twenty-one days.",
+          "Eighteen percent of gateways have historically remained offline for more than thirty days.",
+          "Gateways can store two trust chains, but dual validation adds six percent to handshake CPU.",
+          "The old private key is suspected of exposure, but no confirmed misuse has been observed.",
+          "A recovery image can install a new trust chain, but physical service costs about 180 dollars per site."
+        ],
+        "decision_request": "Choose the trust-overlap policy, offline-device recovery path, emergency revocation trigger, and completion evidence.",
+        "plausible_paths": [
+          "Revoke the old chain immediately and require physical recovery for offline gateways.",
+          "Run a bounded dual-trust window with an emergency kill path.",
+          "Keep the old chain trusted until every gateway has checked in."
+        ],
+        "material_constraints": [
+          "Some gateways will remain offline beyond certificate expiry.",
+          "An exposed old key may require revocation before fleet migration completes.",
+          "Dual validation consumes scarce gateway CPU.",
+          "Physical recovery is available but costly and slow.",
+          "Rollback cannot depend on the expired or revoked old chain."
+        ],
+        "harmful_failure_paths": [
+          "A long-offline gateway reconnects with no trusted path and cannot receive recovery instructions.",
+          "The suspected old key remains accepted indefinitely while waiting for every device."
+        ],
+        "incomplete_information": [
+          "The number of gateways that can receive the recovery image through an out-of-band channel is unknown."
+        ],
+        "reversible_action": "Canary dual trust on one gateway cohort while simulating expiry, revocation, and long-offline reconnects."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Separate normal overlap from the emergency response to confirmed key misuse.",
+          "Provide a recovery trust path for gateways offline beyond the migration window.",
+          "Bound the CPU and duration cost of dual validation.",
+          "Avoid making rollback depend on the old certificate remaining valid.",
+          "Distinguish fleet completion evidence from simple check-in counts."
+        ],
+        "acceptable_decision_families": [
+          "A time-bounded dual-trust canary with an independent recovery chain and emergency revocation trigger.",
+          "Cohort migration with out-of-band recovery for long-offline gateways and a named decision point for old-key revocation."
+        ],
+        "fatal_errors": [
+          "Trusting the suspected old key indefinitely until every gateway reconnects.",
+          "Revoking the old chain without any viable bootstrap path for long-offline gateways."
+        ],
+        "known_valid_insights": [
+          "An independent recovery trust chain can preserve recoverability without extending normal trust in the old key."
+        ],
+        "decision_closure_requirements": [
+          "Name the first gateway cohort.",
+          "Set overlap duration and CPU stop thresholds.",
+          "Define the confirmed-misuse revocation trigger.",
+          "Specify the long-offline recovery mechanism and owner.",
+          "Define completion evidence and rollback."
+        ],
+        "reasoning_notes": "Reward a bounded trust transition that treats compromise response and offline recovery as separate controls."
+      }
+    },
+    {
+      "case_id": "SE-02",
+      "title": "Queued data exports during account deletion",
+      "domain": "data-privacy-security",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Privacy platform owner",
+        "objective": "Honor account deletion while preserving legitimate export delivery and auditable processing.",
+        "facts": [
+          "Customers can request a data export and account deletion within the same session.",
+          "Large exports may remain queued for thirty-six hours.",
+          "Deletion policy requires production data removal within twenty-four hours.",
+          "Export workers snapshot record identifiers when a job starts and fetch the underlying data later.",
+          "Completed exports use signed download links valid for seventy-two hours."
+        ],
+        "decision_request": "Choose job cancellation semantics, download-link behavior, deletion evidence, and rollout controls.",
+        "plausible_paths": [
+          "Allow every export requested before deletion to finish.",
+          "Cancel queued exports and revoke completed links when deletion begins.",
+          "Pause deletion until every previously requested export expires."
+        ],
+        "material_constraints": [
+          "Queued jobs can outlive the deletion deadline.",
+          "A worker snapshot does not contain all exported data.",
+          "Previously issued download links may expose deleted-account data.",
+          "Deletion must be auditable across the API, queue, workers, object storage, and link service.",
+          "A customer may reasonably expect an export requested immediately before deletion."
+        ],
+        "harmful_failure_paths": [
+          "A delayed worker recreates export data after deletion has been recorded complete.",
+          "A still-valid signed link serves a completed export after the account is deleted."
+        ],
+        "incomplete_information": [
+          "Legal has not decided whether a pre-deletion export must remain downloadable after deletion begins."
+        ],
+        "reversible_action": "Pilot cancellation and link revocation for internal test accounts with delayed workers and forced retries."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Coordinate deletion with queued, running, and retrying export workers.",
+          "Address both temporary export objects and already issued download links.",
+          "Avoid claiming legal entitlement while policy is unresolved.",
+          "Produce cross-service evidence that no worker recreated deleted data.",
+          "Define a customer-visible outcome for the conflicting export and deletion requests."
+        ],
+        "acceptable_decision_families": [
+          "Deletion takes precedence with atomic job invalidation, link revocation, cleanup evidence, and clear customer notice.",
+          "A short explicitly approved export-completion exception with isolated storage, expiry, and deletion evidence, pending legal classification."
+        ],
+        "fatal_errors": [
+          "Marking deletion complete while delayed workers can still materialize export objects.",
+          "Leaving signed export links usable after the governing deletion policy says access must end."
+        ],
+        "known_valid_insights": [
+          "Queue cancellation alone is insufficient because running workers, retries, objects, and links have independent state."
+        ],
+        "decision_closure_requirements": [
+          "Set precedence while legal classification is pending.",
+          "Name the cancellation and revocation owner.",
+          "Define worker fencing or deletion-version checks.",
+          "Specify object and link cleanup evidence.",
+          "Set pilot stop and rollback conditions."
+        ],
+        "reasoning_notes": "Reward cross-service closure. Do not require the model to invent the unresolved legal classification."
+      }
+    },
+    {
+      "case_id": "SE-03",
+      "title": "Payment provider failover with delayed webhooks",
+      "domain": "operations-incidents",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Payments reliability lead",
+        "objective": "Restore checkout during a provider outage without creating duplicate charges or unreconciled customer balances.",
+        "facts": [
+          "The primary provider has experienced three outages longer than forty minutes this quarter.",
+          "A secondary provider supports cards but not bank transfers.",
+          "The secondary provider accepts merchant idempotency keys, but the current integration generates provider-specific keys.",
+          "Primary-provider authorization and settlement webhooks may arrive up to forty-eight hours late.",
+          "Finance can reconcile provider exports daily but not continuously."
+        ],
+        "decision_request": "Choose the failover cohort, idempotency boundary, delayed-event handling, and failback criteria.",
+        "plausible_paths": [
+          "Route every retry to the secondary provider after five minutes.",
+          "Fail over a bounded card cohort using a cross-provider payment-attempt key.",
+          "Keep checkout unavailable until the primary provider recovers."
+        ],
+        "material_constraints": [
+          "Bank transfers cannot use the secondary provider.",
+          "The same customer attempt may reach both providers.",
+          "Late primary webhooks can arrive after secondary success.",
+          "Continuous reconciliation is unavailable.",
+          "Failback can overlap with in-flight secondary attempts."
+        ],
+        "harmful_failure_paths": [
+          "A retry succeeds at the secondary provider after the primary provider already authorized it.",
+          "Traffic fails back while secondary attempts remain unresolved, splitting one order across providers."
+        ],
+        "incomplete_information": [
+          "The fraction of apparently failed primary authorizations that later settle is unknown."
+        ],
+        "reversible_action": "Run a shadow failover simulation against recorded outage traffic without submitting charges."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Use an idempotency identity that spans both providers and customer retries.",
+          "Handle late primary authorizations after a secondary outcome.",
+          "Keep unsupported payment methods out of the secondary route.",
+          "Bound exposure while continuous reconciliation is unavailable.",
+          "Prevent failback from racing unresolved secondary attempts."
+        ],
+        "acceptable_decision_families": [
+          "A card-only canary with a durable cross-provider attempt ledger, delayed-webhook reconciliation, and guarded failback.",
+          "Shadow validation followed by tightly capped failover only after cross-provider idempotency and repair procedures pass."
+        ],
+        "fatal_errors": [
+          "Retrying payment attempts across providers without a shared idempotency boundary.",
+          "Failing traffic back before unresolved attempts and late primary events are reconciled."
+        ],
+        "known_valid_insights": [
+          "Provider-local idempotency does not protect a payment attempt that crosses provider boundaries."
+        ],
+        "decision_closure_requirements": [
+          "Name the first card cohort and volume cap.",
+          "Define the cross-provider attempt key and owner.",
+          "Specify delayed-webhook reconciliation and customer remediation.",
+          "Set failover stop conditions.",
+          "Define failback evidence and rollback."
+        ],
+        "reasoning_notes": "Reward a bounded failover that prioritizes duplicate-charge prevention over nominal checkout availability."
+      }
+    },
+    {
+      "case_id": "SE-04",
+      "title": "Automated revocation of stale project access",
+      "domain": "organization-process",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Identity governance lead",
+        "objective": "Reduce stale project access without disrupting emergency response or removing still-required contractor access.",
+        "facts": [
+          "The company has about thirty thousand project-level grants.",
+          "Manager reviews are sixty days overdue for twenty-two percent of grants.",
+          "Contractors frequently move between projects before HR records update.",
+          "SCIM removal can take up to six hours to reach two legacy applications.",
+          "Emergency responders use a separate time-limited elevation system, but some teams also retain standing project access."
+        ],
+        "decision_request": "Choose the automation scope, exception path, propagation evidence, and expansion criteria.",
+        "plausible_paths": [
+          "Automatically revoke every overdue grant.",
+          "Start with low-risk inactive grants and require bounded exceptions.",
+          "Continue manual reviews until HR and SCIM data are real time."
+        ],
+        "material_constraints": [
+          "Review overdue status does not prove that access is unused.",
+          "Contractor assignment data may lag actual work.",
+          "Legacy application revocation is asynchronous.",
+          "Emergency elevation exists but is not the only current incident-access path.",
+          "Rollback must not silently recreate grants in applications that already processed revocation."
+        ],
+        "harmful_failure_paths": [
+          "Automation removes an active responder's only working access during an incident.",
+          "The control plane records revocation while a legacy application still permits access."
+        ],
+        "incomplete_information": [
+          "The percentage of standing incident access that can safely migrate to emergency elevation is unknown."
+        ],
+        "reversible_action": "Canary warnings and simulated revocations for inactive low-risk grants before enforcing removals."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Define low-risk inactivity using more than overdue review status.",
+          "Protect active work when contractor assignment records lag.",
+          "Verify application-side revocation rather than trusting the control-plane request.",
+          "Separate emergency elevation migration from ordinary stale-access cleanup.",
+          "Make rollback reconcile actual downstream grant state."
+        ],
+        "acceptable_decision_families": [
+          "Warning-only shadow mode followed by low-risk revocation with owner-approved exceptions and downstream proof.",
+          "A narrow inactive-grant canary while incident access is inventoried and migrated separately."
+        ],
+        "fatal_errors": [
+          "Automatically revoking every overdue grant without validating active use or assignment.",
+          "Treating a submitted SCIM removal as proof that downstream access ended."
+        ],
+        "known_valid_insights": [
+          "Emergency elevation can reduce standing access, but it must be validated before standing incident grants are removed."
+        ],
+        "decision_closure_requirements": [
+          "Define the first low-risk cohort.",
+          "Name exception approval and expiry.",
+          "Set downstream propagation evidence and timeout.",
+          "Specify incident-access protection.",
+          "Define stop conditions, rollback reconciliation, and expansion evidence."
+        ],
+        "reasoning_notes": "Reward phased enforcement with downstream truth. Do not equate overdue governance metadata with proven stale access."
+      }
+    }
+  ]
+}
