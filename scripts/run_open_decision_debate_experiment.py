@@ -190,6 +190,21 @@ def validate_record_payload(record, payload, records_by_id=None, manifest=None):
         if set(observed_labels) != expected_labels or len(observed_labels) != len(expected_labels):
             raise ValueError("$.evaluations: must contain each candidate label exactly once")
         for item in payload["evaluations"]:
+            if record.get("judge_contract") == "weak-challenge-checklist":
+                for field in ("must_cover", "closure", "fatal_errors"):
+                    observed_ids = [
+                        checklist_item["item_id"]
+                        for checklist_item in item[field]
+                    ]
+                    expected_ids = record["checklist_item_ids"][field]
+                    if (
+                        observed_ids != expected_ids
+                        or len(set(observed_ids)) != len(expected_ids)
+                    ):
+                        raise ValueError(
+                            f"$.evaluations.{field}: must contain each checklist "
+                            "item exactly once"
+                        )
             if item["total_score"] != sum(item["scores"].values()):
                 raise ValueError("$.evaluations: total_score must equal the dimension scores")
         ranking = payload["ranking"]
