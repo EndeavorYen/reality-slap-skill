@@ -63,15 +63,27 @@ def judge_payload(record):
     evaluations = []
     for label in record["candidate_labels"]:
         must_cover = [
-            {"item_id": item_id, "covered": True, "explanation": "Covered."}
+            {
+                "item_id": item_id,
+                "covered": True,
+                "explanation": "The decision explicitly covers this requirement.",
+            }
             for item_id in record["checklist_item_ids"]["must_cover"]
         ]
         closure = [
-            {"item_id": item_id, "satisfied": True, "explanation": "Satisfied."}
+            {
+                "item_id": item_id,
+                "satisfied": True,
+                "explanation": "The decision explicitly closes this requirement.",
+            }
             for item_id in record["checklist_item_ids"]["closure"]
         ]
         fatal = [
-            {"item_id": item_id, "present": False, "explanation": "Absent."}
+            {
+                "item_id": item_id,
+                "present": False,
+                "explanation": "The fatal condition is not present in the decision.",
+            }
             for item_id in record["checklist_item_ids"]["fatal_errors"]
         ]
         scores = {dimension: 2 for dimension in DIMENSIONS}
