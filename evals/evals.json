@@ -95,6 +95,38 @@
     "status_note": "Complete live evidence cleared every preregistered green threshold. No replication calls were triggered.",
     "claim_boundary": "Internal holdout signal for this mixed Terra/Luna challenger pool. It is not model-agnostic, length-controlled, or independently replicated evidence."
   },
+  "latest_question_swarm_ledger_replay": {
+    "status": "live-complete",
+    "date": "2026-07-23",
+    "design": "paired diagnostic replay over eight frozen question-swarm confirmation cases",
+    "conditions": {
+      "H": "Sol-medium draft plus Terra-high questions plus Sol-medium Reality Slap revision",
+      "S": "Sol-medium draft plus two Luna-low question calls plus Sol-medium Reality Slap revision",
+      "L": "S with a private source-constraint closure ledger in the final Sol-medium revision",
+      "DH": "single direct Sol-high Reality Slap answer",
+      "DX": "single direct Sol-xhigh Reality Slap answer"
+    },
+    "result_json": "evals/question-swarm-ledger-replay-2026-07-23.json",
+    "result_markdown": "evals/question-swarm-ledger-replay-2026-07-23.md",
+    "verdict": "safety-regression",
+    "checklist_agreement": 0.931944,
+    "quality": {
+      "H": {"defect_burden": 17, "mean_score": 14.125},
+      "S": {"defect_burden": 14, "mean_score": 14.0625},
+      "L": {"defect_burden": 15, "mean_score": 15.625},
+      "DH": {"defect_burden": 25, "mean_score": 13.875},
+      "DX": {"defect_burden": 21, "mean_score": 14.4375}
+    },
+    "end_to_end_credits": {
+      "H": 60.330262,
+      "S": 56.9726,
+      "L": 66.635925,
+      "DH": 30.4668,
+      "DX": 29.50165
+    },
+    "evaluator_note": "One Terra five-way judge exhausted three attempts. Three two-candidate fallback calls covered the missing evaluations; all completed, one after a retry. The frozen H/S outputs had burden 22/22 under the earlier two-way evaluation and 17/14 here, exposing candidate-set or fresh-judge format sensitivity.",
+    "claim_boundary": "Diagnostic replay reusing the earlier eight cases, drafts, question packets, and H/S outputs. It isolates ledger and direct-effort mechanisms but is not a fresh holdout or general model ranking; exact quality margins are evaluator-format-sensitive."
+  },
   "latest_live_ab": {
     "date": "2026-07-05",
     "workspace": "/tmp/reality-slap-full-decay-ab-20260705",

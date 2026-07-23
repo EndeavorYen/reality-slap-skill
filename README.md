@@ -132,6 +132,48 @@ replicated or model-agnostic result. It validates a promising architecture, not
 yet a production command; challenge routing and compression are the next cost
 targets.
 
+### Cost and effort follow-up
+
+An eight-case paired replay then compared the frozen Terra path (H), two-Luna
+path (S), S plus a source-constraint ledger (L), and direct Sol high/xhigh
+answers. Reality Slap was applied only to the Sol decision calls.
+
+| Condition | Defect burden | Mean score (/21) | End-to-end credits |
+|---|---:|---:|---:|
+| H — Terra questions | 17 | 14.125 | 60.330262 |
+| S — two Luna question calls | **14** | 14.062 | 56.972600 |
+| L — S + constraint ledger | 15 | **15.625** | 66.635925 |
+| DH — direct Sol high | 25 | 13.875 | 30.466800 |
+| DX — direct Sol xhigh | 21 | 14.438 | **29.501650** |
+
+Direct Sol high/xhigh was 46–48% cheaper than S, but produced materially more
+hidden defects and guardrail failures. Xhigh improved aggregate burden over
+high by four, yet still missed two hard constraints and produced one fabricated
+fact and one unsafe-action flag. Higher internal effort reduced some omissions;
+it did not replace external coverage.
+
+The ledger raised the average score but added one defect and cost more than
+every other path. Its regression was a process-isolation leak: a final answer
+copied the internal phrase `frozen draft`. This is a useful warning that an
+audit scaffold can make an answer look more complete while leaking unsupported
+process context. Keep such ledgers private and gate the final answer separately.
+
+Five-candidate judging also proved too brittle: one Terra judge failed the
+output contract three times. A targeted two-candidate PK fallback completed all
+three calls, one after a retry. Future offline selection should apply cost and
+safety gates first, then use seeded pairwise PK instead of one O(n²) all-pairs
+judge.
+
+The frozen H/S answers had burden 22/22 in the earlier two-way confirmation but
+17/14 in this five-candidate evaluation. High agreement inside one run did not
+eliminate cross-format sensitivity. The broad direct-versus-pipeline signal is
+useful; the exact three-defect S-over-H margin is not yet a replicated fact.
+
+[Read the full cost/effort replay](evals/question-swarm-ledger-replay-2026-07-23.md)
+or inspect the [machine-readable result](evals/question-swarm-ledger-replay-2026-07-23.json).
+This was a diagnostic reuse of the same eight cases and frozen H/S artifacts,
+not a fresh holdout or a general model ranking.
+
 ### Same-model roleplay remains limited
 
 In the same-model roleplay pilot, Reality Slap improved boundary completeness

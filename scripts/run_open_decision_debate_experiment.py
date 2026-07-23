@@ -235,6 +235,26 @@ def validate_record_payload(record, payload, records_by_id=None, manifest=None):
             raise ValueError(
                 "$.challenge_dispositions: must cover each challenge exactly once"
             )
+        ledger_ids = record.get("ledger_constraint_ids")
+        if ledger_ids:
+            observed_ledger_ids = [
+                item["constraint_id"] for item in payload["constraint_ledger"]
+            ]
+            if (
+                observed_ledger_ids != ledger_ids
+                or len(set(observed_ledger_ids)) != len(ledger_ids)
+            ):
+                raise ValueError(
+                    "$.constraint_ledger: must cover each source constraint "
+                    "exactly once and in order"
+                )
+            for interaction in payload["interaction_checks"]:
+                left = interaction["left_constraint_id"]
+                right = interaction["right_constraint_id"]
+                if left == right:
+                    raise ValueError(
+                        "$.interaction_checks: constraint IDs must be distinct"
+                    )
     if record["kind"] == "serial" and record["phase"] != "final":
         if payload.get("phase") != record["phase"]:
             raise ValueError("$.phase: must match the record phase")
