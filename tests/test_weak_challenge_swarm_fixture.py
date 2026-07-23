@@ -30,6 +30,22 @@ class WeakChallengeSwarmFixtureTests(unittest.TestCase):
             result["summary"]["screening_metrics"]["burden_reduction"],
             0.25,
         )
+        self.assertIn("candidate_artifact_metrics", result["summary"])
+        self.assertIn("cost_proxy", result["summary"])
+        self.assertIn(
+            "disposition_transitions_c0_to_c1",
+            result["summary"]["challenge_metrics"],
+        )
+        self.assertNotIn(
+            "nonempty_resulting_changes",
+            result["summary"]["challenge_metrics"],
+        )
+        self.assertEqual(
+            result["summary"]["factorial_comparisons"]["neutral_self_revision"][
+                "baseline"
+            ],
+            "A",
+        )
 
     def test_amber_and_not_supported_routes_use_real_checklists(self):
         amber = self.run_mode("amber")

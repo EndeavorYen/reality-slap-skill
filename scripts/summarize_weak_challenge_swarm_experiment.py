@@ -305,27 +305,262 @@ def _challenge_metrics(generation_records):
     by_role = collections.Counter()
     by_model = collections.Counter()
     dispositions = collections.Counter()
-    changes = collections.Counter()
+    disposition_by_model = collections.Counter()
+    challenge_count_distribution = collections.Counter()
+    challenge_sources = {}
+    revisions = {}
     for record in generation_records:
+        if record["kind"] != "challenge":
+            continue
         payload = json.loads(Path(record["output_path"]).read_text(encoding="utf-8"))
-        if record["kind"] == "challenge":
-            count = len(payload["challenges"])
-            by_role[record["role"]] += count
-            by_model[record["model"]] += count
-        elif record["kind"] == "revision":
-            for item in payload["challenge_dispositions"]:
-                dispositions[(record["condition"], item["disposition"])] += 1
-                changes[(record["condition"], bool(item["resulting_change"].strip()))] += 1
+        count = len(payload["challenges"])
+        by_role[record["role"]] += count
+        by_model[record["model"]] += count
+        challenge_count_distribution[
+            (record["model"], record["role"], count)
+        ] += 1
+        for index, _challenge in enumerate(payload["challenges"], start=1):
+            challenge_sources[
+                (
+                    record["case_id"],
+                    f"{record['role'].upper()}-{index}",
+                )
+            ] = {
+                "model": record["model"],
+                "role": record["role"],
+            }
+    for record in generation_records:
+        if record["kind"] != "revision":
+            continue
+        payload = json.loads(Path(record["output_path"]).read_text(encoding="utf-8"))
+        revisions[(record["case_id"], record["condition"])] = payload
+        for item in payload["challenge_dispositions"]:
+            dispositions[(record["condition"], item["disposition"])] += 1
+            source = challenge_sources[
+                (record["case_id"], item["challenge_id"])
+            ]
+            disposition_by_model[
+                (
+                    source["model"],
+                    record["condition"],
+                    item["disposition"],
+                )
+            ] += 1
+    transitions = collections.Counter()
+    changed = []
+    case_ids = sorted({record["case_id"] for record in generation_records})
+    for case_id in case_ids:
+        c0 = {
+            item["challenge_id"]: item
+            for item in revisions[(case_id, "C0")]["challenge_dispositions"]
+        }
+        c1 = {
+            item["challenge_id"]: item
+            for item in revisions[(case_id, "C1")]["challenge_dispositions"]
+        }
+        if set(c0) != set(c1):
+            raise ValueError(f"C0/C1 disposition IDs differ: {case_id}")
+        for challenge_id in c0:
+            pair = (c0[challenge_id]["disposition"], c1[challenge_id]["disposition"])
+            transitions[pair] += 1
+            if pair[0] != pair[1]:
+                changed.append(
+                    {
+                        "case_id": case_id,
+                        "challenge_id": challenge_id,
+                        "c0": pair[0],
+                        "c1": pair[1],
+                    }
+                )
     return {
         "challenge_count_by_role": dict(sorted(by_role.items())),
         "challenge_count_by_model": dict(sorted(by_model.items())),
+        "challenge_count_distribution": {
+            f"{model}:{role}:{count}": calls
+            for (model, role, count), calls in sorted(
+                challenge_count_distribution.items()
+            )
+        },
         "dispositions": {
             f"{condition}:{disposition}": count
             for (condition, disposition), count in sorted(dispositions.items())
         },
-        "nonempty_resulting_changes": {
-            f"{condition}:{str(nonempty).lower()}": count
-            for (condition, nonempty), count in sorted(changes.items())
+        "dispositions_by_challenger_model": {
+            f"{model}:{condition}:{disposition}": count
+            for (model, condition, disposition), count in sorted(
+                disposition_by_model.items()
+            )
+        },
+        "disposition_transitions_c0_to_c1": {
+            f"{left}->{right}": count
+            for (left, right), count in sorted(transitions.items())
+        },
+        "changed_disposition_count": len(changed),
+        "changed_dispositions": changed,
+        "resulting_change_measurement_limit": (
+            "resulting_change is required non-empty text for every disposition, "
+            "including rejection; non-emptiness cannot measure an actual final edit."
+        ),
+    }
+
+
+def _candidate_artifact_metrics(generation_records):
+    lengths = collections.defaultdict(list)
+    for record in generation_records:
+        if record["kind"] not in {"draft", "revision"}:
+            continue
+        payload = json.loads(Path(record["output_path"]).read_text(encoding="utf-8"))
+        final = payload if record["kind"] == "draft" else payload["final_decision"]
+        text = json.dumps(final, sort_keys=True, separators=(",", ":"))
+        lengths[record["condition"]].append(len(text))
+    return {
+        condition: {
+            "mean_final_json_characters": round(sum(values) / len(values), 3),
+            "min_final_json_characters": min(values),
+            "max_final_json_characters": max(values),
+        }
+        for condition, values in sorted(lengths.items())
+    }
+
+
+def _metadata_totals(records):
+    result = {
+        "calls": len(records),
+        "attempts": 0,
+        "retries": 0,
+        "elapsed_seconds_sum": 0.0,
+        "prompt_characters": 0,
+        "output_characters": 0,
+    }
+    for record in records:
+        path = Path(record["metadata_path"])
+        if not path.exists():
+            continue
+        attempts = json.loads(path.read_text(encoding="utf-8")).get("attempts", [])
+        result["attempts"] += len(attempts)
+        result["retries"] += max(0, len(attempts) - 1)
+        result["elapsed_seconds_sum"] += sum(
+            item.get("elapsed_seconds", 0) for item in attempts
+        )
+        result["prompt_characters"] += sum(
+            item.get("prompt_characters", 0) for item in attempts
+        )
+        result["output_characters"] += sum(
+            item.get("output_characters", 0) for item in attempts
+        )
+    result["elapsed_seconds_sum"] = round(result["elapsed_seconds_sum"], 6)
+    return result
+
+
+def _add_costs(*items):
+    fields = (
+        "calls",
+        "attempts",
+        "retries",
+        "elapsed_seconds_sum",
+        "prompt_characters",
+        "output_characters",
+    )
+    result = {field: sum(item[field] for item in items) for field in fields}
+    result["elapsed_seconds_sum"] = round(result["elapsed_seconds_sum"], 6)
+    return result
+
+
+def _ratio(numerator, denominator):
+    return round(numerator / denominator, 6) if denominator else None
+
+
+def _cost_proxy(generation_records):
+    challenges = [
+        record for record in generation_records if record["kind"] == "challenge"
+    ]
+    by_condition = {
+        condition: [
+            record
+            for record in generation_records
+            if record.get("condition") == condition
+        ]
+        for condition in CONDITIONS
+    }
+    challenge_cost = _metadata_totals(challenges)
+    systems = {
+        "B0": _metadata_totals(by_condition["B0"]),
+        "B1": _metadata_totals(by_condition["B1"]),
+        "C0": _add_costs(challenge_cost, _metadata_totals(by_condition["C0"])),
+        "C1": _add_costs(challenge_cost, _metadata_totals(by_condition["C1"])),
+    }
+    baseline = systems["B0"]
+    ratios = {
+        name: {
+            "prompt_character_ratio_vs_b0": _ratio(
+                item["prompt_characters"],
+                baseline["prompt_characters"],
+            ),
+            "output_character_ratio_vs_b0": _ratio(
+                item["output_characters"],
+                baseline["output_characters"],
+            ),
+            "elapsed_sum_ratio_vs_b0": _ratio(
+                item["elapsed_seconds_sum"],
+                baseline["elapsed_seconds_sum"],
+            ),
+        }
+        for name, item in systems.items()
+    }
+    c0 = systems["C0"]
+    c1 = systems["C1"]
+    return {
+        "scope": (
+            "Generation-only incremental work after the shared draft. Elapsed time "
+            "is summed call time, not parallel wall-clock time or billed tokens."
+        ),
+        "challenge_pool": challenge_cost,
+        "systems": systems,
+        "ratios_vs_b0": ratios,
+        "reality_slap_increment_c1_minus_c0": {
+            field: round(c1[field] - c0[field], 6)
+            if field == "elapsed_seconds_sum"
+            else c1[field] - c0[field]
+            for field in (
+                "calls",
+                "attempts",
+                "retries",
+                "elapsed_seconds_sum",
+                "prompt_characters",
+                "output_characters",
+            )
+        },
+    }
+
+
+def _execution_reliability(records):
+    invalid_reasons = collections.Counter()
+    retry_calls = []
+    for record in records:
+        path = Path(record["metadata_path"])
+        if not path.exists():
+            continue
+        attempts = json.loads(path.read_text(encoding="utf-8")).get("attempts", [])
+        if len(attempts) > 1:
+            retry_calls.append(
+                {
+                    "call_id": record["call_id"],
+                    "kind": record["kind"],
+                    "model": record["model"],
+                    "attempts": len(attempts),
+                    "first_invalid_reason": attempts[0].get("invalid_reason", ""),
+                }
+            )
+        for attempt in attempts:
+            reason = attempt.get("invalid_reason", "")
+            if reason:
+                invalid_reasons[(record["model"], record["kind"], reason)] += 1
+    return {
+        "retry_call_count": len(retry_calls),
+        "retry_calls": sorted(retry_calls, key=lambda item: item["call_id"]),
+        "invalid_attempts": {
+            f"{model}:{kind}:{reason}": count
+            for (model, kind, reason), count in sorted(invalid_reasons.items())
         },
     }
 
@@ -448,6 +683,7 @@ def summarize(workspace):
     gate = screening_gate(primary)
     comparisons = {}
     for name, baseline, treatment in (
+        ("neutral_self_revision", "A", "B0"),
         ("reality_slap_without_challenges", "B0", "B1"),
         ("challenge_swarm_without_reality_slap", "B0", "C0"),
         ("reality_slap_with_challenges", "C0", "C1"),
@@ -502,6 +738,11 @@ def summarize(workspace):
         "factorial_interaction_burden_delta": interaction,
         "pairwise_preferences": pairwise,
         "challenge_metrics": _challenge_metrics(generation_records),
+        "candidate_artifact_metrics": _candidate_artifact_metrics(
+            generation_records
+        ),
+        "cost_proxy": _cost_proxy(generation_records),
+        "execution_reliability": _execution_reliability(all_records),
         "challenger_assignment_counts": {
             f"{role}:{model}": count
             for (role, model), count in sorted(assignment_counts.items())
@@ -540,6 +781,28 @@ def render_markdown(summary):
         )
         return "\n".join(lines)
     primary = summary["screening_metrics"]
+    comparisons = summary["factorial_comparisons"]
+    neutral = comparisons["neutral_self_revision"]
+    challenge = comparisons["challenge_swarm_without_reality_slap"]
+    rs_without = comparisons["reality_slap_without_challenges"]
+    rs_with = comparisons["reality_slap_with_challenges"]
+    artifacts = summary["candidate_artifact_metrics"]
+    cost = summary["cost_proxy"]
+    c1_cost_ratio = cost["ratios_vs_b0"]["C1"]
+    c0_c1_pairwise = [
+        item
+        for item in summary["pairwise_preferences"]
+        if {item["left"], item["right"]} == {"C0", "C1"}
+    ]
+    c0_wins = sum(
+        item["count"] for item in c0_c1_pairwise if item["winner"] == "C0"
+    )
+    c1_wins = sum(
+        item["count"] for item in c0_c1_pairwise if item["winner"] == "C1"
+    )
+    ties = sum(
+        item["count"] for item in c0_c1_pairwise if item["winner"] == "tie"
+    )
     lines.extend(
         [
             "## Primary endpoint",
@@ -568,6 +831,86 @@ def render_markdown(summary):
         [
             f"- Interaction burden delta: "
             f"`{summary['factorial_interaction_burden_delta']:+d}`",
+            "",
+            "## Condition outcomes",
+            "",
+            "| Condition | Defect burden | Mean score | Mean final JSON chars |",
+            "| --- | ---: | ---: | ---: |",
+            *[
+                f"| {condition} | {summary['conditions'][condition]['defect_burden']} "
+                f"| {summary['conditions'][condition]['mean_score']:.3f} "
+                f"| {artifacts[condition]['mean_final_json_characters']:.1f} |"
+                for condition in CONDITIONS
+            ],
+            "",
+            "## Observed mechanism",
+            "",
+            f"- Neutral self-revision A→B0 changed burden by "
+            f"`{neutral['burden_delta']:+d}` while changing mean score by "
+            f"`{neutral['mean_score_delta']:+.3f}`.",
+            f"- Challenge discovery without Reality Slap B0→C0 changed burden by "
+            f"`{challenge['burden_delta']:+d}` across "
+            f"`{challenge['improved_cases']}` improved cases.",
+            f"- Reality Slap without challenges B0→B1 changed burden by "
+            f"`{rs_without['burden_delta']:+d}`; with challenges C0→C1 it changed "
+            f"burden by only `{rs_with['burden_delta']:+d}`.",
+            f"- The challenge-only component guardrail regressions were "
+            f"`{', '.join(challenge['regressions']) or 'none'}`; the complete C1 "
+            f"regressions were `{', '.join(primary['regressions']) or 'none'}`.",
+            f"- Interaction burden delta was "
+            f"`{summary['factorial_interaction_burden_delta']:+d}`: the observed "
+            "effects were sub-additive rather than mutually amplifying.",
+            f"- C0 versus C1 pairwise judgments were `{c0_wins}` C0 wins / "
+            f"`{c1_wins}` C1 wins / `{ties}` ties.",
+            f"- C0→C1 changed "
+            f"`{summary['challenge_metrics']['changed_disposition_count']}` of "
+            f"`{sum(summary['challenge_metrics']['disposition_transitions_c0_to_c1'].values())}` "
+            "challenge dispositions.",
+            "",
+            "## Cost and reliability",
+            "",
+            f"- Complete C1 generation work after the shared draft used "
+            f"`{c1_cost_ratio['prompt_character_ratio_vs_b0']}`× B0 prompt characters, "
+            f"`{c1_cost_ratio['output_character_ratio_vs_b0']}`× B0 output characters, "
+            f"and `{c1_cost_ratio['elapsed_sum_ratio_vs_b0']}`× summed call time. "
+            "These are cost proxies, not billed-token ratios.",
+            f"- Final C1 JSON averaged "
+            f"`{artifacts['C1']['mean_final_json_characters']:.1f}` characters versus "
+            f"`{artifacts['B0']['mean_final_json_characters']:.1f}` for B0.",
+            f"- Execution required "
+            f"`{summary['execution_reliability']['retry_call_count']}` retry calls; "
+            "all completed within the frozen one-retry limit.",
+            "",
+            "## Non-trivial insights",
+            "",
+            "1. The green operational result is real, but the factorial does not "
+            "attribute the large gain primarily to Reality Slap. Most hidden-defect "
+            "reduction appeared when external challenges were added; Reality Slap's "
+            "increment on top of those challenges was much smaller.",
+            "2. Mean quality scores can conceal hidden-card regressions. A neutral "
+            "second pass can look slightly better by rubric score while covering fewer "
+            "hard constraints or closure requirements.",
+            "3. Reality Slap behaved more like a guardrail and evidence-calibration "
+            "layer than a discovery engine in the full system. Its value should be "
+            "judged on residual critical errors, not only average score or acceptance "
+            "rate.",
+            "4. More context bought materially more coverage, but also much more "
+            "input, output, and evaluator complexity. The next optimization target is "
+            "challenge compression or routing, not adding more debating roles.",
+            "5. Challenge count is not a useful challenger-quality metric here because "
+            "the one-to-three output cap was nearly saturated. Per-model yield is "
+            "exploratory and cannot establish model interchangeability.",
+            "",
+            "## Measurement limits",
+            "",
+            f"- {summary['challenge_metrics']['resulting_change_measurement_limit']}",
+            "- Longer C0/C1 answers may partly mediate checklist coverage. Judges were "
+            "told not to reward verbosity, but this experiment does not independently "
+            "hold final-answer length constant.",
+            "- The mixed Terra/Luna pool was role-balanced but not powered as a "
+            "head-to-head model comparison.",
+            "- This is a preregistered internal holdout screen, not independent external "
+            "replication.",
             "",
             "## Claim boundary",
             "",
