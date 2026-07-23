@@ -261,6 +261,22 @@ def validate_record_payload(record, payload, records_by_id=None, manifest=None):
                             f"$.evaluations.{field}: must contain each checklist "
                             "item exactly once"
                         )
+                    for checklist_item in item[field]:
+                        if len(checklist_item["explanation"].strip()) < 12:
+                            raise ValueError(
+                                f"$.evaluations.{field}.explanation: "
+                                "must contain a substantive explanation"
+                            )
+                for explanation in item["critical_explanations"].values():
+                    if len(explanation.strip()) < 12:
+                        raise ValueError(
+                            "$.evaluations.critical_explanations: "
+                            "must contain substantive explanations"
+                        )
+                if len(item["summary"].strip()) < 12:
+                    raise ValueError(
+                        "$.evaluations.summary: must contain a substantive summary"
+                    )
             if item["total_score"] != sum(item["scores"].values()):
                 raise ValueError("$.evaluations: total_score must equal the dimension scores")
         ranking = payload["ranking"]
@@ -276,6 +292,14 @@ def validate_record_payload(record, payload, records_by_id=None, manifest=None):
                 raise ValueError("$.pairwise_preferences: pair labels must be distinct")
             if item["winner"] != "tie" and item["winner"] not in pair:
                 raise ValueError("$.pairwise_preferences: winner must belong to the pair")
+            if (
+                record.get("judge_contract") == "weak-challenge-checklist"
+                and len(item["rationale"].strip()) < 12
+            ):
+                raise ValueError(
+                    "$.pairwise_preferences.rationale: "
+                    "must contain a substantive rationale"
+                )
             observed_pairs.add(pair)
         if (
             observed_pairs != expected_pairs
@@ -328,7 +352,7 @@ def save_call_metadata(record, metadata):
     path.write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
-def call_eligibility(record, records_by_id):
+def call_eligibility(record, records_by_id, max_attempts=MAX_ATTEMPTS):
     metadata = load_call_metadata(record)
     attempts = metadata["attempts"]
     latest_invalid_reason = attempts[-1].get("invalid_reason", "") if attempts else ""
@@ -337,7 +361,7 @@ def call_eligibility(record, records_by_id):
         and not latest_invalid_reason
     ):
         return "complete"
-    if len(attempts) >= MAX_ATTEMPTS:
+    if len(attempts) >= max_attempts:
         return "retry-exhausted"
     if any(
         dependency not in records_by_id
@@ -368,11 +392,11 @@ def load_phase_records(workspace, phase):
     raise ValueError(f"unknown phase: {phase}")
 
 
-def iter_pending_calls(workspace, phase):
+def iter_pending_calls(workspace, phase, max_attempts=MAX_ATTEMPTS):
     records = load_phase_records(workspace, phase)
     records_by_id = {record["call_id"]: record for record in records}
     for record in records:
-        if call_eligibility(record, records_by_id) == "ready":
+        if call_eligibility(record, records_by_id, max_attempts) == "ready":
             yield record
 
 
@@ -624,7 +648,15 @@ def audit_workspace(workspace):
     return combined
 
 
-def run_phase(workspace, phase, codex_bin, cwd, timeout_seconds, max_workers):
+def run_phase(
+    workspace,
+    phase,
+    codex_bin,
+    cwd,
+    timeout_seconds,
+    max_workers,
+    max_attempts=MAX_ATTEMPTS,
+):
     workspace = Path(workspace)
     manifest = json.loads((workspace / "manifest.json").read_text(encoding="utf-8"))
     results = []
@@ -634,7 +666,7 @@ def run_phase(workspace, phase, codex_bin, cwd, timeout_seconds, max_workers):
         ready = [
             record
             for record in records
-            if call_eligibility(record, records_by_id) == "ready"
+            if call_eligibility(record, records_by_id, max_attempts) == "ready"
         ]
         if not ready:
             break
@@ -664,6 +696,7 @@ def main():
     parser.add_argument("--cwd", default="/private/tmp")
     parser.add_argument("--timeout-seconds", type=float, default=240)
     parser.add_argument("--max-workers", type=int, default=4)
+    parser.add_argument("--max-attempts", type=int, choices=range(1, 4), default=MAX_ATTEMPTS)
     parser.add_argument("--audit-only", action="store_true")
     args = parser.parse_args()
     if args.audit_only:
@@ -676,6 +709,7 @@ def main():
             args.cwd,
             args.timeout_seconds,
             args.max_workers,
+            args.max_attempts,
         )
     print(json.dumps(payload, indent=2, sort_keys=True))
 

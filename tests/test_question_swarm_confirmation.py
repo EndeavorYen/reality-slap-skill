@@ -16,7 +16,14 @@ from create_question_swarm_confirmation_workspace import (
     create_confirmation_workspace,
     load_records,
 )
-from run_open_decision_debate_experiment import render_prompt
+from create_weak_challenge_swarm_judging import (
+    CRITICAL_FLAGS,
+    DIMENSIONS,
+)
+from run_open_decision_debate_experiment import (
+    render_prompt,
+    validate_record_payload,
+)
 
 
 BANK = ROOT / "evals" / "question-swarm-holdout-bank.json"
@@ -187,6 +194,60 @@ class QuestionSwarmConfirmationTests(unittest.TestCase):
         self.assertTrue(
             all(mappings[0] != mappings[1] for mappings in by_case.values())
         )
+
+    def test_final_judge_rejects_schema_valid_placeholder_explanations(self):
+        self._complete_generation()
+        record = create_confirmation_judges(self.workspace)[0]
+
+        def checklist_items(field, decision_field):
+            return [
+                {
+                    "item_id": item_id,
+                    decision_field: False,
+                    "explanation": "No supporting evidence was provided.",
+                }
+                for item_id in record["checklist_item_ids"][field]
+            ]
+
+        evaluations = []
+        for label in record["candidate_labels"]:
+            evaluations.append(
+                {
+                    "label": label,
+                    "must_cover": checklist_items("must_cover", "covered"),
+                    "closure": checklist_items("closure", "satisfied"),
+                    "fatal_errors": checklist_items("fatal_errors", "present"),
+                    "critical_flags": {
+                        flag: False for flag in CRITICAL_FLAGS
+                    },
+                    "critical_explanations": {
+                        flag: "No supporting evidence was provided."
+                        for flag in CRITICAL_FLAGS
+                    },
+                    "scores": {
+                        dimension: 0 for dimension in DIMENSIONS
+                    },
+                    "total_score": 0,
+                    "summary": "No supporting evidence was provided.",
+                }
+            )
+        payload = {
+            "case_id": record["case_id"],
+            "evaluations": evaluations,
+            "pairwise_preferences": [
+                {
+                    "left_label": "A",
+                    "right_label": "B",
+                    "winner": "tie",
+                    "rationale": "Neither candidate provides stronger evidence.",
+                }
+            ],
+            "ranking": ["A", "B"],
+        }
+        payload["evaluations"][0]["summary"] = "x"
+
+        with self.assertRaisesRegex(ValueError, "substantive summary"):
+            validate_record_payload(record, payload)
 
 
 if __name__ == "__main__":

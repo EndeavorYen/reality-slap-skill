@@ -216,6 +216,29 @@ class RunOpenDecisionDebateExperimentTests(unittest.TestCase):
         self.assertIn(role["call_id"], audit["retry_exhausted_call_ids"])
         self.assertIn(cross["call_id"], audit["dependency_blocked_call_ids"])
 
+    def test_explicit_third_attempt_can_recover_an_exhausted_call(self):
+        role = self.case_record(
+            "heterogeneous-debate-rs-chair",
+            "role",
+            role="option_architect",
+        )
+        self.write_attempts(
+            role,
+            [
+                {"attempt": 1, "invalid_reason": "invalid-output"},
+                {"attempt": 2, "invalid_reason": "invalid-output"},
+            ],
+        )
+
+        self.assertEqual(
+            call_eligibility(role, self.records_by_id),
+            "retry-exhausted",
+        )
+        self.assertEqual(
+            call_eligibility(role, self.records_by_id, max_attempts=3),
+            "ready",
+        )
+
     def test_valid_completed_call_is_skipped_and_invalid_json_is_retried(self):
         valid = self.case_record(
             "heterogeneous-debate-rs-chair",
