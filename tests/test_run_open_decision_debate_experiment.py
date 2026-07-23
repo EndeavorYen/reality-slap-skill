@@ -19,6 +19,7 @@ from run_open_decision_debate_experiment import (
     build_command,
     call_eligibility,
     iter_pending_calls,
+    parse_usage_events,
     render_prompt,
     response_status,
     validate_payload,
@@ -104,7 +105,37 @@ class RunOpenDecisionDebateExperimentTests(unittest.TestCase):
         self.assertIn('model_reasoning_effort="high"', command)
         self.assertIn("--ignore-user-config", command)
         self.assertIn("--ignore-rules", command)
+        self.assertIn("--json", command)
         self.assertEqual(command[-1], "sealed prompt")
+
+    def test_parse_usage_events_requires_one_complete_usage_record(self):
+        events = "\n".join(
+            [
+                '{"type":"thread.started","thread_id":"thread-1"}',
+                '{"type":"turn.completed","usage":{"input_tokens":10,'
+                '"cached_input_tokens":2,"output_tokens":3,'
+                '"reasoning_output_tokens":1}}',
+            ]
+        )
+
+        self.assertEqual(
+            parse_usage_events(events),
+            {
+                "input_tokens": 10,
+                "cached_input_tokens": 2,
+                "output_tokens": 3,
+                "reasoning_output_tokens": 1,
+            },
+        )
+
+        with self.assertRaisesRegex(ValueError, "exactly one"):
+            parse_usage_events('{"type":"thread.started"}')
+        with self.assertRaisesRegex(ValueError, "exactly one"):
+            parse_usage_events(events + "\n" + events.splitlines()[-1])
+        with self.assertRaisesRegex(ValueError, "missing usage field"):
+            parse_usage_events(
+                '{"type":"turn.completed","usage":{"input_tokens":10}}'
+            )
 
     def test_initial_ready_wave_has_exactly_sixty_calls(self):
         pending = list(iter_pending_calls(self.workspace, "generation"))

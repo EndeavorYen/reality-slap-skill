@@ -27,10 +27,47 @@ INVALID_OUTPUT_MARKERS = (
     "ERROR: You've hit your usage limit",
     "ERROR: child process exited with status",
 )
+USAGE_FIELDS = (
+    "input_tokens",
+    "cached_input_tokens",
+    "output_tokens",
+    "reasoning_output_tokens",
+)
 
 
 def sha256_text(text):
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def parse_usage_events(text):
+    completed = []
+    for line_number, line in enumerate(text.splitlines(), start=1):
+        if not line.strip():
+            continue
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError as error:
+            raise ValueError(f"invalid JSONL event at line {line_number}") from error
+        if event.get("type") == "turn.completed":
+            completed.append(event)
+    if len(completed) != 1:
+        raise ValueError(
+            "expected exactly one turn.completed usage event, "
+            f"found {len(completed)}"
+        )
+    usage = completed[0].get("usage")
+    if not isinstance(usage, dict):
+        raise ValueError("turn.completed is missing usage")
+    missing = [field for field in USAGE_FIELDS if field not in usage]
+    if missing:
+        raise ValueError(f"missing usage field: {missing[0]}")
+    result = {}
+    for field in USAGE_FIELDS:
+        value = usage[field]
+        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+            raise ValueError(f"invalid usage field: {field}")
+        result[field] = value
+    return result
 
 
 def validate_payload(value, schema, path="$"):
@@ -273,9 +310,15 @@ def save_call_metadata(record, metadata):
 
 
 def call_eligibility(record, records_by_id):
-    if response_status(record, records_by_id) == "complete":
+    metadata = load_call_metadata(record)
+    attempts = metadata["attempts"]
+    latest_invalid_reason = attempts[-1].get("invalid_reason", "") if attempts else ""
+    if (
+        response_status(record, records_by_id) == "complete"
+        and not latest_invalid_reason
+    ):
         return "complete"
-    if len(load_call_metadata(record)["attempts"]) >= MAX_ATTEMPTS:
+    if len(attempts) >= MAX_ATTEMPTS:
         return "retry-exhausted"
     if any(
         dependency not in records_by_id
@@ -389,6 +432,7 @@ def build_command(record, codex_bin, cwd, prompt):
         "read-only",
         "--color",
         "never",
+        "--json",
         "--model",
         record["model"],
         "--config",
@@ -415,18 +459,22 @@ def execute_call(record, records_by_id, manifest, codex_bin, cwd, timeout_second
     command = build_command(record, codex_bin, cwd, prompt)
     log_path = Path(record["log_path"])
     log_path.parent.mkdir(parents=True, exist_ok=True)
+    events_path = log_path.parent / f"events-attempt-{attempt_number}.jsonl"
     started = time.monotonic()
     timed_out = False
     returncode = 0
-    with log_path.open("a", encoding="utf-8") as log_file:
+    with (
+        log_path.open("a", encoding="utf-8") as log_file,
+        events_path.open("w", encoding="utf-8") as events_file,
+    ):
         log_file.write(f"\n=== attempt {attempt_number} ===\n")
         try:
             result = subprocess.run(
                 command,
                 check=False,
                 text=True,
-                stdout=log_file,
-                stderr=subprocess.STDOUT,
+                stdout=events_file,
+                stderr=log_file,
                 timeout=timeout_seconds,
             )
             returncode = result.returncode
@@ -444,12 +492,20 @@ def execute_call(record, records_by_id, manifest, codex_bin, cwd, timeout_second
         if output_path.exists()
         else ""
     )
+    usage = None
+    usage_error = ""
+    try:
+        usage = parse_usage_events(events_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as error:
+        usage_error = str(error)
     if timed_out:
         invalid_reason = "timeout"
     elif returncode != 0:
         invalid_reason = f"exit-{returncode}"
     elif status != "complete":
         invalid_reason = "invalid-output"
+    elif usage_error:
+        invalid_reason = "missing-usage"
     else:
         invalid_reason = ""
     metadata["call_id"] = record["call_id"]
@@ -465,6 +521,9 @@ def execute_call(record, records_by_id, manifest, codex_bin, cwd, timeout_second
             "prompt_sha256": sha256_text(prompt),
             "output_characters": len(output_text),
             "output_sha256": sha256_text(output_text),
+            "events_path": str(events_path),
+            "usage": usage,
+            "usage_error": usage_error,
         }
     if DRAFT_MARKER in Path(record["prompt_path"]).read_text(encoding="utf-8"):
         attempt["shared_input_hashes"] = shared_input_hashes(
@@ -477,7 +536,7 @@ def execute_call(record, records_by_id, manifest, codex_bin, cwd, timeout_second
     return {
         "call_id": record["call_id"],
         "attempt": attempt_number,
-        "status": status,
+        "status": status if not invalid_reason else "invalid",
         "invalid_reason": invalid_reason,
     }
 
