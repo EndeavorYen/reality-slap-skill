@@ -85,7 +85,58 @@ The release benchmark measures whether the same recommendation survives a true m
 | Strong individual pass rate | 14/24 (58.3%) | 24/24 (100.0%) |
 | Hard-evidence gate | — | 8/8 pass |
 
-Reality Slap materially improved stance stability in the release benchmark. In the same-model roleplay pilot, it improved boundary completeness modestly but did not demonstrate lower harmful consensus; both arms recorded zero harmful-compromise flags.
+Reality Slap materially improved stance stability in the release benchmark.
+
+### Strong proposer + weak challenge swarm
+
+A preregistered 12-case internal holdout tested a different pattern: one strong
+model drafts the answer, isolated weaker models challenge it from distinct
+angles, and the strong model revises the answer. The experiment separated a
+neutral self-revision, Reality Slap alone, challenge swarm alone, and the
+combined system.
+
+| Condition | Defect burden | Mean score (/21) | Mean final JSON chars |
+|---|---:|---:|---:|
+| A — original draft | 21 | 16.042 | 4,119 |
+| B0 — neutral self-revision | 28 | 16.292 | 4,079 |
+| B1 — Reality Slap self-revision | 20 | 17.417 | 4,377 |
+| C0 — challenge swarm | 5 | 20.583 | 7,017 |
+| C1 — challenge swarm + Reality Slap | **4** | **20.708** | 6,675 |
+
+Against neutral self-revision, the complete C1 system reduced hidden-defect
+burden from **28 to 4 (85.7%)**, improved 10/12 cases with none worsened, and
+raised mean score by 4.417 points. Checklist agreement was 93.8%, with no
+guardrail regression.
+
+The factorial result matters more than the headline:
+
+- External challenges produced most of the gain: B0→C0 removed 23 defects.
+- Reality Slap alone removed 8 defects, but added to the swarm it removed only
+  one more. The effects were sub-additive, not mutually amplifying.
+- C0 introduced one fabricated-fact regression; C1 removed that regression.
+  This supports Reality Slap as a residual guardrail and evidence-calibration
+  layer, not as the main discovery engine.
+- Neutral self-revision increased mean score slightly while worsening defect
+  burden from 21 to 28. Average quality scores can hide missed constraints.
+
+The coverage was expensive. After the shared draft, C1 used **7.17× prompt
+characters, 5.31× output characters, and 5.76× summed call time** versus B0.
+These are generation-work proxies, not billed-token ratios. C1 answers were
+also 1.64× longer, so this run does not isolate reasoning coverage from answer
+length.
+
+[Read the full weak-challenge-swarm result](evals/weak-challenge-swarm-2026-07-23.md)
+or inspect the [machine-readable evidence](evals/weak-challenge-swarm-2026-07-23.json).
+This is an internal mixed Terra/Luna challenger screen, not an independently
+replicated or model-agnostic result. It validates a promising architecture, not
+yet a production command; challenge routing and compression are the next cost
+targets.
+
+### Same-model roleplay remains limited
+
+In the same-model roleplay pilot, Reality Slap improved boundary completeness
+modestly but did not demonstrate lower harmful consensus; both arms recorded
+zero harmful-compromise flags.
 
 <p align="center">
   <img src="assets/same-model-roleplay-result.svg" alt="Same-model roleplay pilot card: mean quality was 13.833 versus 13.958 out of 14; complete critical boundaries increased modestly from 20/24 to 23/24; harmful-compromise flags were 0/24 in both arms. Verdict: better boundaries, no demonstrated reduction in harmful consensus." width="900">
@@ -257,4 +308,6 @@ The gate checks the skill, tests, eval bank, install layout, command shim, and s
 - [x] Scripted hard-evidence gate.
 - [x] Explicit Deep Fix companion for drift-resistant root-cause execution.
 - [x] Fixed Repair Queue for ordered multi-problem repair without scope drift.
+- [x] Internal factorial proof for strong-proposer + weak-challenge-swarm revision.
+- [ ] Cost-bounded challenge command with routing, compression, and fallback.
 - [ ] Plugin packaging decision.
