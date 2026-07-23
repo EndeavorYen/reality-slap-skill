@@ -18,9 +18,13 @@ from create_open_decision_debate_judging import (
 from create_open_decision_debate_workspace import (
     SOL_EFFORT,
     SOL_MODEL,
+    STAGE2_D,
+    STAGE2_E,
+    STAGE2_F,
     TERRA_EFFORT,
     TERRA_MODEL,
     load_records,
+    validate_stage2_reused_candidates,
     write_json,
 )
 from run_open_decision_debate_experiment import audit_workspace, response_status
@@ -173,6 +177,27 @@ def final_verdict(gate_result):
     return "not-supported"
 
 
+def stage2_verdict(
+    stage1_green,
+    peer_gate,
+    chair_gate,
+    heterogeneous_gate,
+):
+    if not stage1_green:
+        return {"verdict": "incomplete", "component_findings": []}
+    findings = []
+    if chair_gate["supported"]:
+        findings.append("reality-slap-chair-contribution-supported")
+    if heterogeneous_gate["supported"]:
+        findings.append("heterogeneous-model-contribution-supported")
+    verdict = (
+        "large-structured-debate-gain-supported"
+        if peer_gate["supported"]
+        else "bundle-gain-only"
+    )
+    return {"verdict": verdict, "component_findings": findings}
+
+
 def sha256_path(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
@@ -215,6 +240,8 @@ def condition_evaluations(record, payload):
 def read_judgments(workspace):
     workspace = Path(workspace)
     manifest = load_json(workspace / "manifest.json")
+    if manifest.get("stage") == "stage2":
+        validate_stage2_reused_candidates(workspace)
     records = load_judge_records(workspace)
     verify_judge_mappings(workspace, manifest, records)
     by_case = {}
@@ -416,6 +443,186 @@ def summarize_stage1(workspace):
     }
 
 
+def human_winner_for_pair(resolution, label_to_condition, left, right):
+    condition_to_label = {
+        condition: label for label, condition in label_to_condition.items()
+    }
+    expected_pair = {
+        condition_to_label[left],
+        condition_to_label[right],
+    }
+    entries = resolution.get("pairwise_winners")
+    if not isinstance(entries, list):
+        raise ValueError("Stage 2 human resolution requires pairwise_winners")
+    matching = [
+        item for item in entries if set(item.get("pair", [])) == expected_pair
+    ]
+    if len(matching) != 1:
+        raise ValueError("human component outcomes must cover every pair once")
+    winner = matching[0].get("winner")
+    if winner == "tie":
+        return "tie"
+    if winner not in expected_pair:
+        raise ValueError("human component winner must belong to its pair")
+    return label_to_condition[winner]
+
+
+def summarize_stage2(workspace):
+    workspace = Path(workspace)
+    manifest, judged = read_judgments(workspace)
+    source_stage1 = summarize_stage1(manifest["source_stage1_workspace"])
+    if source_stage1["verdict"] != "stage1-large-bundle-signal":
+        raise ValueError("Stage 2 source did not clear the Stage 1 green gate")
+    queue, resolutions, human_mappings = human_evidence(workspace)
+    conflict_by_case = {item["case_id"]: item for item in queue["conflicts"]}
+    comparisons = (
+        ("heterogeneous-debate-rs-chair", STAGE2_D),
+        ("heterogeneous-debate-rs-chair", STAGE2_E),
+        ("heterogeneous-debate-rs-chair", STAGE2_F),
+    )
+    outcomes = {right: [] for _, right in comparisons}
+    score_deltas = {right: [] for _, right in comparisons}
+    raw_agreements = {right: [] for _, right in comparisons}
+    resolved_flags = {}
+    for case_id in manifest["case_ids"]:
+        items = judged[case_id]
+        raw_winners = {}
+        for left, right in comparisons:
+            winners = [
+                preference_for(
+                    item["payload"],
+                    item["record"]["label_to_condition"],
+                    left,
+                    right,
+                )[0]
+                for item in items
+            ]
+            raw_winners[right] = winners
+            raw_agreements[right].append(winners[0] == winners[1])
+        conflict = conflict_by_case.get(case_id)
+        if conflict:
+            resolution = resolutions[conflict["conflict_id"]]
+            mapping = human_mappings[conflict["conflict_id"]]
+            flags = decode_human_flags(resolution, mapping)
+            for left, right in comparisons:
+                outcomes[right].append(
+                    human_winner_for_pair(resolution, mapping, left, right)
+                )
+        else:
+            for left, right in comparisons:
+                if raw_winners[right][0] != raw_winners[right][1]:
+                    raise ValueError(
+                        f"unresolved Stage 2 pairwise disagreement: {case_id}"
+                    )
+                outcomes[right].append(raw_winners[right][0])
+            first_flags = {
+                condition: evaluation["critical_flags"]
+                for condition, evaluation in items[0]["evaluations"].items()
+            }
+            second_flags = {
+                condition: evaluation["critical_flags"]
+                for condition, evaluation in items[1]["evaluations"].items()
+            }
+            if first_flags != second_flags:
+                raise ValueError(
+                    f"unresolved Stage 2 critical disagreement: {case_id}"
+                )
+            flags = first_flags
+        resolved_flags[case_id] = flags
+        c_score = sum(
+            item["evaluations"]["heterogeneous-debate-rs-chair"]["total_score"]
+            for item in items
+        ) / len(items)
+        for _, right in comparisons:
+            comparator_score = sum(
+                item["evaluations"][right]["total_score"] for item in items
+            ) / len(items)
+            score_deltas[right].append(c_score - comparator_score)
+
+    conditions = ["heterogeneous-debate-rs-chair", STAGE2_D, STAGE2_E, STAGE2_F]
+    flag_counts = {
+        condition: {
+            flag: sum(
+                resolved_flags[case_id][condition][flag]
+                for case_id in manifest["case_ids"]
+            )
+            for flag in CRITICAL_FLAGS
+        }
+        for condition in conditions
+    }
+    n = len(manifest["case_ids"])
+    component_gates = {}
+    for _, right in comparisons:
+        regressions = [
+            flag
+            for flag in SAFETY_GUARDRAILS
+            if flag_counts["heterogeneous-debate-rs-chair"][flag]
+            > flag_counts[right][flag]
+        ]
+        dissent_regressions = []
+        if right == STAGE2_E:
+            dissent_regressions = [
+                flag
+                for flag in ("false_unanimity", "suppressed_valid_dissent")
+                if flag_counts["heterogeneous-debate-rs-chair"][flag]
+                > flag_counts[right][flag]
+            ]
+        component_gates[right] = stage2_component_gate(
+            n=n,
+            wins=outcomes[right].count("heterogeneous-debate-rs-chair"),
+            losses=outcomes[right].count(right),
+            score_delta=sum(score_deltas[right]) / n,
+            agreement=sum(raw_agreements[right]) / n,
+            regressions=regressions,
+            chair_dissent_regressions=dissent_regressions,
+        )
+    verdict = stage2_verdict(
+        stage1_green=True,
+        peer_gate=component_gates[STAGE2_D],
+        chair_gate=component_gates[STAGE2_E],
+        heterogeneous_gate=component_gates[STAGE2_F],
+    )
+    generation_records = load_records(workspace)
+    judge_records = load_judge_records(workspace)
+    return {
+        "experiment_id": manifest["experiment_id"],
+        "stage": "stage2",
+        "subset": manifest["subset"],
+        "case_ids": manifest["case_ids"],
+        "verdict": verdict["verdict"],
+        "component_findings": verdict["component_findings"],
+        "next_action": "complete",
+        "gate": {
+            "decision": "complete",
+            "reason": verdict["verdict"],
+            "next_action": "complete",
+            "thresholds": {},
+            "observed": {"complete": True},
+            "checks": {"complete": True},
+            "failed_thresholds": [],
+        },
+        "component_gates": component_gates,
+        "models": {
+            "sol": {"model": SOL_MODEL, "effort": SOL_EFFORT},
+            "terra": {"model": TERRA_MODEL, "effort": TERRA_EFFORT},
+        },
+        "counts": {
+            "generation_records": len(generation_records),
+            "new_generation_calls": manifest["new_generation_call_count"],
+            "judge_records": len(judge_records),
+            "human_conflicts": queue["conflict_count"],
+            **attempt_metrics(generation_records + judge_records),
+        },
+        "critical_flag_counts": flag_counts,
+        "audit": audit_workspace(workspace),
+        "limitations": [
+            "Stage 2 reuses the same cases and is mechanism evidence, not replication.",
+            "Terra family and high effort are confounded.",
+            "A supported heterogeneous component is operational, not family-only causal evidence.",
+        ],
+    }
+
+
 def incomplete_summary(workspace, stage, error):
     workspace = Path(workspace)
     manifest_path = workspace / "manifest.json"
@@ -450,9 +657,11 @@ def incomplete_summary(workspace, stage, error):
 
 def summarize(workspace, stage="stage1"):
     try:
-        if stage != "stage1":
-            raise ValueError("Stage 2 summarization requires completed ablation support")
-        return summarize_stage1(workspace)
+        if stage == "stage1":
+            return summarize_stage1(workspace)
+        if stage == "stage2":
+            return summarize_stage2(workspace)
+        raise ValueError(f"unknown stage: {stage}")
     except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError) as error:
         return incomplete_summary(workspace, stage, error)
 

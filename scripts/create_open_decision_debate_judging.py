@@ -15,6 +15,7 @@ from create_open_decision_debate_workspace import (
     TERRA_MODEL,
     load_records,
     strict_object,
+    validate_stage2_reused_candidates,
     write_json,
 )
 from run_open_decision_debate_experiment import response_status
@@ -199,6 +200,8 @@ def judge_call_dir(workspace, call_id):
 def create_judge_records(workspace, stage="stage1"):
     workspace = Path(workspace)
     conditions = STAGE1_CONDITIONS if stage == "stage1" else STAGE2_CONDITIONS
+    if stage == "stage2":
+        validate_stage2_reused_candidates(workspace)
     manifest, finals = validate_generation_complete(workspace, conditions)
     labels = labels_for(conditions)
     schema_path = workspace / "schemas" / f"{stage}-judge.json"
@@ -342,16 +345,26 @@ def preference_for(payload, mapping, left_condition, right_condition):
     return mapping[item["winner"]], item["rationale"]
 
 
-def reencode_rationale(record, payload, human_condition_to_label):
+def reencode_rationale(
+    record,
+    payload,
+    human_condition_to_label,
+    left_condition,
+    right_condition,
+):
     mapping = record["label_to_condition"]
     winner, rationale = preference_for(
         payload,
         mapping,
-        "matched-serial-review",
-        "heterogeneous-debate-rs-chair",
+        left_condition,
+        right_condition,
     )
     return {
         "judge": record["judge_id"],
+        "pair": [
+            human_condition_to_label[left_condition],
+            human_condition_to_label[right_condition],
+        ],
         "winner": (
             "tie" if winner == "tie" else human_condition_to_label[winner]
         ),
@@ -385,13 +398,22 @@ def create_conflict_queue(workspace):
         if manifest.get("judge_stage") == "stage1"
         else STAGE2_CONDITIONS
     )
+    comparisons = (
+        (("heterogeneous-debate-rs-chair", "matched-serial-review"),)
+        if manifest.get("judge_stage") == "stage1"
+        else tuple(
+            ("heterogeneous-debate-rs-chair", condition)
+            for condition in STAGE2_CONDITIONS
+            if condition != "heterogeneous-debate-rs-chair"
+        )
+    )
     finals = final_records_by_condition(workspace)
     for case_id in manifest["case_ids"]:
         judged = by_case.get(case_id, [])
         if len(judged) != 2:
             raise ValueError(f"expected two judge records: {case_id}")
         reasons = set()
-        primary_winners = []
+        winners_by_comparison = {comparison: [] for comparison in comparisons}
         score_by_judge = []
         flags_by_judge = []
         for record, payload in judged:
@@ -400,13 +422,13 @@ def create_conflict_queue(workspace):
                 condition: evaluations[label]
                 for label, condition in record["label_to_condition"].items()
             }
-            winner, _ = preference_for(
-                payload,
-                record["label_to_condition"],
-                "matched-serial-review",
-                "heterogeneous-debate-rs-chair",
-            )
-            primary_winners.append(winner)
+            for comparison in comparisons:
+                winner, _ = preference_for(
+                    payload,
+                    record["label_to_condition"],
+                    *comparison,
+                )
+                winners_by_comparison[comparison].append(winner)
             score_by_judge.append({
                 condition: item["total_score"]
                 for condition, item in condition_evaluations.items()
@@ -415,7 +437,10 @@ def create_conflict_queue(workspace):
                 condition: item["critical_flags"]
                 for condition, item in condition_evaluations.items()
             })
-        if len(set(primary_winners)) > 1:
+        if any(
+            len(set(winners)) > 1
+            for winners in winners_by_comparison.values()
+        ):
             reasons.add("pairwise-disagreement")
         if any(
             abs(score_by_judge[0][condition] - score_by_judge[1][condition]) > 3
@@ -454,24 +479,36 @@ def create_conflict_queue(workspace):
             for label, condition in human_mapping.items()
         ]
         conflict_id = f"{case_id}:human-conflict"
-        conflicts.append(
-            {
-                "conflict_id": conflict_id,
-                "case_id": case_id,
-                "reasons": sorted(reasons),
-                "case": case_payload,
-                "adjudication": adjudication,
-                "candidates": candidates,
-                "primary_pair": [
-                    condition_to_human["matched-serial-review"],
-                    condition_to_human["heterogeneous-debate-rs-chair"],
-                ],
-                "judge_rationales": [
-                    reencode_rationale(record, payload, condition_to_human)
-                    for record, payload in judged
-                ],
-            }
-        )
+        conflict = {
+            "conflict_id": conflict_id,
+            "case_id": case_id,
+            "reasons": sorted(reasons),
+            "case": case_payload,
+            "adjudication": adjudication,
+            "candidates": candidates,
+            "judge_rationales": [
+                reencode_rationale(
+                    record,
+                    payload,
+                    condition_to_human,
+                    *comparison,
+                )
+                for comparison in comparisons
+                for record, payload in judged
+            ],
+        }
+        encoded_pairs = [
+            [
+                condition_to_human[left],
+                condition_to_human[right],
+            ]
+            for left, right in comparisons
+        ]
+        if manifest.get("judge_stage") == "stage1":
+            conflict["primary_pair"] = encoded_pairs[0]
+        else:
+            conflict["component_pairs"] = encoded_pairs
+        conflicts.append(conflict)
         human_mappings.append(
             {
                 "conflict_id": conflict_id,
@@ -507,13 +544,19 @@ def load_human_resolutions(workspace, required_conflict_ids):
     for item in resolutions:
         required = {
             "conflict_id",
-            "pairwise_winner",
             "resolved_critical_flags",
             "rationale",
             "reviewer_timestamp",
         }
         if not required.issubset(item):
             raise ValueError(f"invalid human adjudication: {item.get('conflict_id', '')}")
+        if (
+            "pairwise_winner" not in item
+            and "pairwise_winners" not in item
+        ):
+            raise ValueError(
+                f"invalid human adjudication: {item.get('conflict_id', '')}"
+            )
         if item["conflict_id"] in by_id:
             raise ValueError("duplicate human adjudication")
         by_id[item["conflict_id"]] = item

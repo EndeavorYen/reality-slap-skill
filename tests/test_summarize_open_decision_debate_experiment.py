@@ -14,6 +14,7 @@ from summarize_open_decision_debate_experiment import (
     render_markdown,
     stage1_gate,
     stage2_component_gate,
+    stage2_verdict,
     summarize,
 )
 from create_open_decision_debate_judging import create_judge_records
@@ -138,6 +139,33 @@ class SummarizeOpenDecisionDebateExperimentTests(unittest.TestCase):
 
         self.assertTrue(supported["supported"])
         self.assertFalse(weak["supported"])
+
+    def test_stage_two_verdict_requires_peer_interaction_component(self):
+        supported = {"supported": True}
+        unsupported = {"supported": False}
+
+        isolated = stage2_verdict(
+            stage1_green=True,
+            peer_gate=supported,
+            chair_gate=supported,
+            heterogeneous_gate=supported,
+        )
+        bundle_only = stage2_verdict(
+            stage1_green=True,
+            peer_gate=unsupported,
+            chair_gate=supported,
+            heterogeneous_gate=supported,
+        )
+
+        self.assertEqual(
+            isolated["verdict"],
+            "large-structured-debate-gain-supported",
+        )
+        self.assertIn(
+            "reality-slap-chair-contribution-supported",
+            isolated["component_findings"],
+        )
+        self.assertEqual(bundle_only["verdict"], "bundle-gain-only")
 
     def test_report_exposes_failed_thresholds_and_claim_boundary(self):
         gate = stage1_gate(

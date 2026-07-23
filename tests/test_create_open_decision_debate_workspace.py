@@ -14,9 +14,14 @@ sys.path.insert(0, str(SCRIPTS))
 from create_open_decision_debate_workspace import (
     CONDITIONS,
     DEPENDENCY_PACKET_MARKER,
+    STAGE2_D,
+    STAGE2_E,
+    STAGE2_F,
     ROLES,
+    create_stage2_records,
     create_workspace,
     load_records,
+    validate_stage2_reused_candidates,
 )
 
 
@@ -205,6 +210,102 @@ class CreateOpenDecisionDebateWorkspaceTests(unittest.TestCase):
         self.assertEqual(first["terra_role_by_case"], second["terra_role_by_case"])
         self.assertEqual(first["prompt_sha256"], second["prompt_sha256"])
         self.assertEqual(first_records, second_records)
+
+    def create_stage2(self):
+        self.create()
+        for record in self.records():
+            if (
+                record["condition"] == "heterogeneous-debate-rs-chair"
+                and record["kind"] == "chair"
+            ):
+                output = {
+                    "recommendation": "Run a bounded pilot.",
+                    "accepted_claims": ["The pilot is reversible."],
+                    "rejected_claims": ["A full rollout is unsupported."],
+                    "residual_dissent": ["The effect size remains uncertain."],
+                    "decision_owner": "Named owner",
+                    "next_action": "Start the pilot.",
+                    "stop_conditions": ["Stop on threshold failure."],
+                    "rollback_or_revision_path": "Return to the prior state.",
+                    "change_evidence": ["Validated production evidence."],
+                    "known_facts": ["The supplied constraint."],
+                    "inferences": ["A bounded inference."],
+                    "uncertainties": ["Outcome size."],
+                }
+                Path(record["output_path"]).write_text(
+                    json.dumps(output) + "\n",
+                    encoding="utf-8",
+                )
+        stage2 = Path(self.temp_dir.name) / "stage2"
+        manifest = create_stage2_records(self.workspace, stage2)
+        return stage2, manifest
+
+    def test_stage_two_adds_exactly_276_calls_for_twelve_cases(self):
+        stage2, manifest = self.create_stage2()
+        records = load_records(stage2)
+
+        self.assertEqual(manifest["new_generation_call_count"], 252)
+        self.assertEqual(manifest["planned_judge_call_count"], 24)
+        self.assertEqual(manifest["planned_model_call_count"], 276)
+        self.assertEqual(
+            collections.Counter(record["condition"] for record in records),
+            {
+                "heterogeneous-debate-rs-chair": 12,
+                STAGE2_D: 84,
+                STAGE2_E: 84,
+                STAGE2_F: 84,
+            },
+        )
+
+    def test_d_self_reviews_never_receive_peer_outputs(self):
+        stage2, _ = self.create_stage2()
+        records = load_records(stage2)
+
+        for record in (
+            item
+            for item in records
+            if item["condition"] == STAGE2_D and item["kind"] == "self_review"
+        ):
+            self.assertEqual(record["depends_on"], [record["own_first_round_call_id"]])
+
+    def test_e_uses_normal_chair_without_reality_slap(self):
+        stage2, _ = self.create_stage2()
+        chair = next(
+            record
+            for record in load_records(stage2)
+            if record["condition"] == STAGE2_E and record["kind"] == "chair"
+        )
+
+        self.assertFalse(chair["uses_skill"])
+        self.assertNotIn(
+            "<FROZEN_REALITY_SLAP>",
+            Path(chair["prompt_path"]).read_text(encoding="utf-8"),
+        )
+
+    def test_f_is_homogeneous_sol_medium(self):
+        stage2, _ = self.create_stage2()
+        calls = [
+            record
+            for record in load_records(stage2)
+            if record["condition"] == STAGE2_F
+        ]
+
+        self.assertEqual(
+            {(record["model"], record["reasoning_effort"]) for record in calls},
+            {("gpt-5.6-sol", "medium")},
+        )
+
+    def test_stage_two_reused_c_candidate_hash_is_enforced(self):
+        stage2, _ = self.create_stage2()
+        reused = next(
+            record
+            for record in load_records(stage2)
+            if record["condition"] == "heterogeneous-debate-rs-chair"
+        )
+        Path(reused["output_path"]).write_text("{}\n", encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "reused candidate hash mismatch"):
+            validate_stage2_reused_candidates(stage2)
 
 
 if __name__ == "__main__":
