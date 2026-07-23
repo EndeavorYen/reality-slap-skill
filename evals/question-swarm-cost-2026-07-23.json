@@ -9,41 +9,54 @@
     "QS-07",
     "QS-08"
   ],
-  "claim_boundary": "Internal eight-case holdout; monetary cost remains unresolved unless an authoritative relative rate card is supplied.",
+  "claim_boundary": "Internal eight-case holdout; credit cost uses the official OpenAI Codex rate card retrieved on 2026-07-23.",
   "complete": true,
   "cost": {
     "challenger_break_even": {
       "complete": true,
-      "high_weighted_tokens": 127030,
-      "max_small_to_high_unit_price_ratio": 0.388464,
-      "small_weighted_tokens": 228904,
+      "high_reference_units": 6.350512,
+      "max_small_to_high_unit_price_ratio": 0.412409,
+      "small_reference_units": 10.779,
       "target_ratio": 0.7
     },
     "checks": {
-      "authoritative_rate_card_available": false,
-      "challenger_ratio_at_most_0_70": false,
-      "critique_loop_ratio_at_most_0_85": false,
+      "authoritative_rate_card_available": true,
+      "challenger_ratio_at_most_0_70": true,
+      "critique_loop_ratio_at_most_0_85": true,
       "usage_complete": true
     },
-    "max_luna_to_terra_ratio_for_loop_gate_by_sol_ratio": {
-      "0.25": 0.46613,
-      "0.5": 0.460554,
-      "1.0": 0.449402,
-      "2.0": 0.427097
+    "counted_tokens": {
+      "b1_revision": 178792,
+      "h_questions": 126737,
+      "h_review_increment": 8061,
+      "h_revision": 186853,
+      "s_questions": 228447,
+      "s_review_increment": 11638,
+      "s_revision": 190430
     },
-    "passed": false,
+    "max_luna_to_terra_ratio_for_loop_gate_by_sol_ratio": {},
+    "passed": true,
     "priced_cost": {
-      "challenger_ratio_s_vs_h": null,
-      "critique_loop_ratio_s_vs_h": null,
-      "h_challenger": null,
-      "h_critique_loop": null,
-      "s_challenger": null,
-      "s_critique_loop": null
+      "b1_review": 26.649625,
+      "challenger_ratio_s_vs_h": 0.678937,
+      "critique_loop_ratio_s_vs_h": 0.628552,
+      "h_challenger": 6.350512,
+      "h_critique_loop": 9.039387,
+      "h_review": 29.3385,
+      "h_review_increment": 2.688875,
+      "s_challenger": 4.3116,
+      "s_critique_loop": 5.681725,
+      "s_review": 28.01975,
+      "s_review_increment": 1.370125,
+      "unit": "credits"
     },
     "rate_card": {
-      "authoritative": false,
+      "authoritative": true,
       "luna_to_terra_unit_price_ratio": null,
-      "sol_to_terra_unit_price_ratio": null
+      "retrieved_at": "2026-07-23",
+      "sol_to_terra_unit_price_ratio": null,
+      "source_url": "https://learn.chatgpt.com/docs/pricing",
+      "unit": "credits_per_1m_tokens"
     },
     "usage": {
       "questions": {
@@ -100,15 +113,6 @@
           "records": 8
         }
       }
-    },
-    "weighted_tokens": {
-      "b1_revision": 179814,
-      "h_questions": 127030,
-      "h_review_increment": 8231,
-      "h_revision": 188045,
-      "s_questions": 228904,
-      "s_review_increment": 12102,
-      "s_revision": 191916
     }
   },
   "experiment_id": "question-swarm-confirmation-20260723",

@@ -7,8 +7,8 @@ non-inferior to one Terra-high challenger, but it missed one hard constraint
 that H caught. The fail-closed verdict is `safety-regression`.
 
 The useful result is narrower: two Luna-low question calls can approach one
-Terra-high challenger on broad decision quality, but the tested mechanism
-cannot yet replace it safely or prove a cost saving.
+Terra-high challenger on broad decision quality at lower official Codex-credit
+cost, but the tested mechanism cannot yet replace it safely.
 
 ## Frozen comparison
 
@@ -75,26 +75,37 @@ Reality Slap cannot recover an absent challenge by itself; it disciplines the
 main model's treatment of supplied claims and dissent, not exhaustive recall
 of every operational dependency.
 
-## Measured cost
+## Official credit cost
 
-| Work | H path | S path |
+| Work | H path credits | S path credits |
 | --- | ---: | ---: |
-| Challenger weighted tokens | 127,030 | 228,904 |
-| Sol revision weighted tokens | 188,045 | 191,916 |
-| Review increment over B1 | 8,231 | 12,102 |
+| Challenger | 6.350512 | 4.311600 |
+| Sol revision | 29.338500 | 28.019750 |
+| Sol review increment over B1 | 2.688875 | 1.370125 |
+| Full critique loop | 9.039387 | 5.681725 |
 
-S used 1.80 times as many challenger weighted tokens because two isolated calls
-each reread the context. It satisfies the 70% challenger-cost target only if a
-Luna token costs at most 38.85% of a Terra token.
+The official OpenAI Codex rate card charges credits per million
+input / cached-input / output tokens:
 
-For the full critique loop, the maximum Luna/Terra unit-price ratio that meets
-the 85% target ranges from 42.71% to 46.61% as the Sol/Terra unit-price ratio
-ranges from 2.0 to 0.25. No authoritative relative rate card was available, so
-the monetary verdict remains `price-unresolved`.
+| Model | Input | Cached input | Output |
+| --- | ---: | ---: | ---: |
+| Sol | 125 | 12.5 | 750 |
+| Terra | 62.5 | 6.25 | 375 |
+| Luna | 25 | 2.5 | 150 |
 
-Weighted tokens are input + output + reasoning-output tokens. Cached input is
-recorded separately in the JSON artifact. Failed judge retries are experiment
-overhead and are not counted as product-path cost.
+S cost 67.89% of H for the challenger stage, passing the 70% gate by 2.11
+percentage points. Its full critique loop cost 62.86% of H, passing the 85%
+gate. The S2 challenger break-even Luna/Terra multiplier was 41.24%; the
+official multiplier is 40%.
+
+Although S reread more context, its revision happened to receive 14,080 cached
+input tokens while H received none, so the measured S Sol-review increment was
+also lower. This cache advantage should be rechecked across repeated runs.
+
+Reasoning output is reported as a subset of output tokens and is not charged a
+second time. Failed judge retries are experiment overhead and are not counted
+as product-path cost. Credits measure Codex consumption, not subscription
+dollars.
 
 ## Evaluator repair
 
@@ -112,9 +123,9 @@ is not automatically valid evaluation evidence.
 
 ## Non-trivial implications
 
-1. **Model substitution is not the main cost lever.** Repeating a long context
-   can outweigh the cheaper model. Prompt compaction, shared-prefix caching, or
-   fewer calls matter before adding more critics.
+1. **The cheaper model was sufficient, but with a narrow challenger margin.**
+   S2 passed the 70% gate at 67.89%; additional context or output could erase
+   that margin. Prompt compaction and stable cache reuse still matter.
 2. **More critics are not monotonic.** In screening, S4 doubled S2's challenger
    tokens, raised duplicate questions from 12.5% to 28.1%, and missed more exact
    fatal items.
@@ -137,5 +148,6 @@ Reality Slap. Compare that variant against the frozen H outputs on a fresh
 holdout. Separately test a single Luna-low eight-question call to determine
 whether the second full-context call buys enough diversity to justify its cost.
 
-Claim boundary: internal eight-case holdout; no authoritative dollar rate card;
-the result supports mechanism selection, not a general model-quality claim.
+Claim boundary: internal eight-case holdout using the official Codex credit
+rate card retrieved on 2026-07-23. Credits are not subscription dollars; the
+result supports mechanism selection, not a general model-quality claim.

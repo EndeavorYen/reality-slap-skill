@@ -2,10 +2,9 @@
 
 ## Outcome
 
-`S2` advanced provisionally. Two isolated Luna-low question calls recovered
-95.1% of the unique hidden-item coverage of one Terra-high call, while `S4`
-failed the critical-item gate. Monetary cost was not declared because no
-authoritative Luna/Terra rate card was available.
+`S2` passed screening. Two isolated Luna-low question calls recovered 95.1% of
+the unique hidden-item coverage of one Terra-high call and cost 68.1% as many
+official Codex credits. `S4` failed both the critical-item and cost gates.
 
 This is a screening result, not evidence that `S2` is production-ready.
 
@@ -22,11 +21,11 @@ questions. Reality Slap was not present in challenger calls.
 
 ## Results
 
-| Arm | Unique hidden items | Coverage vs H | Fatal items found | H fatal items missed | Duplicate rate | Weighted tokens |
+| Arm | Unique hidden items | Coverage vs H | Fatal items found | H fatal items missed | Duplicate rate | Credits |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| H | 41 | 100.0% | 5 | — | 0.0% | 63,444 |
-| S2 | 39 | 95.1% | 5 | 1 | 12.5% | 112,302 |
-| S4 | 41 | 100.0% | 4 | 2 | 28.1% | 230,393 |
+| H | 41 | 100.0% | 5 | — | 0.0% | 3.713637 |
+| S2 | 39 | 95.1% | 5 | 1 | 12.5% | 2.529690 |
+| S4 | 41 | 100.0% | 4 | 2 | 28.1% | 5.350190 |
 
 Every one of the 96 generated questions was reviewable. There were no failed
 or retried generation calls.
@@ -39,15 +38,17 @@ cross-lens reasoning.
 
 ## Cost boundary
 
-Weighted tokens are input + output + reasoning-output tokens; cached input is
-reported separately in the JSON artifact and is not double-counted.
+The official OpenAI Codex rate card charges credits per million input, cached
+input, and output tokens. Sol costs `125 / 12.5 / 750`, Terra
+`62.5 / 6.25 / 375`, and Luna `25 / 2.5 / 150` credits for those token classes.
+Reasoning output is a subset of output tokens and is not charged a second time.
 
-- S2 used 1.77 times H's weighted tokens. It meets the 70% challenger-cost gate
-  only if a Luna token costs no more than 39.55% of a Terra token.
-- S4 used 3.63 times H's weighted tokens. Its corresponding break-even ratio is
-  19.28%.
+- S2 cost 68.12% of H and passed the 70% challenger-cost gate.
+- S4 cost 144.07% of H and failed the cost gate despite Luna's lower unit price.
+- S2's break-even Luna/Terra multiplier was 41.10%; the official multiplier is
+  40% for all three token classes.
 
-These are break-even inequalities, not dollar-price claims.
+Credits measure incremental Codex consumption, not subscription dollars.
 
 ## Provenance and boundary
 
@@ -56,7 +57,7 @@ These are break-even inequalities, not dollar-price claims.
 - Generation calls: 32/32 complete
 - Blind question judges: 4/4 complete
 - Selected arm: `S2`
-- Verdict: `price-unresolved-provisional-selection`
+- Verdict: `screening-pass`
 
 The paired eight-case confirmation result is recorded separately in
 `question-swarm-cost-2026-07-23.md`.

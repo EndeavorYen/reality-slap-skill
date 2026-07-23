@@ -71,38 +71,44 @@
       "S2": {
         "break_even": {
           "complete": true,
-          "high_weighted_tokens": 63444,
-          "max_small_to_high_unit_price_ratio": 0.395459,
-          "small_weighted_tokens": 112302,
+          "high_reference_units": 3.713637,
+          "max_small_to_high_unit_price_ratio": 0.411046,
+          "small_reference_units": 6.324225,
           "target_ratio": 0.7
         },
-        "challenger_cost_ratio_vs_h": null,
-        "cost_pass": false,
+        "challenger_cost_ratio_vs_h": 0.681189,
+        "cost_pass": true,
         "coverage_ratio_vs_h": 0.95122,
         "fatal_items_h_found_but_arm_missed": 1,
-        "quality_pass": true
+        "high_challenger_credits": 3.713637,
+        "quality_pass": true,
+        "small_challenger_credits": 2.52969
       },
       "S4": {
         "break_even": {
           "complete": true,
-          "high_weighted_tokens": 63444,
-          "max_small_to_high_unit_price_ratio": 0.192761,
-          "small_weighted_tokens": 230393,
+          "high_reference_units": 3.713637,
+          "max_small_to_high_unit_price_ratio": 0.194352,
+          "small_reference_units": 13.375475,
           "target_ratio": 0.7
         },
-        "challenger_cost_ratio_vs_h": null,
+        "challenger_cost_ratio_vs_h": 1.440687,
         "cost_pass": false,
         "coverage_ratio_vs_h": 1.0,
         "fatal_items_h_found_but_arm_missed": 2,
-        "quality_pass": false
+        "high_challenger_credits": 3.713637,
+        "quality_pass": false,
+        "small_challenger_credits": 5.35019
       }
     },
     "selected_arm": "S2",
-    "verdict": "price-unresolved-provisional-selection"
+    "verdict": "screening-pass"
   },
   "price_assumption": {
-    "authoritative_rate_card_available": false,
-    "luna_to_terra_unit_price_ratio": null
+    "authoritative_rate_card_available": true,
+    "luna_to_terra_unit_price_ratio": null,
+    "rate_card_retrieved_at": "2026-07-23",
+    "rate_card_source_url": "https://learn.chatgpt.com/docs/pricing"
   },
   "stage": "screening"
 }

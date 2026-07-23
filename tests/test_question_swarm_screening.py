@@ -14,6 +14,7 @@ from create_question_swarm_screening_workspace import (
     create_screening_workspace,
     load_records,
 )
+from question_swarm_common import load_credit_rate_card
 from summarize_question_swarm_screening import select_screening_arm
 
 
@@ -168,6 +169,21 @@ class QuestionSwarmScreeningTests(unittest.TestCase):
 
         self.assertEqual(result["verdict"], "screening-pass")
         self.assertEqual(result["selected_arm"], "S2")
+
+        official = select_screening_arm(
+            metrics,
+            rate_card=load_credit_rate_card(
+                ROOT / "evals" / "openai-codex-rate-card-2026-07-23.json"
+            ),
+        )
+        self.assertEqual(
+            official["arms"]["S2"]["challenger_cost_ratio_vs_h"],
+            0.55,
+        )
+        self.assertEqual(
+            official["arms"]["S2"]["small_challenger_credits"],
+            0.055,
+        )
 
 
 if __name__ == "__main__":

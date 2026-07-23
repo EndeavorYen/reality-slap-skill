@@ -13,6 +13,8 @@ from create_weak_challenge_swarm_judging import (
 )
 from question_swarm_common import (
     break_even_multiplier,
+    credit_cost,
+    load_credit_rate_card,
     usage_totals,
     weighted_tokens,
 )
@@ -131,7 +133,12 @@ def _quality_metrics(case_results, agreement):
     }
 
 
-def _cost_metrics(records, luna_to_terra=None, sol_to_terra=None):
+def _cost_metrics(
+    records,
+    luna_to_terra=None,
+    sol_to_terra=None,
+    rate_card=None,
+):
     questions = {
         condition: [
             record
@@ -172,19 +179,55 @@ def _cost_metrics(records, luna_to_terra=None, sol_to_terra=None):
     )
     h_increment = max(0, h_r - b1_r) if complete else None
     s_increment = max(0, s_r - b1_r) if complete else None
-    rate_complete = luna_to_terra is not None and sol_to_terra is not None
-    if complete and rate_complete:
+    authoritative = rate_card is not None
+    rate_complete = authoritative or (
+        luna_to_terra is not None and sol_to_terra is not None
+    )
+    if complete and authoritative:
+        prices = rate_card["models"]
+        h_challenger = credit_cost(
+            usage["questions"]["H"],
+            prices["gpt-5.6-terra"],
+        )
+        s_challenger = credit_cost(
+            usage["questions"]["S"],
+            prices["gpt-5.6-luna"],
+        )
+        b1_review = credit_cost(
+            usage["revisions"]["B1"],
+            prices["gpt-5.6-sol"],
+        )
+        h_review = credit_cost(
+            usage["revisions"]["H"],
+            prices["gpt-5.6-sol"],
+        )
+        s_review = credit_cost(
+            usage["revisions"]["S"],
+            prices["gpt-5.6-sol"],
+        )
+        h_priced_increment = round(max(0, h_review - b1_review), 6)
+        s_priced_increment = round(max(0, s_review - b1_review), 6)
+        h_loop = round(h_challenger + h_priced_increment, 6)
+        s_loop = round(s_challenger + s_priced_increment, 6)
+    elif complete and rate_complete:
         h_challenger = h_q
         s_challenger = s_q * luna_to_terra
-        h_loop = h_challenger + h_increment * sol_to_terra
-        s_loop = s_challenger + s_increment * sol_to_terra
+        h_priced_increment = h_increment * sol_to_terra
+        s_priced_increment = s_increment * sol_to_terra
+        h_loop = h_challenger + h_priced_increment
+        s_loop = s_challenger + s_priced_increment
+        b1_review = h_review = s_review = None
+    else:
+        h_challenger = s_challenger = h_loop = s_loop = None
+        h_priced_increment = s_priced_increment = None
+        b1_review = h_review = s_review = None
+    if complete and rate_complete:
         challenger_ratio = s_challenger / h_challenger if h_challenger else None
         loop_ratio = s_loop / h_loop if h_loop else None
     else:
-        h_challenger = s_challenger = h_loop = s_loop = None
         challenger_ratio = loop_ratio = None
     sensitivity = {}
-    if complete and s_q:
+    if complete and s_q and not authoritative:
         for sol_ratio in (0.25, 0.5, 1.0, 2.0):
             numerator = (
                 0.85 * (h_q + h_increment * sol_ratio)
@@ -203,7 +246,7 @@ def _cost_metrics(records, luna_to_terra=None, sol_to_terra=None):
     }
     return {
         "usage": usage,
-        "weighted_tokens": {
+        "counted_tokens": {
             "h_questions": h_q,
             "s_questions": s_q,
             "b1_revision": b1_r,
@@ -215,11 +258,26 @@ def _cost_metrics(records, luna_to_terra=None, sol_to_terra=None):
         "rate_card": {
             "luna_to_terra_unit_price_ratio": luna_to_terra,
             "sol_to_terra_unit_price_ratio": sol_to_terra,
-            "authoritative": rate_complete,
+            "authoritative": authoritative,
+            "source_url": (
+                rate_card["source_url"] if authoritative else None
+            ),
+            "retrieved_at": (
+                rate_card["retrieved_at"] if authoritative else None
+            ),
+            "unit": rate_card["unit"] if authoritative else "relative_units",
         },
         "priced_cost": {
+            "unit": (
+                "credits" if authoritative else "relative_units"
+            ),
             "h_challenger": h_challenger,
             "s_challenger": s_challenger,
+            "b1_review": b1_review,
+            "h_review": h_review,
+            "s_review": s_review,
+            "h_review_increment": h_priced_increment,
+            "s_review_increment": s_priced_increment,
             "h_critique_loop": h_loop,
             "s_critique_loop": s_loop,
             "challenger_ratio_s_vs_h": round(challenger_ratio, 6)
@@ -233,6 +291,11 @@ def _cost_metrics(records, luna_to_terra=None, sol_to_terra=None):
             usage["questions"]["S"],
             usage["questions"]["H"],
             target_ratio=0.7,
+            reference_rates=(
+                rate_card["models"]["gpt-5.6-terra"]
+                if authoritative
+                else None
+            ),
         ),
         "max_luna_to_terra_ratio_for_loop_gate_by_sol_ratio": sensitivity,
         "checks": checks,
@@ -262,6 +325,7 @@ def summarize_confirmation(
     workspace,
     luna_to_terra=None,
     sol_to_terra=None,
+    rate_card=None,
 ):
     workspace = Path(workspace)
     manifest = json.loads(
@@ -288,6 +352,7 @@ def summarize_confirmation(
         records,
         luna_to_terra=luna_to_terra,
         sol_to_terra=sol_to_terra,
+        rate_card=rate_card,
     )
     return {
         "experiment_id": manifest["experiment_id"],
@@ -299,8 +364,11 @@ def summarize_confirmation(
         "cost": cost,
         "verdict": _verdict(True, quality, cost),
         "claim_boundary": (
-            "Internal eight-case holdout; monetary cost remains unresolved unless "
-            "an authoritative relative rate card is supplied."
+            "Internal eight-case holdout; credit cost uses the official OpenAI "
+            "Codex rate card retrieved on 2026-07-23."
+            if rate_card
+            else "Internal eight-case holdout; monetary cost remains unresolved "
+            "unless an authoritative rate card is supplied."
         ),
     }
 
@@ -308,7 +376,7 @@ def summarize_confirmation(
 def render_markdown(summary):
     quality = summary.get("quality", {})
     cost = summary.get("cost", {})
-    weighted = cost.get("weighted_tokens", {})
+    counted = cost.get("counted_tokens", {})
     lines = [
         "# Cost-Bounded Question Swarm Result",
         "",
@@ -339,23 +407,24 @@ def render_markdown(summary):
             "",
             "## Measured usage",
             "",
-            "| Work | Weighted tokens |",
+            "| Work | Counted tokens |",
             "| --- | ---: |",
-            f"| Terra-high questions | {weighted['h_questions']} |",
-            f"| Luna-low swarm questions | {weighted['s_questions']} |",
-            f"| Sol B1 revision | {weighted['b1_revision']} |",
-            f"| Sol H revision | {weighted['h_revision']} |",
-            f"| Sol S revision | {weighted['s_revision']} |",
+            f"| Terra-high questions | {counted['h_questions']} |",
+            f"| Luna-low swarm questions | {counted['s_questions']} |",
+            f"| Sol B1 revision | {counted['b1_revision']} |",
+            f"| Sol H revision | {counted['h_revision']} |",
+            f"| Sol S revision | {counted['s_revision']} |",
             "",
-            "Weighted tokens are input + output + reasoning-output tokens. They "
-            "are measured usage, not dollars.",
+            "Counted tokens are input + output tokens. Reasoning output is a "
+            "reported subset of output and is not counted twice.",
             "",
-            "## Cost boundary",
+            "## Cost",
             "",
-            f"- Maximum Luna/Terra unit-price ratio for the 70% challenger gate: "
-            f"`{cost['challenger_break_even']['max_small_to_high_unit_price_ratio']}`",
-            "- Monetary verdict remains `price-unresolved` without an authoritative "
-            "relative model rate card.",
+            f"- Challenger cost ratio (S/H): "
+            f"`{cost['priced_cost']['challenger_ratio_s_vs_h']}`",
+            f"- Critique-loop cost ratio (S/H): "
+            f"`{cost['priced_cost']['critique_loop_ratio_s_vs_h']}`",
+            f"- Cost unit: `{cost['priced_cost']['unit']}`",
             "",
             "## Claim boundary",
             "",
@@ -371,6 +440,7 @@ def main():
     parser.add_argument("--workspace", required=True)
     parser.add_argument("--luna-to-terra-price-ratio", type=float)
     parser.add_argument("--sol-to-terra-price-ratio", type=float)
+    parser.add_argument("--rate-card")
     parser.add_argument("--output")
     parser.add_argument("--markdown-output")
     args = parser.parse_args()
@@ -378,6 +448,11 @@ def main():
         args.workspace,
         luna_to_terra=args.luna_to_terra_price_ratio,
         sol_to_terra=args.sol_to_terra_price_ratio,
+        rate_card=(
+            load_credit_rate_card(args.rate_card)
+            if args.rate_card
+            else None
+        ),
     )
     text = json.dumps(summary, indent=2, sort_keys=True) + "\n"
     if args.output:

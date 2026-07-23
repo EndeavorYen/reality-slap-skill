@@ -8,6 +8,8 @@ from pathlib import Path
 from create_question_swarm_screening_workspace import load_records
 from question_swarm_common import (
     break_even_multiplier,
+    credit_cost,
+    load_credit_rate_card,
     usage_totals,
     weighted_tokens,
 )
@@ -95,8 +97,19 @@ def _arm_metrics(judge_records):
     return result
 
 
-def select_screening_arm(metrics, luna_to_terra_price_ratio=None):
+def select_screening_arm(
+    metrics,
+    luna_to_terra_price_ratio=None,
+    rate_card=None,
+):
     high = metrics["H"]
+    authoritative = rate_card is not None
+    terra_rates = (
+        rate_card["models"]["gpt-5.6-terra"] if authoritative else None
+    )
+    luna_rates = (
+        rate_card["models"]["gpt-5.6-luna"] if authoritative else None
+    )
     eligible = {}
     for condition in ("S2", "S4"):
         item = metrics[condition]
@@ -110,13 +123,21 @@ def select_screening_arm(metrics, luna_to_terra_price_ratio=None):
         quality_pass = coverage_ratio >= 0.9 and missed_fatal <= 1
         small_tokens = weighted_tokens(item["usage"])
         high_tokens = weighted_tokens(high["usage"])
-        cost_ratio = (
-            luna_to_terra_price_ratio * small_tokens / high_tokens
-            if luna_to_terra_price_ratio is not None
-            and small_tokens is not None
-            and high_tokens
-            else None
-        )
+        if authoritative:
+            high_credits = credit_cost(high["usage"], terra_rates)
+            small_credits = credit_cost(item["usage"], luna_rates)
+            cost_ratio = (
+                small_credits / high_credits if high_credits else None
+            )
+        else:
+            high_credits = small_credits = None
+            cost_ratio = (
+                luna_to_terra_price_ratio * small_tokens / high_tokens
+                if luna_to_terra_price_ratio is not None
+                and small_tokens is not None
+                and high_tokens
+                else None
+            )
         cost_pass = cost_ratio is not None and cost_ratio <= 0.7
         eligible[condition] = {
             "coverage_ratio_vs_h": round(coverage_ratio, 6),
@@ -125,11 +146,14 @@ def select_screening_arm(metrics, luna_to_terra_price_ratio=None):
             "challenger_cost_ratio_vs_h": round(cost_ratio, 6)
             if cost_ratio is not None
             else None,
+            "high_challenger_credits": high_credits,
+            "small_challenger_credits": small_credits,
             "cost_pass": cost_pass,
             "break_even": break_even_multiplier(
                 item["usage"],
                 high["usage"],
                 target_ratio=0.7,
+                reference_rates=terra_rates,
             ),
         }
     quality_candidates = [
@@ -143,7 +167,7 @@ def select_screening_arm(metrics, luna_to_terra_price_ratio=None):
             "verdict": "small-swarm-not-quality-effective",
             "arms": eligible,
         }
-    if luna_to_terra_price_ratio is not None:
+    if authoritative or luna_to_terra_price_ratio is not None:
         candidates = [
             condition
             for condition in quality_candidates
@@ -159,7 +183,9 @@ def select_screening_arm(metrics, luna_to_terra_price_ratio=None):
         candidates = quality_candidates
     candidates.sort(
         key=lambda condition: (
-            weighted_tokens(metrics[condition]["usage"]),
+            eligible[condition]["small_challenger_credits"]
+            if authoritative
+            else weighted_tokens(metrics[condition]["usage"]),
             0 if condition == "S2" else 1,
         )
     )
@@ -167,13 +193,17 @@ def select_screening_arm(metrics, luna_to_terra_price_ratio=None):
     return {
         "selected_arm": selected,
         "verdict": "screening-pass"
-        if luna_to_terra_price_ratio is not None
+        if authoritative or luna_to_terra_price_ratio is not None
         else "price-unresolved-provisional-selection",
         "arms": eligible,
     }
 
 
-def summarize_screening(workspace, luna_to_terra_price_ratio=None):
+def summarize_screening(
+    workspace,
+    luna_to_terra_price_ratio=None,
+    rate_card=None,
+):
     workspace = Path(workspace)
     manifest = json.loads(
         (workspace / "manifest.json").read_text(encoding="utf-8")
@@ -205,6 +235,7 @@ def summarize_screening(workspace, luna_to_terra_price_ratio=None):
     selection = select_screening_arm(
         metrics,
         luna_to_terra_price_ratio=luna_to_terra_price_ratio,
+        rate_card=rate_card,
     )
     public_metrics = {}
     for condition, item in metrics.items():
@@ -221,7 +252,13 @@ def summarize_screening(workspace, luna_to_terra_price_ratio=None):
         "price_assumption": {
             "luna_to_terra_unit_price_ratio": luna_to_terra_price_ratio,
             "authoritative_rate_card_available": (
-                luna_to_terra_price_ratio is not None
+                rate_card is not None
+            ),
+            "rate_card_source_url": (
+                rate_card["source_url"] if rate_card else None
+            ),
+            "rate_card_retrieved_at": (
+                rate_card["retrieved_at"] if rate_card else None
             ),
         },
         "arms": public_metrics,
@@ -233,11 +270,17 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--workspace", required=True)
     parser.add_argument("--luna-to-terra-price-ratio", type=float)
+    parser.add_argument("--rate-card")
     parser.add_argument("--output")
     args = parser.parse_args()
     summary = summarize_screening(
         args.workspace,
         luna_to_terra_price_ratio=args.luna_to_terra_price_ratio,
+        rate_card=(
+            load_credit_rate_card(args.rate_card)
+            if args.rate_card
+            else None
+        ),
     )
     text = json.dumps(summary, indent=2, sort_keys=True) + "\n"
     if args.output:

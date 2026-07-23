@@ -152,32 +152,83 @@ def usage_totals(records):
 def weighted_tokens(usage):
     if not usage.get("complete"):
         return None
-    return (
-        usage["input_tokens"]
-        + usage["output_tokens"]
-        + usage["reasoning_output_tokens"]
-    )
+    # Codex reports reasoning_output_tokens as a subset of output_tokens.
+    return usage["input_tokens"] + usage["output_tokens"]
 
 
-def break_even_multiplier(small_usage, high_usage, target_ratio):
-    small = weighted_tokens(small_usage)
-    high = weighted_tokens(high_usage)
+def credit_cost(usage, rates):
+    if not usage.get("complete"):
+        return None
+    cached = usage["cached_input_tokens"]
+    if cached > usage["input_tokens"]:
+        raise ValueError("cached input tokens cannot exceed input tokens")
+    uncached = usage["input_tokens"] - cached
+    credits = (
+        uncached * rates["input_tokens"]
+        + cached * rates["cached_input_tokens"]
+        + usage["output_tokens"] * rates["output_tokens"]
+    ) / 1_000_000
+    return round(credits, 6)
+
+
+def load_credit_rate_card(path):
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    if payload.get("unit") != "credits_per_1m_tokens":
+        raise ValueError("rate card must use credits_per_1m_tokens")
+    required_models = {
+        "gpt-5.6-sol",
+        "gpt-5.6-terra",
+        "gpt-5.6-luna",
+    }
+    models = payload.get("models")
+    if not isinstance(models, dict) or not required_models.issubset(models):
+        raise ValueError("rate card is missing a required GPT-5.6 model")
+    expected_fields = {
+        "input_tokens",
+        "cached_input_tokens",
+        "output_tokens",
+    }
+    for model in required_models:
+        rates = models[model]
+        if set(rates) != expected_fields or any(
+            isinstance(value, bool)
+            or not isinstance(value, (int, float))
+            or value < 0
+            for value in rates.values()
+        ):
+            raise ValueError(f"invalid rate card entry: {model}")
+    if not payload.get("source_url") or not payload.get("retrieved_at"):
+        raise ValueError("rate card requires source_url and retrieved_at")
+    return payload
+
+
+def break_even_multiplier(
+    small_usage,
+    high_usage,
+    target_ratio,
+    reference_rates=None,
+):
+    if reference_rates is None:
+        small = weighted_tokens(small_usage)
+        high = weighted_tokens(high_usage)
+    else:
+        small = credit_cost(small_usage, reference_rates)
+        high = credit_cost(high_usage, reference_rates)
     if small is None or high is None or small == 0:
         return {
             "complete": False,
             "target_ratio": target_ratio,
-            "small_weighted_tokens": small,
-            "high_weighted_tokens": high,
+            "small_reference_units": small,
+            "high_reference_units": high,
             "max_small_to_high_unit_price_ratio": None,
         }
     return {
         "complete": True,
         "target_ratio": target_ratio,
-        "small_weighted_tokens": small,
-        "high_weighted_tokens": high,
+        "small_reference_units": small,
+        "high_reference_units": high,
         "max_small_to_high_unit_price_ratio": round(
             target_ratio * high / small,
             6,
         ),
     }
-

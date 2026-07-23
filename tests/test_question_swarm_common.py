@@ -12,6 +12,8 @@ sys.path.insert(0, str(SCRIPTS))
 from question_swarm_common import (
     LENSES,
     break_even_multiplier,
+    credit_cost,
+    load_credit_rate_card,
     load_holdout_bank,
     question_schema,
     usage_totals,
@@ -111,9 +113,29 @@ class QuestionSwarmCommonTests(unittest.TestCase):
 
         result = break_even_multiplier(small, high, target_ratio=0.7)
 
-        self.assertEqual(result["small_weighted_tokens"], 250)
-        self.assertEqual(result["high_weighted_tokens"], 125)
+        self.assertEqual(result["small_reference_units"], 240)
+        self.assertEqual(result["high_reference_units"], 120)
         self.assertEqual(result["max_small_to_high_unit_price_ratio"], 0.35)
+
+    def test_official_credit_cost_does_not_double_count_reasoning(self):
+        usage = {
+            "complete": True,
+            "input_tokens": 200,
+            "cached_input_tokens": 50,
+            "output_tokens": 40,
+            "reasoning_output_tokens": 10,
+        }
+        rates = {
+            "input_tokens": 25,
+            "cached_input_tokens": 2.5,
+            "output_tokens": 150,
+        }
+
+        self.assertEqual(credit_cost(usage, rates), 0.009875)
+        card = load_credit_rate_card(
+            ROOT / "evals" / "openai-codex-rate-card-2026-07-23.json"
+        )
+        self.assertEqual(card["models"]["gpt-5.6-luna"], rates)
 
 
 if __name__ == "__main__":
