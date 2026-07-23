@@ -566,13 +566,181 @@ def load_human_resolutions(workspace, required_conflict_ids):
     return by_id
 
 
+def render_conflict_review(workspace):
+    workspace = Path(workspace)
+    queue = json.loads(
+        (workspace / "human-conflict-queue.json").read_text(encoding="utf-8")
+    )
+    human_mappings = {
+        item["case_id"]: item["label_to_condition"]
+        for item in json.loads(
+            (workspace / "human-mappings.json").read_text(encoding="utf-8")
+        )["mappings"]
+    }
+    judge_records = {}
+    for record in load_judge_records(workspace):
+        judge_records.setdefault(record["case_id"], []).append(record)
+    lines = [
+        "# Blinded Human Conflict Review",
+        "",
+        "Review only the evidence below. Condition identities, model identities, "
+        "and process transcripts are intentionally hidden. For each case, select "
+        "the better option in the primary pair or `tie`, then resolve only the "
+        "critical flags on which the two judges disagreed. Agreed flag values are "
+        "preserved automatically.",
+        "",
+    ]
+    for conflict in queue["conflicts"]:
+        case_id = conflict["case_id"]
+        lines.extend(
+            [
+                f"## {case_id}: {conflict['case']['title']}",
+                "",
+                f"Objective: {conflict['case']['objective']}",
+                "",
+                "Material constraints:",
+                "",
+                *(
+                    f"- {item}"
+                    for item in conflict["case"]["material_constraints"]
+                ),
+                "",
+                "Acceptable decision families:",
+                "",
+                *(
+                    f"- {item}"
+                    for item in conflict["adjudication"][
+                        "acceptable_decision_families"
+                    ]
+                ),
+                "",
+            ]
+        )
+        for candidate in conflict["candidates"]:
+            decision = candidate["final_decision"]
+            lines.extend(
+                [
+                    f"### {candidate['label']}",
+                    "",
+                    f"Recommendation: {decision['recommendation']}",
+                    "",
+                    f"Owner: {decision['decision_owner']}",
+                    "",
+                    f"Next action: {decision['next_action']}",
+                    "",
+                    f"Rollback: {decision['rollback_or_revision_path']}",
+                    "",
+                    "Stop conditions:",
+                    "",
+                    *(f"- {item}" for item in decision["stop_conditions"]),
+                    "",
+                    "Residual dissent:",
+                    "",
+                    *(f"- {item}" for item in decision["residual_dissent"]),
+                    "",
+                ]
+            )
+        pair = conflict.get("primary_pair")
+        if pair:
+            lines.extend(
+                [
+                    f"### Primary pair: {pair[0]} vs {pair[1]}",
+                    "",
+                ]
+            )
+        else:
+            lines.extend(["### Component pairs", ""])
+            for component_pair in conflict["component_pairs"]:
+                lines.append(
+                    f"- {component_pair[0]} vs {component_pair[1]}"
+                )
+            lines.append("")
+        lines.extend(["Judge rationales:", ""])
+        for item in conflict["judge_rationales"]:
+            lines.append(
+                f"- Reviewer {item['judge']}: `{item['winner']}` — "
+                f"{item['rationale']}"
+            )
+        lines.extend(["", "Disputed critical flags:", ""])
+        human_mapping = human_mappings[case_id]
+        condition_to_human = {
+            condition: label for label, condition in human_mapping.items()
+        }
+        evaluations = []
+        for record in judge_records[case_id]:
+            payload = json.loads(
+                Path(record["output_path"]).read_text(encoding="utf-8")
+            )
+            by_label = {
+                item["label"]: item for item in payload["evaluations"]
+            }
+            evaluations.append(
+                {
+                    condition_to_human[condition]: by_label[label]
+                    for label, condition in record["label_to_condition"].items()
+                }
+            )
+        disputes = []
+        for label in human_mapping:
+            for flag in CRITICAL_FLAGS:
+                left = evaluations[0][label]
+                right = evaluations[1][label]
+                if left["critical_flags"][flag] == right["critical_flags"][flag]:
+                    continue
+                disputes.append((label, flag, left, right))
+        if disputes:
+            for label, flag, left, right in disputes:
+                lines.extend(
+                    [
+                        f"- `{label}.{flag}`",
+                        f"  - Reviewer 1: `{left['critical_flags'][flag]}` — "
+                        f"{left['critical_explanations'][flag]}",
+                        f"  - Reviewer 2: `{right['critical_flags'][flag]}` — "
+                        f"{right['critical_explanations'][flag]}",
+                    ]
+                )
+        else:
+            lines.append("- None")
+        lines.extend(
+            [
+                "",
+                "### Resolution form",
+                "",
+            ]
+        )
+        if pair:
+            lines.append(
+                f"- Pairwise winner: `[ ] {pair[0]}` `[ ] {pair[1]}` `[ ] tie`"
+            )
+        else:
+            for component_pair in conflict["component_pairs"]:
+                lines.append(
+                    f"- {component_pair[0]} vs {component_pair[1]} winner: "
+                    f"`[ ] {component_pair[0]}` `[ ] {component_pair[1]}` `[ ] tie`"
+                )
+        for label, flag, _, _ in disputes:
+            lines.append(
+                f"- `{label}.{flag}`: `[ ] true` `[ ] false`"
+            )
+        lines.extend(["- Rationale:", "", "---", ""])
+    return "\n".join(lines).rstrip() + "\n"
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--workspace", required=True)
     parser.add_argument("--stage", choices=("stage1", "stage2"), default="stage1")
     parser.add_argument("--create-conflict-queue", action="store_true")
+    parser.add_argument("--render-human-review")
     args = parser.parse_args()
-    if args.create_conflict_queue:
+    if args.render_human_review:
+        review = render_conflict_review(args.workspace)
+        Path(args.render_human_review).write_text(review, encoding="utf-8")
+        payload = {
+            "human_review": str(Path(args.render_human_review).absolute()),
+            "stage": args.stage,
+        }
+    elif args.create_conflict_queue:
         payload = create_conflict_queue(args.workspace)
     else:
         records = create_judge_records(args.workspace, args.stage)

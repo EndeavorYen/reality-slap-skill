@@ -15,6 +15,7 @@ from create_open_decision_debate_judging import (
     create_conflict_queue,
     create_judge_records,
     load_human_resolutions,
+    render_conflict_review,
 )
 from create_open_decision_debate_workspace import (
     ROLES,
@@ -276,6 +277,23 @@ class CreateOpenDecisionDebateJudgingTests(unittest.TestCase):
         output_path.write_text(json.dumps(payload) + "\n", encoding="utf-8")
 
         self.assertEqual(response_status(record), "invalid")
+
+    def test_human_review_is_blinded_and_shows_only_disputed_flags(self):
+        self.write_judges(
+            winner_by_judge={
+                "sol-medium": "heterogeneous-debate-rs-chair",
+                "terra-high": "matched-serial-review",
+            }
+        )
+        create_conflict_queue(self.workspace)
+
+        review = render_conflict_review(self.workspace)
+
+        self.assertIn("Resolution form", review)
+        self.assertIn("Primary pair", review)
+        self.assertNotIn("heterogeneous-debate-rs-chair", review)
+        self.assertNotIn("matched-serial-review", review)
+        self.assertNotIn("gpt-5.6", review)
 
 
 if __name__ == "__main__":
