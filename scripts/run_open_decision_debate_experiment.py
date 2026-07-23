@@ -152,6 +152,24 @@ def expected_challenge_ids(record, records_by_id, manifest=None):
 
 def rendered_challenge_packet(record, records_by_id, manifest):
     dependencies = _weak_swarm_dependencies(record, records_by_id)
+    if record.get("packet_mode") == "opaque_questions":
+        questions = []
+        for dependency in dependencies:
+            if dependency.get("kind") != "question":
+                continue
+            payload = _dependency_payload(dependency)
+            questions.extend(payload["questions"])
+        random.Random(
+            f"{manifest['seed']}:{record['call_id']}:opaque-question-packet"
+        ).shuffle(questions)
+        return [
+            {
+                "question_id": f"Q-{index}",
+                "target": question["target"],
+                "question": question["question"],
+            }
+            for index, question in enumerate(questions, start=1)
+        ]
     challenge_dependencies = [
         dependency for dependency in dependencies if dependency.get("kind") == "challenge"
     ]
@@ -190,7 +208,8 @@ def shared_input_hashes(record, records_by_id, manifest):
             json.dumps(draft, sort_keys=True, separators=(",", ":"))
         )
     }
-    if record.get("condition") in {"C0", "C1"}:
+    prompt_template = Path(record["prompt_path"]).read_text(encoding="utf-8")
+    if CHALLENGE_PACKET_MARKER in prompt_template:
         packet = rendered_challenge_packet(record, records_by_id, manifest)
         result["challenge_packet_sha256"] = sha256_text(
             json.dumps(packet, sort_keys=True, separators=(",", ":"))
