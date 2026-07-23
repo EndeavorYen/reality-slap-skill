@@ -1,0 +1,534 @@
+{
+  "experiment_id": "cost-bounded-question-swarm-20260723",
+  "seed": 20260723,
+  "cases": [
+    {
+      "case_id": "QS-01",
+      "title": "Cache invalidation during regional partition",
+      "domain": "platform-architecture",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Edge platform lead",
+        "objective": "Reduce configuration-read latency without serving revoked access policy during a regional partition.",
+        "facts": [
+          "Policy reads account for 42 percent of control-plane requests and currently cross regions.",
+          "An edge cache would reduce median policy-read latency by 70 milliseconds.",
+          "Policy revocations occur about thirty times per day and five are classified as urgent.",
+          "Cross-region invalidation has a measured p99 delay of four minutes during packet loss.",
+          "Services can attach a policy version to requests, but two legacy clients do not yet send one."
+        ],
+        "decision_request": "Choose the cache consistency policy, client rollout order, and partition behavior.",
+        "plausible_paths": [
+          "Cache all policy reads with a fixed five-minute TTL.",
+          "Cache versioned policies while routing urgent or unversioned checks to an authoritative region.",
+          "Keep all policy reads authoritative until every client supports versions."
+        ],
+        "material_constraints": [
+          "Urgent revocations must not remain effective for minutes.",
+          "Two clients cannot yet prove which policy version they used.",
+          "Regional partitions are expected rather than exceptional.",
+          "The authoritative policy service has limited cross-region capacity.",
+          "A rollback must not require a coordinated client release."
+        ],
+        "harmful_failure_paths": [
+          "A revoked principal continues receiving access from stale edge state.",
+          "A full authoritative fallback overloads the policy service during a partition."
+        ],
+        "incomplete_information": [
+          "The fraction of legacy-client requests involving urgent policy changes is unknown."
+        ],
+        "reversible_action": "Pilot versioned caching for one modern client with forced invalidation delay and an authoritative fallback ceiling."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Separate ordinary freshness from urgent revocation semantics.",
+          "Provide a safe path for clients that cannot present a policy version.",
+          "Bound authoritative fallback load during a partition.",
+          "Define how cached decisions prove their policy version.",
+          "Keep rollback independent of a coordinated client deployment."
+        ],
+        "acceptable_decision_families": [
+          "Version-aware caching for modern clients with fail-closed handling of urgent or unversioned checks.",
+          "A staged no-cache policy for legacy clients while modern-client caching is piloted under explicit load limits."
+        ],
+        "fatal_errors": [
+          "Treating a fixed cache lifetime as sufficient protection for urgent revocations.",
+          "Sending every partitioned request to the authoritative service without a capacity guard."
+        ],
+        "known_valid_insights": [
+          "Client version support creates a natural boundary for a staged policy."
+        ],
+        "decision_closure_requirements": [
+          "Name the initial client cohort.",
+          "Specify urgent-revocation behavior.",
+          "Set an authoritative fallback capacity threshold.",
+          "Define a stale-policy stop condition.",
+          "Name the rollback owner and mechanism."
+        ],
+        "reasoning_notes": "Reward bounded hybrid policies. Do not require one universal cache rule for modern and legacy clients."
+      }
+    },
+    {
+      "case_id": "QS-02",
+      "title": "Event schema migration with offline consumers",
+      "domain": "platform-architecture",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Data platform owner",
+        "objective": "Migrate a high-volume event schema without silently corrupting delayed or offline consumers.",
+        "facts": [
+          "The new schema removes one overloaded field and replaces it with three typed fields.",
+          "Nine online consumers can deploy within two weeks, while four batch consumers may remain offline for thirty days.",
+          "The event log retains fourteen days of data.",
+          "Dual-writing both schemas increases producer CPU by 18 percent at peak.",
+          "A translation gateway exists but has not been load-tested above half of peak volume."
+        ],
+        "decision_request": "Choose the compatibility mechanism, cutover criteria, and cleanup sequence.",
+        "plausible_paths": [
+          "Cut producers directly to the new schema after online consumers migrate.",
+          "Dual-write old and new events until every consumer confirms migration.",
+          "Publish the new schema and translate for lagging consumers through a bounded gateway."
+        ],
+        "material_constraints": [
+          "Offline consumers can outlive event retention.",
+          "Producer peak CPU has limited headroom.",
+          "Translation capacity is unproven at full traffic.",
+          "Consumer acknowledgements do not prove historical replay correctness.",
+          "The old overloaded field cannot represent every new typed value exactly."
+        ],
+        "harmful_failure_paths": [
+          "A delayed consumer resumes after old events have expired and reconstructs incomplete state.",
+          "Dual-writing at peak causes producer saturation and data loss."
+        ],
+        "incomplete_information": [
+          "The maximum acceptable translation loss for historical backfill has not been agreed."
+        ],
+        "reversible_action": "Canary the translation gateway for one batch consumer using a recorded peak-volume replay."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Address consumers that remain offline beyond log retention.",
+          "Protect producer capacity while compatibility work is active.",
+          "Test semantic as well as syntactic translation.",
+          "Define treatment of values that cannot round-trip to the old field.",
+          "Separate live cutover from historical recovery."
+        ],
+        "acceptable_decision_families": [
+          "Bounded gateway translation plus explicit backfill snapshots for long-offline consumers.",
+          "Time-limited dual writing with peak admission limits and a separate historical migration path."
+        ],
+        "fatal_errors": [
+          "Assuming consumer deployment acknowledgement proves delayed replay safety.",
+          "Running unrestricted dual publication despite known producer headroom limits."
+        ],
+        "known_valid_insights": [
+          "The fourteen-day log and thirty-day offline window require a recovery artifact outside the log."
+        ],
+        "decision_closure_requirements": [
+          "Name the first consumer and replay fixture.",
+          "Set producer CPU and gateway load stop thresholds.",
+          "Define unsupported value handling.",
+          "Specify the historical backfill artifact.",
+          "Set old-schema retirement evidence and owner."
+        ],
+        "reasoning_notes": "Multiple compatibility mechanisms are valid if live traffic and historical recovery are both closed."
+      }
+    },
+    {
+      "case_id": "QS-03",
+      "title": "Usage pricing change for annual customers",
+      "domain": "product-launch",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Billing product lead",
+        "objective": "Introduce usage pricing without creating surprise charges or breaking annual commitments.",
+        "facts": [
+          "The current plan includes unlimited API calls under annual contracts.",
+          "Ten percent of customers generate 68 percent of variable infrastructure cost.",
+          "Forty percent of annual contracts renew within the next four months.",
+          "The billing system can meter calls but cannot yet display real-time spend forecasts.",
+          "Sales has verbally promised continued unlimited use to three strategic accounts."
+        ],
+        "decision_request": "Choose the launch cohort, customer protections, and migration timeline.",
+        "plausible_paths": [
+          "Move every account to usage pricing next month.",
+          "Apply usage pricing only at renewal with advance estimates and caps.",
+          "Launch an opt-in usage tier with performance benefits before mandatory migration."
+        ],
+        "material_constraints": [
+          "Existing annual commitments may limit mid-term pricing changes.",
+          "Customers cannot yet see real-time projected spend.",
+          "Strategic verbal promises need contract review rather than assumption.",
+          "Heavy users drive most variable cost.",
+          "Revenue impact differs between renewal and mid-term cohorts."
+        ],
+        "harmful_failure_paths": [
+          "Customers receive unpredictable invoices before they can control usage.",
+          "The company preserves unlimited pricing for the costliest users without an explicit exception owner."
+        ],
+        "incomplete_information": [
+          "Legal has not classified the three strategic verbal promises."
+        ],
+        "reversible_action": "Offer shadow metering and non-billing forecasts to one renewal cohort before changing invoices."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Distinguish mid-term contracts from renewal decisions.",
+          "Provide a spend-control mechanism before billed usage.",
+          "Route strategic promises through explicit legal and commercial review.",
+          "Measure customer behavior under shadow metering.",
+          "Assign ownership for exceptions and margin tradeoffs."
+        ],
+        "acceptable_decision_families": [
+          "Renewal-only migration after shadow bills, budgets, and caps are validated.",
+          "Opt-in usage pricing with a bounded later renewal migration and named exceptions."
+        ],
+        "fatal_errors": [
+          "Imposing surprise variable invoices before customers receive usable spend controls.",
+          "Treating informal sales statements as either automatically binding or automatically irrelevant."
+        ],
+        "known_valid_insights": [
+          "Shadow billing can produce behavior and support evidence without immediate invoice risk."
+        ],
+        "decision_closure_requirements": [
+          "Name the first renewal cohort.",
+          "Define budget, alert, or cap protections.",
+          "Set customer-notice timing.",
+          "Assign strategic-exception approval.",
+          "Specify rollback and margin stop conditions."
+        ],
+        "reasoning_notes": "Do not reward an abstract balanced answer that fails to choose a cohort and migration trigger."
+      }
+    },
+    {
+      "case_id": "QS-04",
+      "title": "AI support drafting with regulated customers",
+      "domain": "product-launch",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Customer support product manager",
+        "objective": "Reduce response time with AI-assisted drafting while protecting regulated customer communications.",
+        "facts": [
+          "Agents spend 35 percent of handling time drafting repetitive replies.",
+          "The model occasionally invents product entitlements when the case record is incomplete.",
+          "Regulated customers require retained approval records for material advice.",
+          "The support console can label AI text but cannot yet prevent direct send for selected queues.",
+          "A read-only retrieval layer can restrict the model to approved knowledge articles."
+        ],
+        "decision_request": "Choose eligible queues, approval controls, and evidence required for expansion.",
+        "plausible_paths": [
+          "Enable autonomous replies for every queue.",
+          "Enable drafts only with mandatory agent review for selected queues.",
+          "Delay all use until direct-send controls and full audit storage exist."
+        ],
+        "material_constraints": [
+          "Entitlement claims must be grounded in customer records.",
+          "Regulated material advice needs an approval trail.",
+          "The console cannot enforce queue-specific direct-send blocking yet.",
+          "Approved knowledge retrieval does not contain account-specific facts.",
+          "Time savings must not be inferred from drafting speed alone."
+        ],
+        "harmful_failure_paths": [
+          "An agent sends invented entitlement or compliance advice under time pressure.",
+          "A blanket delay forfeits low-risk drafting evidence from routine queues."
+        ],
+        "incomplete_information": [
+          "The rate at which agents catch plausible but unsupported drafts is unknown."
+        ],
+        "reversible_action": "Pilot drafts in one non-regulated queue with mandatory review, retrieval citations, and sampled error audits."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Separate low-risk drafting from regulated advice.",
+          "Keep a human approval step where enforcement cannot prevent direct send.",
+          "Require account-specific claims to cite customer records.",
+          "Measure caught and uncaught unsupported claims.",
+          "Preserve an audit record before regulated expansion."
+        ],
+        "acceptable_decision_families": [
+          "A non-regulated draft-only pilot with mandatory review and error sampling.",
+          "A narrower template-assist pilot that excludes account and compliance claims."
+        ],
+        "fatal_errors": [
+          "Allowing unsupervised customer messages before queue-specific sending controls exist.",
+          "Claiming regulated readiness from approved-article retrieval alone."
+        ],
+        "known_valid_insights": [
+          "A low-risk queue can test agent interaction without deciding autonomous or regulated use."
+        ],
+        "decision_closure_requirements": [
+          "Name eligible and excluded queues.",
+          "Define mandatory review evidence.",
+          "Specify unsupported-claim metrics.",
+          "Set an immediate disable threshold.",
+          "Name the owner of regulated expansion approval."
+        ],
+        "reasoning_notes": "Reward preserving a bounded low-risk path without accepting the unsafe autonomous leap."
+      }
+    },
+    {
+      "case_id": "QS-05",
+      "title": "Database recovery after partial replica corruption",
+      "domain": "operations-incidents",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Incident commander",
+        "objective": "Restore write availability without promoting corrupted replica state or losing forensic evidence.",
+        "facts": [
+          "The primary database is unavailable after a storage-controller failure.",
+          "Two replicas are current within thirty seconds but disagree on 0.4 percent of checksums.",
+          "A third replica is six hours behind and has consistent checksums.",
+          "The last full backup completed eighteen hours ago.",
+          "Traffic can remain read-only for another forty minutes before contractual penalties begin."
+        ],
+        "decision_request": "Choose the recovery source, validation steps, and write-reenable threshold.",
+        "plausible_paths": [
+          "Promote the newest replica immediately.",
+          "Restore the last full backup and replay all available logs.",
+          "Keep read-only while comparing replicas and isolate disputed ranges."
+        ],
+        "material_constraints": [
+          "The newest replicas contain a small but unexplained divergence.",
+          "The consistent replica has a six-hour recovery gap.",
+          "The backup is older than every replica.",
+          "Write downtime has a forty-minute business threshold.",
+          "Forensic copies are needed to identify whether corruption is ongoing."
+        ],
+        "harmful_failure_paths": [
+          "Promotion makes inconsistent data authoritative and spreads corruption.",
+          "A cautious full restore exceeds the business threshold without first testing a bounded recovery."
+        ],
+        "incomplete_information": [
+          "The divergent checksum ranges have not been mapped to customer-critical tables."
+        ],
+        "reversible_action": "Clone the newest replicas, compare disputed ranges, and rehearse promotion against isolated validation queries."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Preserve forensic copies before destructive recovery steps.",
+          "Identify whether divergent ranges affect critical tables.",
+          "Use the read-only window for a bounded validation path.",
+          "Define how later writes avoid contaminating recovery evidence.",
+          "Keep an explicit fallback to the consistent older source."
+        ],
+        "acceptable_decision_families": [
+          "Validate and promote a quarantined current replica only if disputed critical ranges clear.",
+          "Restore a consistent source with bounded log replay if current-state validation fails."
+        ],
+        "fatal_errors": [
+          "Promoting a current replica solely because it has the smallest lag.",
+          "Destroying or overwriting divergent copies before evidence preservation."
+        ],
+        "known_valid_insights": [
+          "The forty-minute window supports rapid validation, not blind promotion."
+        ],
+        "decision_closure_requirements": [
+          "Name the validation owner.",
+          "Set a checksum and critical-table promotion gate.",
+          "Specify forensic snapshot preservation.",
+          "Define the write-reenable sequence.",
+          "Name the fallback source and trigger."
+        ],
+        "reasoning_notes": "A valid answer may accept limited downtime or bounded data loss, but it must make the tradeoff and gate explicit."
+      }
+    },
+    {
+      "case_id": "QS-06",
+      "title": "Notification backlog during provider outage",
+      "domain": "operations-incidents",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Messaging operations lead",
+        "objective": "Recover customer notifications without duplicating legal notices or starving time-sensitive security messages.",
+        "facts": [
+          "The primary notification provider has rejected requests for ninety minutes.",
+          "The queue contains eight million messages across marketing, security, receipts, and legal notices.",
+          "A secondary provider can handle 35 percent of normal peak throughput.",
+          "Message IDs are idempotent inside each provider but not across providers.",
+          "Legal notices require proof of delivery while marketing messages can expire."
+        ],
+        "decision_request": "Choose queue prioritization, secondary-provider routing, and recovery controls.",
+        "plausible_paths": [
+          "Drain the oldest messages first through the secondary provider.",
+          "Route every message type to the secondary provider until the primary recovers.",
+          "Prioritize by message class with cross-provider duplicate controls."
+        ],
+        "material_constraints": [
+          "Secondary capacity cannot drain every class.",
+          "Cross-provider delivery can duplicate messages.",
+          "Security messages lose value quickly.",
+          "Legal messages require auditable delivery evidence.",
+          "Marketing messages may be safely expired."
+        ],
+        "harmful_failure_paths": [
+          "FIFO recovery delays security alerts behind expired marketing traffic.",
+          "Cross-provider retries send duplicate legal or transactional messages."
+        ],
+        "incomplete_information": [
+          "The primary provider has not supplied a credible recovery estimate."
+        ],
+        "reversible_action": "Route one security partition through the secondary provider with a cross-provider send ledger and duplicate sampling."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Prioritize message classes rather than queue age alone.",
+          "Add a cross-provider duplicate or send ledger.",
+          "Preserve delivery evidence for legal notices.",
+          "Expire eligible marketing work to protect capacity.",
+          "Define behavior when the primary resumes with old acknowledgements."
+        ],
+        "acceptable_decision_families": [
+          "Class-prioritized secondary routing with a shared send ledger and staged drain.",
+          "Security-only failover while preserving legal notices until auditable routing is ready."
+        ],
+        "fatal_errors": [
+          "Draining the backlog strictly by arrival time despite class-specific urgency.",
+          "Assuming provider-local idempotency prevents duplicates across providers."
+        ],
+        "known_valid_insights": [
+          "Expiring marketing messages converts scarce failover capacity into security recovery."
+        ],
+        "decision_closure_requirements": [
+          "Set the class priority order.",
+          "Define the cross-provider send key.",
+          "Name the legal-delivery evidence store.",
+          "Set capacity and duplicate stop thresholds.",
+          "Define primary-provider reentry reconciliation."
+        ],
+        "reasoning_notes": "Do not reward generic prioritization language without a duplicate-control and reentry contract."
+      }
+    },
+    {
+      "case_id": "QS-07",
+      "title": "Automated dependency updates across owned services",
+      "domain": "organization-process",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Engineering productivity lead",
+        "objective": "Reduce security-update delay without assigning unsafe merge authority to an automation bot.",
+        "facts": [
+          "Median dependency update delay is twenty-three days.",
+          "Twelve services have strong tests and named owners, while seven have flaky suites or shared ownership.",
+          "The bot can open patches, run tests, and collect changelogs.",
+          "Two recent minor-version updates changed runtime defaults despite passing unit tests.",
+          "Production deployment still requires an owner approval in every service."
+        ],
+        "decision_request": "Choose the bot's authority, service eligibility, and escalation policy.",
+        "plausible_paths": [
+          "Allow automatic merge for every passing dependency update.",
+          "Use the bot only to open informational issues.",
+          "Permit bounded automatic merge for eligible low-risk updates with rollback controls."
+        ],
+        "material_constraints": [
+          "Test quality differs materially across services.",
+          "Passing unit tests did not catch two runtime-default changes.",
+          "Ownership is missing or shared for seven services.",
+          "Deployment already has a human approval boundary.",
+          "Security updates and routine upgrades have different urgency."
+        ],
+        "harmful_failure_paths": [
+          "A broad auto-merge policy propagates a behavior-changing update through weakly tested services.",
+          "An issue-only bot fails to shorten the update path for well-owned low-risk services."
+        ],
+        "incomplete_information": [
+          "The false-positive rate of changelog risk classification has not been measured."
+        ],
+        "reversible_action": "Pilot patch generation and bounded merge eligibility on two strongly tested services with automatic rollback."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Tier automation by service test and ownership readiness.",
+          "Separate patch generation from merge authority.",
+          "Treat runtime-default changes as higher risk than version labels imply.",
+          "Preserve human control for weakly owned or high-impact changes.",
+          "Define an urgent security exception path."
+        ],
+        "acceptable_decision_families": [
+          "Low-risk auto-merge only for a named eligible cohort with deployment approval and rollback.",
+          "Patch-and-test automation for all services with merge authority limited to mature cohorts."
+        ],
+        "fatal_errors": [
+          "Granting identical merge authority to services with and without reliable tests and owners.",
+          "Banning patch generation merely because broad automatic merge is unsafe."
+        ],
+        "known_valid_insights": [
+          "The existing deployment approval boundary allows useful automation without full autonomous release."
+        ],
+        "decision_closure_requirements": [
+          "Name the initial eligible services.",
+          "Define low-risk update criteria.",
+          "Set runtime and rollback monitoring.",
+          "Assign exception approval.",
+          "Specify evidence required to expand eligibility."
+        ],
+        "reasoning_notes": "Reward preserving low-risk automation while blocking the unsupported high-risk authority leap."
+      }
+    },
+    {
+      "case_id": "QS-08",
+      "title": "Consolidating on-call ownership after reorganization",
+      "domain": "organization-process",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Infrastructure director",
+        "objective": "Reduce ambiguous incident ownership without creating an overloaded central on-call team.",
+        "facts": [
+          "Four product teams currently rotate primary on-call for their services.",
+          "A new platform team owns shared deployment and observability tooling but not product code.",
+          "Thirty percent of incidents cross at least two team boundaries.",
+          "The platform team has six engineers and already receives an average of nine escalations per week.",
+          "Product teams have inconsistent runbooks and two services lack a named secondary."
+        ],
+        "decision_request": "Choose incident ownership, escalation routing, and the transition sequence.",
+        "plausible_paths": [
+          "Move every primary on-call responsibility to the platform team.",
+          "Keep product ownership unchanged and publish a contact list.",
+          "Retain service ownership while adding a cross-service incident commander and readiness gates."
+        ],
+        "material_constraints": [
+          "The platform team cannot modify every product service.",
+          "Cross-team incidents need one coordinating authority.",
+          "Nine weekly escalations already consume platform capacity.",
+          "Runbook and secondary coverage are inconsistent.",
+          "Ownership must remain clear during the transition."
+        ],
+        "harmful_failure_paths": [
+          "Centralization makes the platform team accountable for failures it cannot repair.",
+          "A directory-only change leaves multi-team incidents without command authority."
+        ],
+        "incomplete_information": [
+          "Incident volume by service and hour has not been normalized across teams."
+        ],
+        "reversible_action": "Pilot a rotating incident commander for cross-team incidents while two services complete runbook and secondary-readiness checks."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Separate service repair ownership from cross-incident coordination.",
+          "Protect the platform team from unbounded primary ownership.",
+          "Require runbook and secondary readiness before routing changes.",
+          "Define who declares a cross-team incident.",
+          "Keep a rollback path for the transition."
+        ],
+        "acceptable_decision_families": [
+          "Product-owned service response with a rotating cross-service incident commander.",
+          "A limited platform coordination layer for certified services while product teams retain repair ownership."
+        ],
+        "fatal_errors": [
+          "Making the platform rotation solely responsible for product failures it lacks authority to change.",
+          "Relying on a contact directory as the only control for multi-team command."
+        ],
+        "known_valid_insights": [
+          "Coordination authority can be centralized without centralizing every repair obligation."
+        ],
+        "decision_closure_requirements": [
+          "Define primary, secondary, and incident-commander roles.",
+          "Name the pilot services.",
+          "Set platform capacity and escalation thresholds.",
+          "Require runbook readiness evidence.",
+          "Specify review timing and rollback ownership."
+        ],
+        "reasoning_notes": "A valid decision must close both normal service incidents and cross-team command without hiding the capacity tradeoff."
+      }
+    }
+  ]
+}
