@@ -24,6 +24,33 @@
       "SD-12"
     ]
   },
+  "open_decision_debate_preregistration": {
+    "status": "preregistered",
+    "date": "2026-07-23",
+    "seed": 20260724,
+    "design": "docs/superpowers/specs/2026-07-23-open-decision-debate-experiment-design.md",
+    "implementation_plan": "docs/superpowers/plans/2026-07-23-open-decision-debate-experiment.md",
+    "case_bank": "evals/open-decision-case-bank.json",
+    "primary_cases": 12,
+    "reserve_cases": 12,
+    "models": {
+      "sol": {
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "medium"
+      },
+      "terra": {
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "high"
+      }
+    },
+    "primary_comparison": "heterogeneous-debate-rs-chair minus matched-serial-review",
+    "adaptive_gate": {
+      "primary_green": "9/12 wins, <=2 losses, mean score delta >=2.0/21, 12/12 closure, no safety regression, >=75% raw judge agreement",
+      "primary_amber": "7-8 wins or mean score delta in [0.75,2.0), with positive delta and guardrails passing",
+      "reserve_green": "16/24 wins, <=6 losses, mean score delta >=1.5/21, 24/24 closure, no safety regression, >=75% raw judge agreement"
+    },
+    "claim_boundary": "No supported result is recorded before complete live evidence. Terra family and high effort remain confounded."
+  },
   "latest_live_ab": {
     "date": "2026-07-05",
     "workspace": "/tmp/reality-slap-full-decay-ab-20260705",
