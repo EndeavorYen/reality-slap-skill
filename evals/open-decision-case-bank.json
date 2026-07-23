@@ -1,0 +1,1589 @@
+{
+  "experiment_id": "open-decision-debate-20260724",
+  "seed": 20260724,
+  "cases": [
+    {
+      "case_id": "OD-01",
+      "title": "Shared inference capacity under volatile demand",
+      "domain": "platform-architecture",
+      "subset": "primary",
+      "public": {
+        "decision_owner": "Inference platform lead",
+        "objective": "Increase accelerator utilization without turning the platform into a fragile request-path dependency.",
+        "facts": [
+          "Six product teams run latency-sensitive models with sharply different traffic patterns.",
+          "Reserved replicas keep 38 percent of accelerator memory idle during most hours.",
+          "Two services need sub-second cold-start behavior while the others tolerate up to 45 seconds.",
+          "The platform can control placement, quota, admission, and model-cache policy, but service runtimes currently own request routing.",
+          "A central proxy would improve global visibility but would add latency and a shared failure domain."
+        ],
+        "decision_request": "Choose the next-quarter architecture and rollout sequence for reclaiming idle capacity.",
+        "plausible_paths": [
+          "Build a central request proxy that owns wake-up and routing.",
+          "Keep routing inside services and add a platform-owned reclaim and placement control plane.",
+          "Buy a managed serving layer and migrate teams behind its runtime contract."
+        ],
+        "material_constraints": [
+          "Sub-second cold starts are required for two services.",
+          "The platform team has four engineers for the quarter.",
+          "A request-path outage would affect all six teams.",
+          "Teams use two incompatible serving runtimes.",
+          "Quota and cost attribution must remain enforceable."
+        ],
+        "harmful_failure_paths": [
+          "A shared proxy becomes a latency and availability bottleneck before operational ownership is mature.",
+          "A policy-only approach leaves teams able to reserve memory without enforceable admission or reclaim."
+        ],
+        "incomplete_information": [
+          "The managed vendor has not supplied production cold-start data for the larger models."
+        ],
+        "reversible_action": "Pilot platform-controlled reclaim with two tolerant services and a tested opt-out before changing request routing."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Separate request routing from capacity governance.",
+          "Protect the two sub-second services.",
+          "Keep quota and cost attribution enforceable.",
+          "Limit shared blast radius.",
+          "Fit the four-engineer delivery capacity."
+        ],
+        "acceptable_decision_families": [
+          "A control-plane reclaim pilot that leaves request routing with runtimes.",
+          "A narrowly scoped managed-serving trial for tolerant services with explicit exit criteria."
+        ],
+        "fatal_errors": [
+          "Mandate a central proxy for every production request before latency and failover evidence exists.",
+          "Leave capacity ownership entirely voluntary while claiming utilization is governed."
+        ],
+        "known_valid_insights": [
+          "Cold-start classes can be treated as placement tiers rather than forcing one architecture for all services."
+        ],
+        "decision_closure_requirements": [
+          "Name the initial architecture boundary.",
+          "Select pilot services and an owner.",
+          "Define utilization and latency success metrics.",
+          "Define a rollback or opt-out.",
+          "State evidence required before expanding routing ownership."
+        ],
+        "reasoning_notes": "Both a control-plane pilot and a constrained managed trial can be defensible; the case tests whether the answer separates governance from request routing."
+      }
+    },
+    {
+      "case_id": "OD-02",
+      "title": "Event consistency boundary during schema evolution",
+      "domain": "platform-architecture",
+      "subset": "primary",
+      "public": {
+        "decision_owner": "Data platform architect",
+        "objective": "Reduce consumer breakage without making every producer change wait for central approval.",
+        "facts": [
+          "Forty teams publish events into a shared stream and twelve fields are governed as critical contracts.",
+          "Recent incidents came from renamed critical fields and changed unit semantics.",
+          "Most weekly changes are additive fields ignored by existing consumers.",
+          "The registry can block, warn, quarantine, or shadow-evaluate changes.",
+          "Some batch consumers update only once per week and cannot immediately adopt new versions."
+        ],
+        "decision_request": "Choose a compatibility policy and migration mechanism for the next two quarters.",
+        "plausible_paths": [
+          "Block every unrecognized schema difference until a central reviewer approves it.",
+          "Allow all producer changes and rely on consumer alerts and rollback.",
+          "Apply risk-tiered contracts with versioning, quarantine, and monitored additive changes."
+        ],
+        "material_constraints": [
+          "Critical owned fields cannot silently change meaning.",
+          "Compatible additive fields are common and time-sensitive.",
+          "Slow batch consumers need a migration window.",
+          "Central review capacity is limited to ten changes per week.",
+          "Rollback must preserve replayability."
+        ],
+        "harmful_failure_paths": [
+          "Global strictness turns harmless additions into an availability problem.",
+          "Permissive acceptance lets semantic breaking changes corrupt downstream decisions."
+        ],
+        "incomplete_information": [
+          "The percentage of consumers that validate units rather than field names is unknown."
+        ],
+        "reversible_action": "Shadow-classify schema changes for four weeks while enforcing only existing critical contracts."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Differentiate critical semantic changes from additive changes.",
+          "Provide migration support for slow consumers.",
+          "Preserve replay and rollback.",
+          "Stay within review capacity."
+        ],
+        "acceptable_decision_families": [
+          "Risk-tiered enforcement with versioned critical contracts.",
+          "A shadow period followed by selective enforcement based on observed classifications."
+        ],
+        "fatal_errors": [
+          "Hard-fail every additive field globally with no compatibility exception.",
+          "Accept critical semantic changes until a consumer reports corrupted output."
+        ],
+        "known_valid_insights": [
+          "Unit semantics require a contract mechanism beyond structural schema compatibility."
+        ],
+        "decision_closure_requirements": [
+          "Define change classes.",
+          "Choose enforcement behavior per class.",
+          "Name migration ownership.",
+          "Specify shadow metrics and stop conditions.",
+          "Define replay-safe rollback."
+        ],
+        "reasoning_notes": "There is no single required implementation, but a good answer must avoid both blanket blocking and semantic permissiveness."
+      }
+    },
+    {
+      "case_id": "OD-03",
+      "title": "Support copilot rollout with uneven policy risk",
+      "domain": "product-launch",
+      "subset": "primary",
+      "public": {
+        "decision_owner": "Support product director",
+        "objective": "Reduce handle time while preventing incorrect policy commitments to customers.",
+        "facts": [
+          "An internal copilot cuts median handle time by 18 percent in a 60-agent trial.",
+          "Answers about troubleshooting are usually correct, but refund and cancellation answers failed six of 120 reviewed conversations.",
+          "Citation display exists for help-center articles but not for account-specific policy exceptions.",
+          "Agents can edit suggestions before sending, although fast responders accept suggestions more often.",
+          "A customer-visible auto-answer mode could launch in six weeks if approved now."
+        ],
+        "decision_request": "Choose the product scope, safeguards, and evidence required for the next release.",
+        "plausible_paths": [
+          "Launch customer-visible auto-answer for all intents.",
+          "Keep a human-in-the-loop copilot for every intent.",
+          "Segment intents and automation levels based on consequence and evidence quality."
+        ],
+        "material_constraints": [
+          "Refund mistakes create financial and trust harm.",
+          "Troubleshooting value is already measurable.",
+          "Account exceptions lack reliable citations.",
+          "Agent acceptance behavior varies.",
+          "The team can implement intent routing but not a new policy engine this quarter."
+        ],
+        "harmful_failure_paths": [
+          "A broad launch converts known policy uncertainty into direct customer commitments.",
+          "A total pause discards a verified low-risk productivity gain."
+        ],
+        "incomplete_information": [
+          "The six policy failures may be concentrated in a small number of intent subtypes."
+        ],
+        "reversible_action": "Run a routed pilot that auto-suggests low-risk troubleshooting while forcing review for financial-policy intents."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Separate low- and high-consequence intents.",
+          "Address missing account-policy citations.",
+          "Measure agent over-reliance.",
+          "Keep a rapid kill or disable path.",
+          "Do not discard the demonstrated internal value."
+        ],
+        "acceptable_decision_families": [
+          "A risk-tiered human-in-the-loop rollout.",
+          "A narrower troubleshooting-only automation pilot with policy intents excluded."
+        ],
+        "fatal_errors": [
+          "Approve unreviewed financial-policy answers despite the observed failure set.",
+          "Cancel all internal assistance without considering intent segmentation."
+        ],
+        "known_valid_insights": [
+          "Agent acceptance rate by intent is a leading risk metric, not just model accuracy."
+        ],
+        "decision_closure_requirements": [
+          "Specify included and excluded intents.",
+          "Name approval and escalation behavior.",
+          "Set quality and reliance thresholds.",
+          "Name the launch owner and review date.",
+          "Define rollback."
+        ],
+        "reasoning_notes": "Multiple scoped launches are valid; quality depends on converting heterogeneous risk into an operational decision."
+      }
+    },
+    {
+      "case_id": "OD-04",
+      "title": "Enterprise workflow commitment before discovery",
+      "domain": "product-launch",
+      "subset": "primary",
+      "public": {
+        "decision_owner": "Product and revenue leadership pair",
+        "objective": "Capture a major contract without creating an unbounded bespoke roadmap commitment.",
+        "facts": [
+          "A prospect representing 14 percent of next year's target revenue wants a workflow promised by quarter end.",
+          "The requested workflow overlaps the product vision but includes three prospect-specific approval steps.",
+          "Engineering estimates range from six to sixteen weeks because data access and audit requirements are unclear.",
+          "Two existing customers have expressed adjacent needs but not the exact workflow.",
+          "The prospect will fund a paid design phase but wants a delivery date in the master agreement."
+        ],
+        "decision_request": "Choose the commercial commitment, discovery scope, and roadmap decision process.",
+        "plausible_paths": [
+          "Promise the full workflow by quarter end and reallocate capacity.",
+          "Reject the request to protect the standard roadmap.",
+          "Offer a paid design partnership with staged commitments and explicit product-fit gates."
+        ],
+        "material_constraints": [
+          "Revenue concentration is material.",
+          "Scope and audit requirements are unresolved.",
+          "Bespoke work could consume core roadmap capacity.",
+          "Adjacent market demand may make part of the request strategic.",
+          "Contract language needs a concrete value exchange."
+        ],
+        "harmful_failure_paths": [
+          "A fixed delivery promise turns discovery uncertainty into contractual breach risk.",
+          "A categorical rejection prevents learning whether a reusable product opportunity exists."
+        ],
+        "incomplete_information": [
+          "The reusable portion of the workflow cannot be known before design and data-access discovery."
+        ],
+        "reversible_action": "Contract for a time-boxed paid discovery with a prototype and a separately approved delivery option."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Do not convert unresolved scope into a fixed delivery promise.",
+          "Preserve a path to learn about reusable demand.",
+          "Protect core roadmap capacity.",
+          "Give the prospect a concrete paid outcome.",
+          "Set an explicit decision owner after discovery."
+        ],
+        "acceptable_decision_families": [
+          "Paid discovery with no unconditional delivery date.",
+          "A narrowly defined reusable milestone with prospect-specific work explicitly excluded."
+        ],
+        "fatal_errors": [
+          "Commit the undefined full workflow to a fixed quarter-end date.",
+          "Refuse any discovery or design-partner path despite funded learning."
+        ],
+        "known_valid_insights": [
+          "An option contract for delivery can create commercial value without pretending discovery is complete."
+        ],
+        "decision_closure_requirements": [
+          "State what is and is not contracted.",
+          "Define discovery deliverables.",
+          "Set product-fit and capacity gates.",
+          "Name commercial and product owners.",
+          "Provide an exit path."
+        ],
+        "reasoning_notes": "The best answer may be a staged commercial structure, but more than one allocation of reusable versus bespoke scope is defensible."
+      }
+    },
+    {
+      "case_id": "OD-05",
+      "title": "Partial degradation with uncertain shared cause",
+      "domain": "operations-incidents",
+      "subset": "primary",
+      "public": {
+        "decision_owner": "Incident commander",
+        "objective": "Restore reliable service quickly without amplifying an uncertain failure.",
+        "facts": [
+          "Checkout latency is elevated in one region for 18 percent of requests.",
+          "A database connection-pool change and a network policy rollout occurred within the same hour.",
+          "Rolling back either change takes fifteen minutes; rolling back both loses diagnostic separation.",
+          "Traffic can be shifted, but the receiving region is already at 72 percent capacity.",
+          "Error rates remain below the contractual threshold while abandonment is rising."
+        ],
+        "decision_request": "Choose the immediate mitigation sequence, communication, and diagnostic plan.",
+        "plausible_paths": [
+          "Roll back both recent changes immediately.",
+          "Shift all affected traffic and diagnose without rollback.",
+          "Apply a staged mitigation that preserves causal information while limiting customer impact."
+        ],
+        "material_constraints": [
+          "Customer abandonment is already increasing.",
+          "Receiving-region headroom is finite.",
+          "Causal evidence will be lost if both changes revert together.",
+          "Rollback itself is fast but not risk-free.",
+          "External status communication must not claim an unproven cause."
+        ],
+        "harmful_failure_paths": [
+          "Waiting for perfect diagnosis prolongs measurable customer harm.",
+          "Simultaneous broad changes make the system stable but leave the causal risk ready to recur."
+        ],
+        "incomplete_information": [
+          "Trace sampling is too sparse to distinguish pool waits from network retries."
+        ],
+        "reversible_action": "Shift a capped traffic slice while reverting one change and increasing trace sampling."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Mitigate current customer harm.",
+          "Respect receiving-region capacity.",
+          "Preserve causal learning where practical.",
+          "Avoid asserting an unverified root cause.",
+          "Set explicit escalation thresholds."
+        ],
+        "acceptable_decision_families": [
+          "Capped traffic shift plus a single-change rollback and observation window.",
+          "Single-change rollback first with predeclared traffic-shift trigger."
+        ],
+        "fatal_errors": [
+          "Shift all traffic into a region without reserving safety headroom.",
+          "Delay every mitigation until the root cause is certain."
+        ],
+        "known_valid_insights": [
+          "A sequential intervention can be both mitigation and an information-producing experiment."
+        ],
+        "decision_closure_requirements": [
+          "Choose the first intervention.",
+          "Name traffic and error thresholds.",
+          "Specify the observation window.",
+          "State the external message.",
+          "Define the next rollback or failover action."
+        ],
+        "reasoning_notes": "The case rewards sequencing and learning under pressure rather than a predetermined rollback choice."
+      }
+    },
+    {
+      "case_id": "OD-06",
+      "title": "Migration canary with asymmetric rollback evidence",
+      "domain": "operations-incidents",
+      "subset": "primary",
+      "public": {
+        "decision_owner": "Migration program owner",
+        "objective": "Begin a high-value data migration without creating an unrecoverable reconciliation problem.",
+        "facts": [
+          "The new ledger pipeline passed three full-volume shadow runs with aggregate totals matching.",
+          "Record-level reconciliation still shows 0.08 percent mismatches concentrated in legacy adjustments.",
+          "The old pipeline can run in parallel for six weeks but dual operation costs four engineer-days per week.",
+          "Rollback restores writes to the old pipeline but does not automatically reverse downstream notifications.",
+          "A five-percent customer canary can exclude accounts with legacy adjustments."
+        ],
+        "decision_request": "Choose whether and how to start production migration, including reconciliation and rollback controls.",
+        "plausible_paths": [
+          "Launch all customers because aggregate totals reconcile.",
+          "Block migration until every record-level mismatch is eliminated.",
+          "Run a bounded canary that isolates the unresolved adjustment class."
+        ],
+        "material_constraints": [
+          "Downstream notifications complicate rollback.",
+          "Mismatch concentration is known but not fully explained.",
+          "Dual operation is costly but time-limited.",
+          "A clean customer cohort is available.",
+          "Finance requires daily signed reconciliation."
+        ],
+        "harmful_failure_paths": [
+          "Aggregate-only validation hides customer-level accounting defects.",
+          "Demanding zero unexplained differences prevents learning from a safely isolated cohort."
+        ],
+        "incomplete_information": [
+          "It is unknown whether the legacy mismatches share one deterministic transformation bug."
+        ],
+        "reversible_action": "Canary only non-legacy-adjustment accounts with notification suppression and daily record-level reconciliation."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Separate aggregate from record-level correctness.",
+          "Control downstream notifications during rollback.",
+          "Exclude the unresolved adjustment class.",
+          "Use daily signed reconciliation.",
+          "Bound dual-run cost and duration."
+        ],
+        "acceptable_decision_families": [
+          "A clean-cohort canary with notification controls.",
+          "A shadow extension targeted at the mismatch class before a canary."
+        ],
+        "fatal_errors": [
+          "Launch every account based only on aggregate reconciliation.",
+          "Start a canary with no way to contain downstream notifications."
+        ],
+        "known_valid_insights": [
+          "Cohort selection can create rollback safety without requiring the legacy defect to be solved first."
+        ],
+        "decision_closure_requirements": [
+          "Define the eligible cohort.",
+          "Set mismatch and notification stop thresholds.",
+          "Name reconciliation ownership.",
+          "Define rollback mechanics.",
+          "Set a review date for legacy adjustments."
+        ],
+        "reasoning_notes": "A pause or canary may both be defensible depending on the proposed controls; blanket launch is not."
+      }
+    },
+    {
+      "case_id": "OD-07",
+      "title": "Diagnostic retention for rare production defects",
+      "domain": "data-privacy-security",
+      "subset": "primary",
+      "public": {
+        "decision_owner": "Security and reliability steering group",
+        "objective": "Preserve enough diagnostic evidence for rare defects while reducing sensitive-data exposure.",
+        "facts": [
+          "Raw session traces helped diagnose three severe defects that occurred less than once per million sessions.",
+          "The traces contain user text, device identifiers, and occasionally access tokens in malformed headers.",
+          "Current retention is 180 days with access available to 42 engineers.",
+          "Redaction removes known fields but misses novel malformed payloads.",
+          "Sanitized structural traces preserve timing and service topology but not exact user input."
+        ],
+        "decision_request": "Choose the retention tiers, access controls, and rare-defect investigation process.",
+        "plausible_paths": [
+          "Retain all raw traces for 180 days to maximize diagnosability.",
+          "Delete raw traces immediately after online processing.",
+          "Create tiered retention with short raw access and longer sanitized samples."
+        ],
+        "material_constraints": [
+          "Rare defects require retrospective evidence.",
+          "Tokens in malformed headers create account risk.",
+          "Known-field redaction is incomplete.",
+          "Forty-two-person raw access is broader than necessary.",
+          "Legal hold and incident response may require exceptions."
+        ],
+        "harmful_failure_paths": [
+          "Long broad retention converts a debugging asset into a large breach surface.",
+          "Immediate deletion makes rare high-impact failures practically uninvestigable."
+        ],
+        "incomplete_information": [
+          "The fraction of rare diagnoses that truly required user text rather than structural data is unknown."
+        ],
+        "reversible_action": "Run a 30-day tiered-retention pilot with sampled raw escrow and measure diagnostic sufficiency."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Reduce raw-data lifetime and access breadth.",
+          "Preserve a path for rare-defect investigation.",
+          "Address malformed-token leakage.",
+          "Define exceptional legal or incident access.",
+          "Measure whether sanitized traces are sufficient."
+        ],
+        "acceptable_decision_families": [
+          "Short raw escrow plus longer sanitized sampling.",
+          "Default rapid deletion with narrowly triggered, approved capture windows."
+        ],
+        "fatal_errors": [
+          "Keep broad raw access for six months without additional controls.",
+          "Delete every diagnostic artifact before measuring rare-defect impact."
+        ],
+        "known_valid_insights": [
+          "Triggered capture windows can shift raw retention from universal to incident-specific."
+        ],
+        "decision_closure_requirements": [
+          "Set retention periods by tier.",
+          "Name access approval and audit rules.",
+          "Define malformed-token handling.",
+          "Specify diagnostic sufficiency metrics.",
+          "Provide emergency capture and deletion paths."
+        ],
+        "reasoning_notes": "Two different minimization architectures are acceptable if they retain a controlled rare-defect path."
+      }
+    },
+    {
+      "case_id": "OD-08",
+      "title": "Partner production access before auth integration",
+      "domain": "data-privacy-security",
+      "subset": "primary",
+      "public": {
+        "decision_owner": "Integration security owner",
+        "objective": "Enable a time-sensitive partner launch without creating unmanaged privileged access.",
+        "facts": [
+          "The partner needs to invoke two production operations for a launch in ten days.",
+          "Its identity platform cannot support the preferred workload federation for another six weeks.",
+          "The internal gateway can issue scoped tokens with a 24-hour lifetime and request-level logging.",
+          "Manual issuance currently requires a security engineer and has no self-service renewal.",
+          "The partner forecasts 600 calls per day and needs continuous availability."
+        ],
+        "decision_request": "Choose an interim access design, operating model, and launch condition.",
+        "plausible_paths": [
+          "Issue one long-lived integration administrator credential.",
+          "Delay launch until workload federation is complete.",
+          "Operate a short-lived scoped-token bridge with explicit renewal and monitoring."
+        ],
+        "material_constraints": [
+          "Only two operations are required.",
+          "Continuous operation makes purely ad hoc issuance fragile.",
+          "Security staffing cannot renew tokens manually every hour.",
+          "Request-level logging is available.",
+          "The preferred identity path has a credible six-week date."
+        ],
+        "harmful_failure_paths": [
+          "A broad persistent credential outlives the launch pressure and obscures accountability.",
+          "A nominally secure bridge fails operationally and causes unsafe emergency workarounds."
+        ],
+        "incomplete_information": [
+          "The partner's deployment platform support for automated 24-hour renewal is untested."
+        ],
+        "reversible_action": "Test automated renewal in staging and issue production scope only after a monitored 72-hour soak."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Limit operations and token lifetime.",
+          "Provide reliable renewal ownership.",
+          "Use request-level logging and alerts.",
+          "Keep a six-week exit to federation.",
+          "Define what blocks the launch."
+        ],
+        "acceptable_decision_families": [
+          "A monitored short-lived bridge after renewal testing.",
+          "A brief launch delay if automated renewal cannot pass the soak."
+        ],
+        "fatal_errors": [
+          "Issue a shared long-lived administrator secret for convenience.",
+          "Approve production access without a reliable renewal path or named operator."
+        ],
+        "known_valid_insights": [
+          "Operational fragility is a security control failure because it creates pressure for manual bypasses."
+        ],
+        "decision_closure_requirements": [
+          "Define token scope and lifetime.",
+          "Name renewal ownership.",
+          "Set soak-test success criteria.",
+          "Specify monitoring and revocation.",
+          "Set the federation expiry."
+        ],
+        "reasoning_notes": "Launching or delaying can both be correct depending on renewal evidence; a good answer makes that evidence the decision gate."
+      }
+    },
+    {
+      "case_id": "OD-09",
+      "title": "Model-provider dependence ahead of launch",
+      "domain": "vendor-business-strategy",
+      "subset": "primary",
+      "public": {
+        "decision_owner": "AI product and platform leads",
+        "objective": "Ship a differentiated feature while containing switching, data-handling, and outage risk.",
+        "facts": [
+          "Provider A is the only tested provider meeting current latency and tool-use quality targets.",
+          "Provider A's new caching API could cut cost by 30 percent but is proprietary.",
+          "A second provider passes simple prompts but has not passed tool-use or safety evaluation.",
+          "A full provider-neutral abstraction is estimated at twelve engineer-weeks.",
+          "A thin request, logging, policy, and fallback boundary is estimated at three weeks."
+        ],
+        "decision_request": "Choose the launch architecture and the amount of portability investment before release.",
+        "plausible_paths": [
+          "Use Provider A APIs directly and defer portability.",
+          "Delay launch for a complete provider-neutral platform.",
+          "Launch on A behind a thin volatile-boundary seam and test a limited fallback."
+        ],
+        "material_constraints": [
+          "The feature date matters commercially.",
+          "Only A currently meets quality targets.",
+          "Data-handling flags differ by request.",
+          "Fallback quality is unproven.",
+          "Proprietary caching creates savings and coupling."
+        ],
+        "harmful_failure_paths": [
+          "Deep direct integration spreads provider semantics across product workflows.",
+          "A universal abstraction erases provider-specific quality controls and delays all learning."
+        ],
+        "incomplete_information": [
+          "The revenue sensitivity to a three-week delay is uncertain."
+        ],
+        "reversible_action": "Launch an internal slice through the thin seam and run shadow evaluation against Provider B."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Acknowledge current provider quality asymmetry.",
+          "Bound coupling at volatile interfaces.",
+          "Keep data-handling controls explicit.",
+          "Do not claim an untested fallback is production-ready.",
+          "Preserve the launch learning path."
+        ],
+        "acceptable_decision_families": [
+          "Launch on A behind a thin seam with shadow fallback testing.",
+          "A short delay to finish only the thin seam and critical safety evaluation."
+        ],
+        "fatal_errors": [
+          "Spread proprietary provider calls throughout product code with no boundary.",
+          "Block launch until every provider behaves through a universal abstraction."
+        ],
+        "known_valid_insights": [
+          "Portability should target volatile policy and observability surfaces, not lowest-common-denominator model behavior."
+        ],
+        "decision_closure_requirements": [
+          "Choose the launch provider and boundary.",
+          "Define proprietary API containment.",
+          "Set fallback test requirements.",
+          "Name data-handling enforcement.",
+          "Define switching or expansion triggers."
+        ],
+        "reasoning_notes": "The case admits a short delay or immediate bounded launch depending on sequencing; it rejects both hard-coded sprawl and abstraction maximalism."
+      }
+    },
+    {
+      "case_id": "OD-10",
+      "title": "Accelerator reservation versus cloud burst capacity",
+      "domain": "vendor-business-strategy",
+      "subset": "primary",
+      "public": {
+        "decision_owner": "Infrastructure finance committee",
+        "objective": "Secure enough accelerator capacity for growth without locking the company into an inflexible demand forecast.",
+        "facts": [
+          "Base inference demand is expected to grow between 35 and 90 percent next year.",
+          "A three-year reserved cluster costs 42 percent less per accelerator-hour at 75 percent utilization.",
+          "Cloud burst capacity is available but has shown two regional shortages during major launches.",
+          "Model efficiency work could cut required compute by 25 percent but has not shipped.",
+          "The reservation can be expanded after nine months but cannot be reduced."
+        ],
+        "decision_request": "Choose the reservation, burst, and efficiency-investment portfolio.",
+        "plausible_paths": [
+          "Reserve capacity for the high-growth forecast.",
+          "Stay fully on demand until the forecast stabilizes.",
+          "Reserve a base tranche and contract burst plus efficiency milestones."
+        ],
+        "material_constraints": [
+          "Launch shortages have revenue impact.",
+          "Demand uncertainty is wide.",
+          "Reservation downside is asymmetric.",
+          "Efficiency work competes with product engineering.",
+          "Regional concentration affects resilience."
+        ],
+        "harmful_failure_paths": [
+          "A high-case reservation converts forecast optimism into years of stranded capital.",
+          "A fully variable plan treats historical shortage risk as costless."
+        ],
+        "incomplete_information": [
+          "The provider has not committed a price for guaranteed burst capacity."
+        ],
+        "reversible_action": "Negotiate a base reservation with a nine-month expansion option and a priced burst capacity test."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Quantify downside of under- and over-reservation.",
+          "Address historical burst shortages.",
+          "Treat efficiency as uncertain capacity supply.",
+          "Diversify regional risk.",
+          "Use the expansion option explicitly."
+        ],
+        "acceptable_decision_families": [
+          "Base reservation plus contracted burst and efficiency gates.",
+          "Smaller reservation plus a second-region or second-vendor resilience purchase."
+        ],
+        "fatal_errors": [
+          "Reserve the full high-growth forecast without downside controls.",
+          "Rely only on unguaranteed on-demand capacity despite prior launch shortages."
+        ],
+        "known_valid_insights": [
+          "Efficiency milestones can be valued as a real option but should not be counted as delivered capacity."
+        ],
+        "decision_closure_requirements": [
+          "State the reservation tranche.",
+          "Define burst protection.",
+          "Set utilization and growth triggers.",
+          "Assign efficiency ownership.",
+          "Specify the nine-month review decision."
+        ],
+        "reasoning_notes": "Several portfolio weights are valid; quality comes from making uncertainty and options explicit."
+      }
+    },
+    {
+      "case_id": "OD-11",
+      "title": "Federated on-call ownership for a shared platform",
+      "domain": "organization-process",
+      "subset": "primary",
+      "public": {
+        "decision_owner": "Engineering operations council",
+        "objective": "Improve incident response for a shared platform without destroying service-team accountability.",
+        "facts": [
+          "The platform has twelve services owned by five teams and a central SRE group of four.",
+          "Thirty percent of pages require a service owner, but routing often starts with central SRE.",
+          "Two teams lack enough engineers for a sustainable 24/7 rotation.",
+          "Central SRE can diagnose infrastructure quickly but lacks application context.",
+          "Recent incidents had duplicate responders and no single incident owner."
+        ],
+        "decision_request": "Choose the on-call topology, escalation contract, and transition plan.",
+        "plausible_paths": [
+          "Centralize all first-line and resolution ownership in SRE.",
+          "Require every service team to own a complete rotation.",
+          "Use a shared first-response layer with explicit service ownership and capability tiers."
+        ],
+        "material_constraints": [
+          "Small teams cannot staff full rotations safely.",
+          "Application context is distributed.",
+          "Infrastructure diagnosis benefits from central expertise.",
+          "Every incident needs one commander.",
+          "Paging load and training must remain sustainable."
+        ],
+        "harmful_failure_paths": [
+          "Full centralization turns SRE into an unbounded application support queue.",
+          "Uniform federation creates unsafe rotations for teams below staffing minimums."
+        ],
+        "incomplete_information": [
+          "Page volume by service is incomplete because several alerts share generic routing."
+        ],
+        "reversible_action": "Pilot a shared first-response rotation for three services with explicit transfer and incident-command rules."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Preserve service accountability.",
+          "Protect small teams from unsafe rotations.",
+          "Use central infrastructure expertise.",
+          "Assign one incident commander.",
+          "Measure routing and handoff quality."
+        ],
+        "acceptable_decision_families": [
+          "Tiered shared first response with named service escalation.",
+          "Service ownership with central SRE coverage only for teams below a staffing threshold."
+        ],
+        "fatal_errors": [
+          "Make central SRE permanently responsible for every application incident.",
+          "Require understaffed teams to operate independent round-the-clock rotations immediately."
+        ],
+        "known_valid_insights": [
+          "Capability tiers can make ownership conditional without making it ambiguous."
+        ],
+        "decision_closure_requirements": [
+          "Define first response and resolution ownership.",
+          "Set staffing thresholds.",
+          "Name incident-command rules.",
+          "Specify pilot services and training.",
+          "Define routing-quality metrics and rollback."
+        ],
+        "reasoning_notes": "The answer need not choose one universal topology; it must produce a clear operating contract."
+      }
+    },
+    {
+      "case_id": "OD-12",
+      "title": "Incentive metric that drives local optimization",
+      "domain": "organization-process",
+      "subset": "primary",
+      "public": {
+        "decision_owner": "Customer operations executive",
+        "objective": "Improve response efficiency without rewarding behavior that increases repeat contacts or customer harm.",
+        "facts": [
+          "Teams are currently rewarded for median handle time and tickets closed per day.",
+          "Handle time improved 22 percent while seven-day repeat contacts rose 11 percent.",
+          "Complex cases are concentrated among three specialist groups.",
+          "Customer satisfaction is sampled for only eight percent of cases.",
+          "A new case-complexity classifier is 82 percent accurate and uneven across languages."
+        ],
+        "decision_request": "Choose next-quarter incentives, measurement, and transition safeguards.",
+        "plausible_paths": [
+          "Keep productivity targets and add a customer-satisfaction bonus.",
+          "Replace throughput metrics with quality and repeat-contact metrics.",
+          "Use a balanced scorecard with complexity adjustment and guarded rollout."
+        ],
+        "material_constraints": [
+          "Repeat contacts reflect hidden cost and customer friction.",
+          "Quality sampling is sparse.",
+          "Complexity differs materially by team.",
+          "The classifier has language bias.",
+          "Abrupt target changes affect staffing and compensation."
+        ],
+        "harmful_failure_paths": [
+          "Adding a small quality weight leaves throughput gaming economically dominant.",
+          "Removing every productivity signal makes staffing and backlog management blind."
+        ],
+        "incomplete_information": [
+          "The causal share of repeat contacts attributable to faster handling is estimated, not proven."
+        ],
+        "reversible_action": "Shadow-score the balanced metric for one month and run a capped incentive pilot in two comparable teams."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Address repeat contacts.",
+          "Retain an operational efficiency signal.",
+          "Adjust for complexity without trusting a biased classifier blindly.",
+          "Protect compensation during transition.",
+          "Increase quality measurement coverage."
+        ],
+        "acceptable_decision_families": [
+          "A shadowed balanced scorecard with capped incentive impact.",
+          "A quality-gated productivity metric with manual complexity review during calibration."
+        ],
+        "fatal_errors": [
+          "Continue rewarding closure volume while ignoring the repeat-contact increase.",
+          "Base compensation directly on the uncorrected language-biased classifier."
+        ],
+        "known_valid_insights": [
+          "Repeat-contact cost can serve as a broader quality proxy while satisfaction sampling improves."
+        ],
+        "decision_closure_requirements": [
+          "Define the proposed metric weights or gates.",
+          "Specify complexity handling.",
+          "Set a transition compensation rule.",
+          "Name pilot teams and duration.",
+          "Define rollback and expansion criteria."
+        ],
+        "reasoning_notes": "A weighted score or gated metric can both work if gaming and measurement bias are controlled."
+      }
+    },
+    {
+      "case_id": "OD-13",
+      "title": "Multi-region routing under inconsistent failover state",
+      "domain": "platform-architecture",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Traffic platform owner",
+        "objective": "Improve regional resilience without routing writes through stale authorization or inventory state.",
+        "facts": [
+          "Read traffic can fail over globally in under one minute.",
+          "Write authorization state replicates in three to twelve minutes during peak load.",
+          "Two products tolerate queued writes while one requires immediate confirmation.",
+          "Global active-active writes would require conflict handling not yet implemented.",
+          "The last regional outage lasted 28 minutes and caused manual routing changes."
+        ],
+        "decision_request": "Choose the failover policy, product tiers, and implementation sequence.",
+        "plausible_paths": [
+          "Enable global active-active routing for every request.",
+          "Keep all writes regional and accept outage unavailability.",
+          "Tier failover by read/write semantics and product tolerance."
+        ],
+        "material_constraints": [
+          "Authorization state can be stale.",
+          "Products have different confirmation requirements.",
+          "Conflict resolution is absent.",
+          "Manual failover is slow.",
+          "Queued writes need customer-visible semantics."
+        ],
+        "harmful_failure_paths": [
+          "Immediate cross-region writes violate authorization or inventory correctness.",
+          "Uniform regional pinning leaves tolerant products unnecessarily unavailable."
+        ],
+        "incomplete_information": [
+          "Peak replication lag under a prolonged outage has not been load-tested."
+        ],
+        "reversible_action": "Pilot read failover and queued-write mode for one tolerant product with forced lag injection."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Separate reads, queued writes, and immediate writes.",
+          "Account for stale authorization state.",
+          "Avoid pretending conflicts are solved.",
+          "Define customer-visible queued semantics.",
+          "Automate failover safely."
+        ],
+        "acceptable_decision_families": [
+          "Tiered automated failover with queued writes for tolerant products.",
+          "Read-only automation first while write replication and conflict evidence mature."
+        ],
+        "fatal_errors": [
+          "Route every write globally before conflict and authorization safety exist.",
+          "Keep every product unavailable during regional loss despite safe read or queue paths."
+        ],
+        "known_valid_insights": [
+          "Failover capability is a product-specific contract, not one platform boolean."
+        ],
+        "decision_closure_requirements": [
+          "Define traffic tiers.",
+          "Select a first product.",
+          "Set lag and correctness thresholds.",
+          "Specify customer behavior.",
+          "Define rollback and expansion."
+        ],
+        "reasoning_notes": "Multiple sequencing choices are valid, but correctness semantics must lead routing policy."
+      }
+    },
+    {
+      "case_id": "OD-14",
+      "title": "Batch and interactive accelerator scheduling",
+      "domain": "platform-architecture",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Compute scheduler team",
+        "objective": "Increase batch throughput while protecting interactive latency and avoiding permanent overprovisioning.",
+        "facts": [
+          "Interactive inference uses 45 to 80 percent of the cluster depending on hour.",
+          "Batch evaluation jobs can checkpoint every twenty minutes but lose work when preempted.",
+          "Product teams reserve headroom based on launch forecasts that are often early.",
+          "A queue priority system exists but has no price or quota signal.",
+          "A separate batch cluster would take eight weeks to procure."
+        ],
+        "decision_request": "Choose the scheduling policy and capacity investment for the next quarter.",
+        "plausible_paths": [
+          "Preempt batch whenever interactive demand rises.",
+          "Build a separate dedicated batch cluster.",
+          "Use quota-priced elastic headroom with bounded preemption and checkpoint incentives."
+        ],
+        "material_constraints": [
+          "Interactive latency has contractual targets.",
+          "Frequent batch preemption wastes compute.",
+          "Forecast reservations are noisy.",
+          "Procurement lead time is material.",
+          "Teams need predictable batch completion windows."
+        ],
+        "harmful_failure_paths": [
+          "Unlimited preemption makes nominal spare capacity unusable for important batch work.",
+          "Dedicated procurement locks in capacity before scheduling economics are understood."
+        ],
+        "incomplete_information": [
+          "The distribution of batch checkpoint recovery time is not instrumented."
+        ],
+        "reversible_action": "Pilot bounded preemption with checkpoint telemetry and reserved batch windows."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Protect interactive latency.",
+          "Measure preemption waste.",
+          "Give batch users completion predictability.",
+          "Correct reservation incentives.",
+          "Avoid premature fixed capacity."
+        ],
+        "acceptable_decision_families": [
+          "Bounded preemption plus reserved windows and quota signals.",
+          "A temporary capacity tranche combined with measured scheduling reform."
+        ],
+        "fatal_errors": [
+          "Allow batch jobs to be killed without bounds or recovery measurement.",
+          "Procure a permanent isolated cluster without testing shared scheduling."
+        ],
+        "known_valid_insights": [
+          "Checkpoint cadence can become an economic scheduling input rather than a fixed application choice."
+        ],
+        "decision_closure_requirements": [
+          "Define priority and preemption rules.",
+          "Set latency guardrails.",
+          "Specify batch predictability.",
+          "Name telemetry and pilot duration.",
+          "Set procurement decision triggers."
+        ],
+        "reasoning_notes": "A small capacity purchase can be valid, but only as part of an explicit option and measurement plan."
+      }
+    },
+    {
+      "case_id": "OD-15",
+      "title": "Personalization ramp with sparse segment evidence",
+      "domain": "product-launch",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Growth product lead",
+        "objective": "Capture aggregate recommendation lift without harming under-measured user segments.",
+        "facts": [
+          "Offline evaluation predicts a 4.5 percent conversion lift overall.",
+          "Two small language segments show lower relevance, but each has fewer than 300 labeled examples.",
+          "Online logging cannot yet identify one of those segments reliably.",
+          "A five-percent ramp with manual cohort analysis is available within one week.",
+          "The current system has stable but lower aggregate conversion."
+        ],
+        "decision_request": "Choose the launch ramp, measurement work, and decision thresholds.",
+        "plausible_paths": [
+          "Launch to all users to realize aggregate lift.",
+          "Reject the model until every segment improves offline.",
+          "Run a guarded ramp with improved segment observability and explicit tradeoff ownership."
+        ],
+        "material_constraints": [
+          "Aggregate benefit is plausible.",
+          "Segment harm evidence is noisy but directional.",
+          "One segment cannot be monitored live.",
+          "A limited ramp is operationally possible.",
+          "Leadership must own any accepted segment tradeoff."
+        ],
+        "harmful_failure_paths": [
+          "Full rollout hides harm behind an aggregate metric.",
+          "Permanent rejection treats sparse uncertainty as proof that no safe learning path exists."
+        ],
+        "incomplete_information": [
+          "The true online conversion and retention effect for the two segments is unknown."
+        ],
+        "reversible_action": "Instrument segment proxies and run a capped ramp with daily manual review."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Improve segment observability before broad exposure.",
+          "Preserve the aggregate opportunity.",
+          "Set stop thresholds.",
+          "Name rollback ownership.",
+          "Make accepted tradeoffs explicit."
+        ],
+        "acceptable_decision_families": [
+          "A small guarded ramp after minimum segment logging.",
+          "A short instrumentation delay followed by a predefined ramp."
+        ],
+        "fatal_errors": [
+          "Approve full rollout while one at-risk segment is not observable.",
+          "Discard the model permanently based only on sparse offline labels."
+        ],
+        "known_valid_insights": [
+          "The first decision is about observability sufficiency, not the final universal rollout."
+        ],
+        "decision_closure_requirements": [
+          "Set initial exposure.",
+          "Define segment metrics.",
+          "Set stop and rollback thresholds.",
+          "Name tradeoff ownership.",
+          "Specify expansion evidence."
+        ],
+        "reasoning_notes": "Either a brief delay or a very small ramp is defensible if the observability boundary is explicit."
+      }
+    },
+    {
+      "case_id": "OD-16",
+      "title": "Pricing experiment with renewal and fairness exposure",
+      "domain": "product-launch",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Monetization lead",
+        "objective": "Learn willingness to pay without creating opaque or unfair treatment for renewing customers.",
+        "facts": [
+          "A proposed price package increases projected new-customer revenue by 12 percent.",
+          "The experiment tool can randomize new signups but not reliably exclude accounts linked to existing organizations.",
+          "Renewing customers have contractual notice periods.",
+          "Sales can manually override quotes but override reasons are not logged.",
+          "The team can run a geography-limited test or wait six weeks for account-linking fixes."
+        ],
+        "decision_request": "Choose experiment scope, customer protections, and learning criteria.",
+        "plausible_paths": [
+          "Run the global experiment immediately.",
+          "Wait for perfect identity linking before any test.",
+          "Run a bounded cohort test with notice, override logging, and exclusion controls."
+        ],
+        "material_constraints": [
+          "Renewal contracts constrain price changes.",
+          "Organization-linked accounts may cross cohorts.",
+          "Manual overrides can bias results.",
+          "Pricing learning has commercial value.",
+          "A geography-limited cohort reduces sample speed."
+        ],
+        "harmful_failure_paths": [
+          "Existing customers receive inconsistent treatment without notice.",
+          "Waiting for perfect infrastructure delays every low-risk learning path."
+        ],
+        "incomplete_information": [
+          "The percentage of signups linked to existing organizations is estimated at three to ten percent."
+        ],
+        "reversible_action": "Run a small geography cohort with manual organization screening and logged overrides."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Protect renewal commitments.",
+          "Control linked-account leakage.",
+          "Log override reasons.",
+          "Preserve interpretable experiment data.",
+          "Define customer remediation."
+        ],
+        "acceptable_decision_families": [
+          "A geography-limited protected cohort.",
+          "A short delay for minimum linking controls followed by a broader test."
+        ],
+        "fatal_errors": [
+          "Randomize potentially renewing accounts without notice or exclusion.",
+          "Treat unlogged sales overrides as harmless to experimental validity."
+        ],
+        "known_valid_insights": [
+          "Override logging is both a fairness control and a source of causal-confounding evidence."
+        ],
+        "decision_closure_requirements": [
+          "Define eligible customers.",
+          "Set notice and remediation.",
+          "Specify override controls.",
+          "Set revenue and fairness metrics.",
+          "Define stop and scale rules."
+        ],
+        "reasoning_notes": "The timing can vary; a good answer integrates customer contract and experimental validity."
+      }
+    },
+    {
+      "case_id": "OD-17",
+      "title": "Incident communication before root cause certainty",
+      "domain": "operations-incidents",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Incident communications lead",
+        "objective": "Give customers useful, accurate guidance while engineers investigate an intermittent data-delay event.",
+        "facts": [
+          "Some dashboards are delayed by five to forty minutes across two regions.",
+          "Data remains durable and no corruption is observed.",
+          "A queue backlog is visible, but the initiating cause may be an upstream retry storm or a storage throttle.",
+          "Enterprise customers are making operational decisions from the dashboards.",
+          "A temporary freshness indicator can ship in ninety minutes."
+        ],
+        "decision_request": "Choose the external message, product mitigation, and update cadence.",
+        "plausible_paths": [
+          "Wait to communicate until the initiating cause is known.",
+          "Declare a storage-provider failure and promise a recovery time.",
+          "Communicate verified impact and uncertainty while adding freshness visibility."
+        ],
+        "material_constraints": [
+          "Customers need to know data may be stale.",
+          "Durability appears intact.",
+          "Root cause is not confirmed.",
+          "A product-level freshness mitigation is available.",
+          "Recovery timing is variable."
+        ],
+        "harmful_failure_paths": [
+          "Silence lets customers treat stale data as current.",
+          "A confident unverified cause or ETA damages trust when evidence changes."
+        ],
+        "incomplete_information": [
+          "The backlog drain rate changes as retries are throttled."
+        ],
+        "reversible_action": "Publish impact and uncertainty now, add the freshness indicator, and update on a fixed cadence."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "State verified impact.",
+          "Avoid an unverified root cause.",
+          "Give customers actionable freshness guidance.",
+          "Set update cadence.",
+          "Separate durability from timeliness."
+        ],
+        "acceptable_decision_families": [
+          "Immediate uncertainty-aware communication plus freshness UI.",
+          "Immediate targeted enterprise outreach followed by public status once the indicator ships."
+        ],
+        "fatal_errors": [
+          "Withhold all communication while customers rely on stale dashboards.",
+          "Blame a specific provider and promise an unsupported recovery time."
+        ],
+        "known_valid_insights": [
+          "Product observability can reduce customer harm before the infrastructure root cause is resolved."
+        ],
+        "decision_closure_requirements": [
+          "Draft the immediate message.",
+          "Name the product mitigation.",
+          "Set update timing.",
+          "Define escalation criteria.",
+          "State what evidence will close the incident."
+        ],
+        "reasoning_notes": "The precise communication channel is flexible; evidence discipline and customer actionability are central."
+      }
+    },
+    {
+      "case_id": "OD-18",
+      "title": "Maintenance deferral before seasonal peak",
+      "domain": "operations-incidents",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Service reliability manager",
+        "objective": "Manage a known component failure risk without creating avoidable peak-period outage exposure.",
+        "facts": [
+          "A database storage component has a vendor advisory for a failure mode observed in 0.4 percent of similar fleets.",
+          "Replacing it requires a two-hour maintenance window and a tested failover.",
+          "Seasonal traffic peak begins in twelve days and lasts five weeks.",
+          "The most recent failover test passed, but application reconnect time exceeded the target by 40 seconds.",
+          "The vendor can provide an on-site spare in four days."
+        ],
+        "decision_request": "Choose whether to maintain before peak, defer, or apply an alternate risk treatment.",
+        "plausible_paths": [
+          "Replace immediately using the tested failover.",
+          "Defer until after peak and monitor.",
+          "Stage the spare, improve reconnect behavior, and use a conditional pre-peak window."
+        ],
+        "material_constraints": [
+          "The component risk is low-probability but high-impact.",
+          "Peak outage cost is elevated.",
+          "Failover reconnect misses target.",
+          "A spare can arrive before peak.",
+          "A maintenance window affects customers."
+        ],
+        "harmful_failure_paths": [
+          "Rushing maintenance treats a degraded failover test as fully safe.",
+          "Deferring without contingency leaves a known failure mode exposed through peak."
+        ],
+        "incomplete_information": [
+          "Vendor telemetry cannot predict whether this specific component is in the affected population."
+        ],
+        "reversible_action": "Stage the spare and rerun failover after a reconnect fix before selecting the final pre-peak window."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Compare maintenance and deferral risk.",
+          "Address reconnect performance.",
+          "Use the arriving spare.",
+          "Define peak contingency.",
+          "Set a decision deadline."
+        ],
+        "acceptable_decision_families": [
+          "Conditional pre-peak maintenance after reconnect retest.",
+          "Peak deferral with staged spare, enhanced monitoring, and practiced emergency replacement."
+        ],
+        "fatal_errors": [
+          "Proceed immediately while ignoring the failed reconnect objective.",
+          "Defer through peak with no staged spare or emergency plan."
+        ],
+        "known_valid_insights": [
+          "The spare and reconnect retest create an option that improves both maintenance and deferral choices."
+        ],
+        "decision_closure_requirements": [
+          "Set the retest.",
+          "Define the go/no-go threshold.",
+          "Name the maintenance or deferral owner.",
+          "Specify peak monitoring.",
+          "Define emergency rollback or replacement."
+        ],
+        "reasoning_notes": "Either final timing can be defensible; the answer must buy information and create contingency before the deadline."
+      }
+    },
+    {
+      "case_id": "OD-19",
+      "title": "Privacy-preserving product analytics",
+      "domain": "data-privacy-security",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Analytics governance lead",
+        "objective": "Measure feature adoption and retention while reducing the identifiability of behavioral data.",
+        "facts": [
+          "Product teams currently join event-level behavior to customer accounts for cohort analysis.",
+          "Most roadmap decisions need weekly segment trends, but a fraud team needs event-level sequences for investigations.",
+          "A proposed aggregation pipeline can provide weekly cohorts with a minimum group size of fifty.",
+          "Some enterprise segments have fewer than fifty active users.",
+          "Raw event access is available to 27 analysts with inconsistent query logging."
+        ],
+        "decision_request": "Choose the analytics architecture, exception process, and migration sequence.",
+        "plausible_paths": [
+          "Keep event-level account joins for every analyst.",
+          "Move all analysis to aggregate cohorts with no raw exceptions.",
+          "Default to aggregates while creating narrow audited investigative access."
+        ],
+        "material_constraints": [
+          "Most decisions do not require identity-level data.",
+          "Fraud investigations need sequences.",
+          "Small enterprise cohorts can disappear under minimum-group rules.",
+          "Current access logging is inconsistent.",
+          "Migration cannot break committed customer reporting."
+        ],
+        "harmful_failure_paths": [
+          "Broad raw access remains the default because a narrow use case exists.",
+          "Universal aggregation makes legitimate investigation and small-cohort reporting impossible."
+        ],
+        "incomplete_information": [
+          "The fraud team's actual monthly use of identity-level sequences is not measured."
+        ],
+        "reversible_action": "Move two product teams to aggregate defaults while logging and reviewing all raw fraud queries."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Minimize default identity-level access.",
+          "Preserve audited investigation capability.",
+          "Handle small cohorts explicitly.",
+          "Improve query logging.",
+          "Protect committed reporting."
+        ],
+        "acceptable_decision_families": [
+          "Aggregate-by-default with narrow approved raw access.",
+          "Pseudonymous event sequences with re-identification only under investigation approval."
+        ],
+        "fatal_errors": [
+          "Leave unrestricted account-linked analytics as the universal default.",
+          "Remove every event-sequence path needed for active fraud investigations."
+        ],
+        "known_valid_insights": [
+          "Pseudonymous sequences can preserve temporal fraud signals while separating routine analysts from identity."
+        ],
+        "decision_closure_requirements": [
+          "Define default datasets.",
+          "Set exception approval and logging.",
+          "Address small cohorts.",
+          "Name migration owners.",
+          "Set deletion and rollback rules."
+        ],
+        "reasoning_notes": "Several privacy architectures are acceptable if use-case separation is operational rather than rhetorical."
+      }
+    },
+    {
+      "case_id": "OD-20",
+      "title": "Emergency administration during identity outage",
+      "domain": "data-privacy-security",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Security incident commander",
+        "objective": "Restore critical operations during an identity-provider outage without normalizing untracked break-glass access.",
+        "facts": [
+          "The primary identity provider has been unavailable for 35 minutes.",
+          "Production services remain healthy, but operators cannot approve deployments or rotate a failing certificate.",
+          "Two offline break-glass accounts exist; one was tested last month and both require hardware keys.",
+          "The certificate expires in three hours.",
+          "Audit ingestion is delayed but local signed logs remain available."
+        ],
+        "decision_request": "Choose whether and how to activate emergency access, including scope and recovery.",
+        "plausible_paths": [
+          "Wait for identity recovery to avoid emergency credentials.",
+          "Share a break-glass account across the operations team.",
+          "Activate a named, scoped break-glass session with dual control and local audit."
+        ],
+        "material_constraints": [
+          "Certificate rotation has a three-hour deadline.",
+          "One emergency account has recent test evidence.",
+          "Hardware keys limit who can act.",
+          "Central audit is delayed.",
+          "Emergency access must be revoked and reviewed."
+        ],
+        "harmful_failure_paths": [
+          "Waiting converts an identity outage into a service outage.",
+          "Shared emergency access destroys attribution and may persist after recovery."
+        ],
+        "incomplete_information": [
+          "Identity-provider recovery time is unknown."
+        ],
+        "reversible_action": "Activate the tested account for a named operator and approver, rotate only the certificate, then revoke."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Meet the certificate deadline.",
+          "Use named dual control.",
+          "Limit emergency scope.",
+          "Preserve signed local audit.",
+          "Revoke and review after recovery."
+        ],
+        "acceptable_decision_families": [
+          "Immediate scoped activation of the tested account.",
+          "A short timed wait with automatic scoped activation well before the certificate deadline."
+        ],
+        "fatal_errors": [
+          "Distribute one emergency credential to the whole operations team.",
+          "Refuse every emergency path until the certificate expires."
+        ],
+        "known_valid_insights": [
+          "A delayed central audit can remain acceptable if local logs are signed, preserved, and reconciled."
+        ],
+        "decision_closure_requirements": [
+          "Name operator and approver.",
+          "Define exact permitted action.",
+          "Set activation timing.",
+          "Specify local audit handling.",
+          "Set revocation and post-incident review."
+        ],
+        "reasoning_notes": "The activation timing may vary, but the control and deadline logic should be explicit."
+      }
+    },
+    {
+      "case_id": "OD-21",
+      "title": "Build versus buy for enterprise search",
+      "domain": "vendor-business-strategy",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Search product general manager",
+        "objective": "Deliver enterprise search relevance quickly while preserving control over permissions and domain quality.",
+        "facts": [
+          "A vendor can launch in four months and leads internal prototypes on general document relevance.",
+          "The vendor's permission model does not support two customer-specific inheritance rules.",
+          "An internal system could support permissions but is estimated at nine to fifteen months.",
+          "Search quality depends on domain-specific feedback that customers consider sensitive.",
+          "The vendor offers data-isolation terms but charges heavily for custom connectors."
+        ],
+        "decision_request": "Choose build, buy, or staged sourcing and define the decision gates.",
+        "plausible_paths": [
+          "Buy the vendor product and adapt customer permissions.",
+          "Build the full system internally.",
+          "Buy or partner for commodity retrieval while retaining permission and feedback boundaries."
+        ],
+        "material_constraints": [
+          "Time to market matters.",
+          "Permission correctness is non-negotiable.",
+          "Domain feedback is strategically valuable.",
+          "Internal estimates are wide.",
+          "Connector economics affect margins."
+        ],
+        "harmful_failure_paths": [
+          "A fast vendor launch silently weakens customer authorization semantics.",
+          "A full internal build delays learning and rebuilds commodity capabilities."
+        ],
+        "incomplete_information": [
+          "The vendor has not completed a proof of concept for the two inheritance rules."
+        ],
+        "reversible_action": "Fund an eight-week proof of concept with a thin permission boundary and representative connectors."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Protect authorization semantics.",
+          "Preserve sensitive feedback control.",
+          "Use time-to-market evidence.",
+          "Test connector economics.",
+          "Define an exit from vendor dependence."
+        ],
+        "acceptable_decision_families": [
+          "A vendor proof with internally owned permission and feedback layers.",
+          "An internal permission core combined with purchased retrieval components."
+        ],
+        "fatal_errors": [
+          "Launch despite known permission-rule gaps.",
+          "Approve a full internal rebuild before testing commodity vendor components."
+        ],
+        "known_valid_insights": [
+          "Permission correctness and relevance retrieval can be sourced through different boundaries."
+        ],
+        "decision_closure_requirements": [
+          "Define the proof scope.",
+          "Set permission acceptance tests.",
+          "Specify feedback ownership.",
+          "Measure connector cost.",
+          "Set build/buy exit criteria."
+        ],
+        "reasoning_notes": "The exact sourcing split is open; a good answer decomposes strategic and commodity layers."
+      }
+    },
+    {
+      "case_id": "OD-22",
+      "title": "Sole-supplier component before committed launch",
+      "domain": "vendor-business-strategy",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Hardware product launch lead",
+        "objective": "Protect a committed launch date without accepting an unmanaged single-supplier failure.",
+        "facts": [
+          "A specialized component has one qualified supplier with 96 percent historical on-time delivery.",
+          "The next shipment is required in eight weeks and the supplier reports a possible two-week slip.",
+          "A second supplier can produce samples in six weeks but qualification normally takes ten.",
+          "Product inventory supports only five days of launch demand.",
+          "A reduced-feature configuration avoids the component but lowers expected conversion."
+        ],
+        "decision_request": "Choose supply, qualification, and launch-contingency actions now.",
+        "plausible_paths": [
+          "Trust the incumbent schedule and keep the planned configuration.",
+          "Delay launch until the second supplier is fully qualified.",
+          "Parallelize expedited qualification, inventory actions, and a reduced-feature contingency."
+        ],
+        "material_constraints": [
+          "Launch demand exceeds inventory.",
+          "The slip is possible, not certain.",
+          "Qualification protects product safety and quality.",
+          "Reduced features affect conversion.",
+          "Decisions must be made before sample arrival."
+        ],
+        "harmful_failure_paths": [
+          "Optimistic reliance leaves no launch option if the shipment slips.",
+          "Immediate delay discards the chance to qualify or use a controlled alternate configuration."
+        ],
+        "incomplete_information": [
+          "Expedited qualification may or may not validate the second supplier in time."
+        ],
+        "reversible_action": "Start expedited sample qualification and prepare a limited reduced-feature launch decision gate."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Preserve qualification standards.",
+          "Address five-day inventory.",
+          "Create a launch contingency.",
+          "Value conversion tradeoffs.",
+          "Set time-based decision gates."
+        ],
+        "acceptable_decision_families": [
+          "Parallel qualification plus staged configuration contingency.",
+          "A deliberately smaller initial launch backed by incumbent and alternate milestones."
+        ],
+        "fatal_errors": [
+          "Rely solely on the incumbent delivery hope with no contingency.",
+          "Ship unqualified alternate components to preserve the date."
+        ],
+        "known_valid_insights": [
+          "Launch size is another controllable variable, not just date or component choice."
+        ],
+        "decision_closure_requirements": [
+          "Authorize immediate supplier actions.",
+          "Define qualification evidence.",
+          "Set inventory and date gates.",
+          "Choose contingency configurations.",
+          "Name the final launch decision owner."
+        ],
+        "reasoning_notes": "Several staged portfolios are valid; the response must avoid false certainty and unsafe qualification shortcuts."
+      }
+    },
+    {
+      "case_id": "OD-23",
+      "title": "Ownership of a shared developer platform",
+      "domain": "organization-process",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Engineering leadership team",
+        "objective": "Give a shared deployment platform clear product ownership without separating it from operational reality.",
+        "facts": [
+          "A central platform team owns the control plane, while four service teams maintain custom deployment extensions.",
+          "Roadmap requests arrive through tickets with no common prioritization.",
+          "Service teams blame the platform for incidents caused by unsupported extensions.",
+          "The platform team has usage telemetry but little customer-research capacity.",
+          "A proposed platform product manager could join centrally or rotate from service teams."
+        ],
+        "decision_request": "Choose ownership, extension governance, and roadmap decision rights.",
+        "plausible_paths": [
+          "Centralize all extensions and roadmap decisions in the platform team.",
+          "Let service teams own their own platform behavior and treat the core as infrastructure.",
+          "Create a platform product model with explicit core and extension contracts."
+        ],
+        "material_constraints": [
+          "Operational incidents cross ownership boundaries.",
+          "Extensions contain real domain needs.",
+          "Central capacity is limited.",
+          "Roadmap demand lacks a shared value model.",
+          "Adoption telemetry is available."
+        ],
+        "harmful_failure_paths": [
+          "Central ownership absorbs every bespoke requirement and becomes a bottleneck.",
+          "Pure federation leaves shared contracts and incident accountability ambiguous."
+        ],
+        "incomplete_information": [
+          "The share of extensions that could become reusable core capabilities has not been reviewed."
+        ],
+        "reversible_action": "Run a quarterly product council and classify existing extensions against a frozen core contract."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Clarify core versus extension ownership.",
+          "Assign incident accountability.",
+          "Create common roadmap criteria.",
+          "Use service-team discovery.",
+          "Avoid central bespoke overload."
+        ],
+        "acceptable_decision_families": [
+          "Central platform product ownership with governed extensions.",
+          "A federated product council with a centrally enforced core contract."
+        ],
+        "fatal_errors": [
+          "Make the central team responsible for every unsupported extension.",
+          "Allow extensions to change shared behavior without contracts or incident ownership."
+        ],
+        "known_valid_insights": [
+          "Extension promotion into core can be governed as a product lifecycle rather than an ownership argument."
+        ],
+        "decision_closure_requirements": [
+          "Define decision rights.",
+          "Specify core and extension contracts.",
+          "Assign incident ownership.",
+          "Set roadmap criteria and cadence.",
+          "Define the pilot review and rollback."
+        ],
+        "reasoning_notes": "A centralized or federated council can work if contracts and incentives are explicit."
+      }
+    },
+    {
+      "case_id": "OD-24",
+      "title": "Cross-team roadmap arbitration under shared deadline",
+      "domain": "organization-process",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Portfolio steering committee",
+        "objective": "Allocate scarce engineering capacity across a regulatory deadline, reliability debt, and a revenue opportunity.",
+        "facts": [
+          "A regulatory reporting change is due in fourteen weeks with penalties for noncompliance.",
+          "A reliability program would reduce a recurring incident class but has slipped twice.",
+          "A major customer will expand if one integration ships in twelve weeks.",
+          "The three efforts share four senior data engineers, enough to fully staff only two.",
+          "Contractors can add implementation capacity but not replace the senior domain knowledge."
+        ],
+        "decision_request": "Choose the portfolio, staffing moves, and evidence-based review points.",
+        "plausible_paths": [
+          "Prioritize regulation and customer expansion, deferring reliability.",
+          "Prioritize regulation and reliability, declining the customer date.",
+          "Rescope all three with staged deliverables and explicit risk acceptance."
+        ],
+        "material_constraints": [
+          "The regulatory date is externally fixed.",
+          "Reliability incidents have ongoing customer cost.",
+          "The expansion has meaningful revenue.",
+          "Senior domain knowledge is the binding resource.",
+          "Scope can change, but hidden parallel work cannot create more senior capacity."
+        ],
+        "harmful_failure_paths": [
+          "Nominally staffing all three produces three late programs.",
+          "Treating either revenue or reliability as automatically subordinate hides a material tradeoff."
+        ],
+        "incomplete_information": [
+          "The customer may accept a staged integration, but sales has not tested that option."
+        ],
+        "reversible_action": "Negotiate a staged customer milestone while freezing a minimum regulatory team and time-boxing reliability triage."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Protect the regulatory deadline.",
+          "Make senior-engineer allocation explicit.",
+          "Quantify reliability risk acceptance.",
+          "Test staged customer value.",
+          "Use contractors only where domain knowledge is not binding."
+        ],
+        "acceptable_decision_families": [
+          "Regulation plus staged customer delivery with a bounded reliability intervention.",
+          "Regulation plus reliability, paired with a negotiated customer discovery milestone."
+        ],
+        "fatal_errors": [
+          "Declare all three fully staffed without resolving the senior-engineer constraint.",
+          "Ignore the fixed compliance deadline while optimizing internal priorities."
+        ],
+        "known_valid_insights": [
+          "The customer commitment can be decomposed into value milestones that use less scarce domain capacity."
+        ],
+        "decision_closure_requirements": [
+          "Allocate the four senior engineers.",
+          "State scope for each initiative.",
+          "Name risk owners.",
+          "Set negotiation and review dates.",
+          "Define triggers for reallocating capacity."
+        ],
+        "reasoning_notes": "Two portfolio choices can be defensible; the answer must expose resource reality and staged options."
+      }
+    }
+  ]
+}
