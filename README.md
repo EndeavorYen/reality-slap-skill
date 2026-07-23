@@ -87,6 +87,31 @@ The release benchmark measures whether the same recommendation survives a true m
 
 Reality Slap materially improved stance stability in the release benchmark.
 
+### Multi-model deliberation: what survived testing
+
+The complete experiment series did **not** show that simulated debate,
+isolated opposing roles, generic self-evaluation, or cheap critic swarms
+reliably beat one strong direct answer. The early weak-challenge result was a
+real internal signal against neutral self-revision, but its large gain did not
+survive the fresh final comparison against direct Sol-xhigh.
+
+The final tournament had no preregistered champion. The current operating
+default is direct Sol-xhigh with Reality Slap (`DX`) because neither more
+expensive pipeline demonstrated lower defect burden. One Terra-high
+question-only challenge (`T1`) remains an experimental premium escalation;
+the two-Luna pipeline (`L2`) is not a production candidate.
+
+The durable insight is narrower: external questions can reveal omissions, but
+the main model may still ignore or mishandle them. Reality Slap helps preserve
+evidence boundaries and residual guardrails; it does not create independent
+reasoning, guarantee convergence, or recover a challenge that was never
+surfaced.
+
+[Read the full cross-experiment synthesis](docs/multi-model-deliberation-findings-2026-07-23.md)
+for the hypothesis history, root causes, cost analysis, product decision, and
+future evaluation protocol. The sections below preserve each experiment's
+historical result and claim boundary.
+
 ### Strong proposer + weak challenge swarm
 
 A preregistered 12-case internal holdout tested a different pattern: one strong

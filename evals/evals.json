@@ -24,6 +24,60 @@
       "SD-12"
     ]
   },
+  "multi_model_deliberation_synthesis": {
+    "status": "complete",
+    "date": "2026-07-23",
+    "report": "docs/multi-model-deliberation-findings-2026-07-23.md",
+    "research_question": "Do simulated debate, isolated opposing roles, self-evaluation, or weak question-only critics reliably improve a strong model's final decision?",
+    "conclusion": "No tested deliberation architecture demonstrated a stable end-to-end quality advantage over the strong direct default. External questions can surface useful omissions, but discovery does not guarantee correct final disposition.",
+    "supported_findings": [
+      "Reality Slap can improve stance stability, evidence boundaries, and residual guardrails.",
+      "Question-only external challenge can surface material omissions in selected cases.",
+      "A direct Sol-xhigh Reality Slap answer is the current post-hoc operating default on cost and observed stability."
+    ],
+    "unsupported_claims": [
+      "Separate calls create useful independent reasoning diversity by themselves.",
+      "Mutually exclusive supporter, opponent, and third-way roles reliably improve the chair's answer.",
+      "Generic self-evaluation is a quality multiplier.",
+      "Two Luna-low critics safely replace one Terra-high critic.",
+      "Pairwise preference is a valid proxy for defect burden or safety.",
+      "More deliberation calls monotonically improve quality."
+    ],
+    "operational_decision": {
+      "default": "DX: one direct Sol-xhigh Reality Slap answer",
+      "experimental_escalation": "T1: one Terra-high question-only challenge plus Sol-medium Reality Slap final for selected high-stakes or cross-domain decisions",
+      "removed_from_shortlist": "L2: two Luna-low question calls plus Sol-medium draft and final",
+      "not_recommended": [
+        "same-model simulated debate as a quality mechanism",
+        "forced mutually exclusive role debate",
+        "generic 請自評",
+        "source-constraint ledger variant"
+      ]
+    },
+    "root_causes": [
+      "Strong-model ceiling concentrates critic value in sparse, hard omissions.",
+      "Prompt diversity does not create independent evidence or priors.",
+      "The bottleneck moves from issue discovery to main-model disposition.",
+      "Every revision can delete correct controls as well as add missing ones.",
+      "Specialized critic fragmentation can miss cross-lens constraints.",
+      "Reality Slap and external challenge effects are partly overlapping and sub-additive.",
+      "Main-model draft and synthesis cost dominate challenger-stage savings.",
+      "Opponent context and candidate-set composition can change checklist judgments."
+    ],
+    "evaluation_requirements": [
+      "fresh hidden holdouts",
+      "frozen candidate answers",
+      "independent anchored checklist judging",
+      "item-level stability across judge contexts",
+      "hard safety gates before preference",
+      "end-to-end cost and retry accounting",
+      "answer-length reporting or control",
+      "discovery-to-disposition scoring",
+      "multiple generation samples",
+      "human adjudication for disputed safety items"
+    ],
+    "claim_boundary": "Internal, mostly model-judged evidence from one model family. The series rejects a reliable large-gain claim for the tested architectures; it does not prove that all multi-agent systems or all external challenge modes are ineffective."
+  },
   "open_decision_debate_preregistration": {
     "status": "preregistered",
     "date": "2026-07-23",
