@@ -1,0 +1,108 @@
+{
+  "arms": {
+    "H": {
+      "duplicate_count": 0,
+      "duplicate_fraction": 0.0,
+      "fatal_item_coverage": 5,
+      "question_count": 32,
+      "reviewable_count": 32,
+      "reviewable_fraction": 1.0,
+      "unique_hidden_item_coverage": 41,
+      "usage": {
+        "attempts": 4,
+        "cached_input_tokens": 12032,
+        "complete": true,
+        "incomplete_call_ids": [],
+        "input_tokens": 61889,
+        "output_tokens": 1393,
+        "reasoning_output_tokens": 162,
+        "records": 4
+      }
+    },
+    "S2": {
+      "duplicate_count": 4,
+      "duplicate_fraction": 0.125,
+      "fatal_item_coverage": 5,
+      "question_count": 32,
+      "reviewable_count": 32,
+      "reviewable_fraction": 1.0,
+      "unique_hidden_item_coverage": 39,
+      "usage": {
+        "attempts": 8,
+        "cached_input_tokens": 22016,
+        "complete": true,
+        "incomplete_call_ids": [],
+        "input_tokens": 110298,
+        "output_tokens": 1784,
+        "reasoning_output_tokens": 220,
+        "records": 8
+      }
+    },
+    "S4": {
+      "duplicate_count": 9,
+      "duplicate_fraction": 0.28125,
+      "fatal_item_coverage": 4,
+      "question_count": 32,
+      "reviewable_count": 32,
+      "reviewable_fraction": 1.0,
+      "unique_hidden_item_coverage": 41,
+      "usage": {
+        "attempts": 16,
+        "cached_input_tokens": 30976,
+        "complete": true,
+        "incomplete_call_ids": [],
+        "input_tokens": 227582,
+        "output_tokens": 2384,
+        "reasoning_output_tokens": 427,
+        "records": 16
+      }
+    }
+  },
+  "case_ids": [
+    "OD-13",
+    "OD-16",
+    "OD-19",
+    "OD-22"
+  ],
+  "complete": true,
+  "experiment_id": "question-swarm-screening-20260723",
+  "gate": {
+    "arms": {
+      "S2": {
+        "break_even": {
+          "complete": true,
+          "high_weighted_tokens": 63444,
+          "max_small_to_high_unit_price_ratio": 0.395459,
+          "small_weighted_tokens": 112302,
+          "target_ratio": 0.7
+        },
+        "challenger_cost_ratio_vs_h": null,
+        "cost_pass": false,
+        "coverage_ratio_vs_h": 0.95122,
+        "fatal_items_h_found_but_arm_missed": 1,
+        "quality_pass": true
+      },
+      "S4": {
+        "break_even": {
+          "complete": true,
+          "high_weighted_tokens": 63444,
+          "max_small_to_high_unit_price_ratio": 0.192761,
+          "small_weighted_tokens": 230393,
+          "target_ratio": 0.7
+        },
+        "challenger_cost_ratio_vs_h": null,
+        "cost_pass": false,
+        "coverage_ratio_vs_h": 1.0,
+        "fatal_items_h_found_but_arm_missed": 2,
+        "quality_pass": false
+      }
+    },
+    "selected_arm": "S2",
+    "verdict": "price-unresolved-provisional-selection"
+  },
+  "price_assumption": {
+    "authoritative_rate_card_available": false,
+    "luna_to_terra_unit_price_ratio": null
+  },
+  "stage": "screening"
+}
