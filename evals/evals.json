@@ -51,6 +51,31 @@
     },
     "claim_boundary": "No supported result is recorded before complete live evidence. Terra family and high effort remain confounded."
   },
+  "weak_challenge_swarm_preregistration": {
+    "status": "preregistered",
+    "date": "2026-07-23",
+    "seed": 20260725,
+    "case_ids": [
+      "OD-13",
+      "OD-14",
+      "OD-15",
+      "OD-16",
+      "OD-17",
+      "OD-18",
+      "OD-19",
+      "OD-20",
+      "OD-21",
+      "OD-22",
+      "OD-23",
+      "OD-24"
+    ],
+    "design": "docs/superpowers/specs/2026-07-23-weak-challenge-swarm-factorial-design.md",
+    "implementation_plan": "docs/superpowers/plans/2026-07-23-weak-challenge-swarm-factorial.md",
+    "planned_calls": 120,
+    "primary_comparison": "C1 minus B0 on conservative hidden-card defect burden",
+    "status_note": "No supported result is recorded before complete live evidence.",
+    "claim_boundary": "The mixed Terra/Luna challenger pool is an operational configuration, not model-agnostic evidence."
+  },
   "latest_live_ab": {
     "date": "2026-07-05",
     "workspace": "/tmp/reality-slap-full-decay-ab-20260705",
