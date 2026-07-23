@@ -15,6 +15,10 @@ from create_open_decision_debate_workspace import (
     DEPENDENCY_PACKET_MARKER,
     load_records,
 )
+from create_weak_challenge_swarm_workspace import (
+    CHALLENGE_PACKET_MARKER,
+    DRAFT_MARKER,
+)
 
 
 MAX_ATTEMPTS = 2
@@ -73,12 +77,108 @@ def validate_payload(value, schema, path="$"):
         raise ValueError(f"{path}: value is not in enum")
 
 
-def validate_record_payload(record, payload):
+def _dependency_payload(dependency):
+    return json.loads(Path(dependency["output_path"]).read_text(encoding="utf-8"))
+
+
+def _weak_swarm_dependencies(record, records_by_id):
+    if records_by_id is None:
+        raise ValueError("weak-swarm semantic validation requires dependency records")
+    dependencies = []
+    for call_id in record.get("depends_on", []):
+        dependency = records_by_id.get(call_id)
+        if dependency is None:
+            raise ValueError(f"dependency record is missing: {call_id}")
+        dependencies.append(dependency)
+    return dependencies
+
+
+def expected_challenge_ids(record, records_by_id, manifest=None):
+    if record.get("kind") != "revision" or record.get("condition") not in {"C0", "C1"}:
+        return []
+    dependencies = _weak_swarm_dependencies(record, records_by_id)
+    challenge_dependencies = [
+        dependency for dependency in dependencies if dependency.get("kind") == "challenge"
+    ]
+    if manifest is not None:
+        expected_roles = manifest["challenge_order_by_case"][record["case_id"]]
+        observed_roles = [dependency.get("role") for dependency in challenge_dependencies]
+        if observed_roles != expected_roles:
+            raise ValueError("challenge dependency order differs from manifest")
+    identifiers = []
+    for dependency in challenge_dependencies:
+        payload = _dependency_payload(dependency)
+        for index, _challenge in enumerate(payload["challenges"], start=1):
+            identifiers.append(f"{dependency['role'].upper()}-{index}")
+    return identifiers
+
+
+def rendered_challenge_packet(record, records_by_id, manifest):
+    dependencies = _weak_swarm_dependencies(record, records_by_id)
+    challenge_dependencies = [
+        dependency for dependency in dependencies if dependency.get("kind") == "challenge"
+    ]
+    expected_roles = manifest["challenge_order_by_case"][record["case_id"]]
+    observed_roles = [dependency.get("role") for dependency in challenge_dependencies]
+    if observed_roles != expected_roles:
+        raise ValueError("challenge dependency order differs from manifest")
+    packet = []
+    for dependency in challenge_dependencies:
+        payload = _dependency_payload(dependency)
+        for index, challenge in enumerate(payload["challenges"], start=1):
+            packet.append(
+                {
+                    "challenge_id": f"{dependency['role'].upper()}-{index}",
+                    "source_role": dependency["role"],
+                    "payload": challenge,
+                }
+            )
+    return packet
+
+
+def _shared_draft(record, records_by_id):
+    dependencies = _weak_swarm_dependencies(record, records_by_id)
+    drafts = [
+        dependency for dependency in dependencies if dependency.get("kind") == "draft"
+    ]
+    if len(drafts) != 1:
+        raise ValueError("weak-swarm record requires exactly one shared draft")
+    return _dependency_payload(drafts[0])
+
+
+def shared_input_hashes(record, records_by_id, manifest):
+    draft = _shared_draft(record, records_by_id)
+    result = {
+        "shared_draft_sha256": sha256_text(
+            json.dumps(draft, sort_keys=True, separators=(",", ":"))
+        )
+    }
+    if record.get("condition") in {"C0", "C1"}:
+        packet = rendered_challenge_packet(record, records_by_id, manifest)
+        result["challenge_packet_sha256"] = sha256_text(
+            json.dumps(packet, sort_keys=True, separators=(",", ":"))
+        )
+    return result
+
+
+def validate_record_payload(record, payload, records_by_id=None, manifest=None):
     schema = json.loads(Path(record["schema_path"]).read_text(encoding="utf-8"))
     validate_payload(payload, schema)
     if record["kind"] in {"role", "cross_exam", "self_review"}:
         if payload.get("role") != record.get("role"):
             raise ValueError("$.role: must match the record role")
+    if record["kind"] == "challenge":
+        if payload.get("role") != record.get("role"):
+            raise ValueError("$.role: must match the challenger role")
+    if record["kind"] == "revision":
+        observed = [
+            item["challenge_id"] for item in payload["challenge_dispositions"]
+        ]
+        expected = expected_challenge_ids(record, records_by_id, manifest)
+        if observed != expected or len(set(observed)) != len(observed):
+            raise ValueError(
+                "$.challenge_dispositions: must cover each challenge exactly once"
+            )
     if record["kind"] == "serial" and record["phase"] != "final":
         if payload.get("phase") != record["phase"]:
             raise ValueError("$.phase: must match the record phase")
@@ -123,7 +223,7 @@ def invalid_marker(text):
     )
 
 
-def response_status(record):
+def response_status(record, records_by_id=None, manifest=None):
     path = Path(record["output_path"])
     if not path.exists() or not path.read_text(encoding="utf-8").strip():
         return "missing"
@@ -132,7 +232,7 @@ def response_status(record):
         return "invalid"
     try:
         payload = json.loads(text)
-        validate_record_payload(record, payload)
+        validate_record_payload(record, payload, records_by_id, manifest)
     except (json.JSONDecodeError, OSError, ValueError):
         return "invalid"
     return "complete"
@@ -158,13 +258,13 @@ def save_call_metadata(record, metadata):
 
 
 def call_eligibility(record, records_by_id):
-    if response_status(record) == "complete":
+    if response_status(record, records_by_id) == "complete":
         return "complete"
     if len(load_call_metadata(record)["attempts"]) >= MAX_ATTEMPTS:
         return "retry-exhausted"
     if any(
         dependency not in records_by_id
-        or response_status(records_by_id[dependency]) != "complete"
+        or response_status(records_by_id[dependency], records_by_id) != "complete"
         for dependency in record.get("depends_on", [])
     ):
         return "blocked"
@@ -236,8 +336,24 @@ def render_prompt(record, records_by_id, manifest):
         return prompt
     for call_id in record["depends_on"]:
         dependency = records_by_id.get(call_id)
-        if dependency is None or response_status(dependency) != "complete":
+        if dependency is None or response_status(dependency, records_by_id, manifest) != "complete":
             raise ValueError(f"dependency is incomplete: {call_id}")
+    if DRAFT_MARKER in prompt:
+        prompt = prompt.replace(
+            DRAFT_MARKER,
+            json.dumps(_shared_draft(record, records_by_id), indent=2, sort_keys=True),
+        )
+    if CHALLENGE_PACKET_MARKER in prompt:
+        prompt = prompt.replace(
+            CHALLENGE_PACKET_MARKER,
+            json.dumps(
+                rendered_challenge_packet(record, records_by_id, manifest),
+                indent=2,
+                sort_keys=True,
+            ),
+        )
+    if DRAFT_MARKER in Path(record["prompt_path"]).read_text(encoding="utf-8"):
+        return prompt
     if DEPENDENCY_PACKET_MARKER not in prompt:
         raise ValueError(f"dependency marker missing: {record['call_id']}")
     packet = dependency_packet(record, records_by_id, manifest)
@@ -307,7 +423,7 @@ def execute_call(record, records_by_id, manifest, codex_bin, cwd, timeout_second
                 encoding="utf-8",
             )
     elapsed = time.monotonic() - started
-    status = response_status(record)
+    status = response_status(record, records_by_id, manifest)
     output_text = (
         output_path.read_text(encoding="utf-8")
         if output_path.exists()
@@ -324,8 +440,7 @@ def execute_call(record, records_by_id, manifest, codex_bin, cwd, timeout_second
     metadata["call_id"] = record["call_id"]
     metadata["model"] = record["model"]
     metadata["reasoning_effort"] = record["reasoning_effort"]
-    metadata["attempts"].append(
-        {
+    attempt = {
             "attempt": attempt_number,
             "returncode": returncode,
             "timed_out": timed_out,
@@ -336,7 +451,13 @@ def execute_call(record, records_by_id, manifest, codex_bin, cwd, timeout_second
             "output_characters": len(output_text),
             "output_sha256": sha256_text(output_text),
         }
-    )
+    if DRAFT_MARKER in Path(record["prompt_path"]).read_text(encoding="utf-8"):
+        attempt["shared_input_hashes"] = shared_input_hashes(
+            record,
+            records_by_id,
+            manifest,
+        )
+    metadata["attempts"].append(attempt)
     save_call_metadata(record, metadata)
     return {
         "call_id": record["call_id"],
@@ -358,7 +479,7 @@ def audit_records(records):
         "ready_call_ids": [],
     }
     for record in records:
-        status = response_status(record)
+        status = response_status(record, records_by_id)
         eligibility = call_eligibility(record, records_by_id)
         if status == "complete":
             audit["complete_call_ids"].append(record["call_id"])
