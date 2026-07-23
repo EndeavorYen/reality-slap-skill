@@ -52,7 +52,7 @@
     "claim_boundary": "No supported result is recorded before complete live evidence. Terra family and high effort remain confounded."
   },
   "weak_challenge_swarm_preregistration": {
-    "status": "preregistered",
+    "status": "live-complete",
     "date": "2026-07-23",
     "seed": 20260725,
     "case_ids": [
@@ -72,9 +72,28 @@
     "design": "docs/superpowers/specs/2026-07-23-weak-challenge-swarm-factorial-design.md",
     "implementation_plan": "docs/superpowers/plans/2026-07-23-weak-challenge-swarm-factorial.md",
     "planned_calls": 120,
+    "completed_records": 120,
+    "actual_attempts": 123,
+    "retries": 3,
+    "result_json": "evals/weak-challenge-swarm-2026-07-23.json",
+    "result_markdown": "evals/weak-challenge-swarm-2026-07-23.md",
     "primary_comparison": "C1 minus B0 on conservative hidden-card defect burden",
-    "status_note": "No supported result is recorded before complete live evidence.",
-    "claim_boundary": "The mixed Terra/Luna challenger pool is an operational configuration, not model-agnostic evidence."
+    "verdict": "weak-challenge-swarm-plus-reality-slap-internal-signal",
+    "gate_decision": "green",
+    "primary_metrics": {
+      "b0_defect_burden": 28,
+      "c1_defect_burden": 4,
+      "burden_reduction": 0.857143,
+      "improved_cases": 10,
+      "worsened_cases": 0,
+      "unchanged_cases": 2,
+      "mean_score_delta": 4.416667,
+      "checklist_agreement": 0.937963,
+      "guardrail_regressions": []
+    },
+    "factorial_note": "Most defect reduction came from B0 to C0 (28 to 5). Reality Slap reduced C0 from 5 to 4 and removed the observed fabricated-fact regression, but did not clear its incremental component gate.",
+    "status_note": "Complete live evidence cleared every preregistered green threshold. No replication calls were triggered.",
+    "claim_boundary": "Internal holdout signal for this mixed Terra/Luna challenger pool. It is not model-agnostic, length-controlled, or independently replicated evidence."
   },
   "latest_live_ab": {
     "date": "2026-07-05",
