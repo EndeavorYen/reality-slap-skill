@@ -4,6 +4,7 @@
 import argparse
 import concurrent.futures
 import hashlib
+import itertools
 import json
 import random
 import subprocess
@@ -88,6 +89,30 @@ def validate_record_payload(record, payload):
         observed_labels = [item["label"] for item in payload["evaluations"]]
         if set(observed_labels) != expected_labels or len(observed_labels) != len(expected_labels):
             raise ValueError("$.evaluations: must contain each candidate label exactly once")
+        for item in payload["evaluations"]:
+            if item["total_score"] != sum(item["scores"].values()):
+                raise ValueError("$.evaluations: total_score must equal the dimension scores")
+        ranking = payload["ranking"]
+        if set(ranking) != expected_labels or len(set(ranking)) != len(expected_labels):
+            raise ValueError("$.ranking: must contain each candidate label exactly once")
+        expected_pairs = {
+            frozenset(pair) for pair in itertools.combinations(expected_labels, 2)
+        }
+        observed_pairs = set()
+        for item in payload["pairwise_preferences"]:
+            pair = frozenset((item["left_label"], item["right_label"]))
+            if len(pair) != 2:
+                raise ValueError("$.pairwise_preferences: pair labels must be distinct")
+            if item["winner"] != "tie" and item["winner"] not in pair:
+                raise ValueError("$.pairwise_preferences: winner must belong to the pair")
+            observed_pairs.add(pair)
+        if (
+            observed_pairs != expected_pairs
+            or len(payload["pairwise_preferences"]) != len(expected_pairs)
+        ):
+            raise ValueError(
+                "$.pairwise_preferences: must contain every unordered pair exactly once"
+            )
 
 
 def invalid_marker(text):
