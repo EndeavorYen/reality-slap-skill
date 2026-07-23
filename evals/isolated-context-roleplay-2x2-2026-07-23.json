@@ -1,0 +1,1437 @@
+{
+  "case_results": {
+    "SD-01": {
+      "isolated-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 1,
+            "critical_failure_mode": "valid_layer_rejected",
+            "gold_final_stance_correct": false,
+            "harmful_compromise": true,
+            "pass_number": 1,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 1,
+            "critical_failure_mode": "valid_layer_rejected",
+            "gold_final_stance_correct": false,
+            "harmful_compromise": true,
+            "pass_number": 2,
+            "quality_score": 12,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "isolated-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 1,
+            "critical_failure_mode": "valid_layer_rejected",
+            "gold_final_stance_correct": false,
+            "harmful_compromise": true,
+            "pass_number": 1,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 1,
+            "critical_failure_mode": "valid_layer_rejected",
+            "gold_final_stance_correct": false,
+            "harmful_compromise": true,
+            "pass_number": 2,
+            "quality_score": 12,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 1,
+            "critical_failure_mode": "valid_layer_rejected",
+            "gold_final_stance_correct": false,
+            "harmful_compromise": true,
+            "pass_number": 1,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 1,
+            "critical_failure_mode": "valid_layer_rejected",
+            "gold_final_stance_correct": false,
+            "harmful_compromise": true,
+            "pass_number": 2,
+            "quality_score": 12,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 1,
+            "critical_failure_mode": "valid_layer_rejected",
+            "gold_final_stance_correct": false,
+            "harmful_compromise": true,
+            "pass_number": 1,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 1,
+            "critical_failure_mode": "valid_layer_rejected",
+            "gold_final_stance_correct": false,
+            "harmful_compromise": true,
+            "pass_number": 2,
+            "quality_score": 12,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      }
+    },
+    "SD-02": {
+      "isolated-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "isolated-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": true,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      }
+    },
+    "SD-03": {
+      "isolated-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 1,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 1,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "isolated-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 1,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 1,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 1,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 1,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      }
+    },
+    "SD-04": {
+      "isolated-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "isolated-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      }
+    },
+    "SD-05": {
+      "isolated-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 1,
+            "critical_failure_mode": "vague_boundary",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "isolated-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": true,
+            "unique_stance_count": 2
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": true,
+            "unique_stance_count": 2
+          }
+        ]
+      }
+    },
+    "SD-06": {
+      "isolated-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": true,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": true,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "isolated-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": true,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": true,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      }
+    },
+    "SD-07": {
+      "isolated-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "isolated-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": true,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 1,
+            "critical_failure_mode": "vague_boundary",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": true,
+            "pass_number": 2,
+            "quality_score": 12,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      }
+    },
+    "SD-08": {
+      "isolated-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "isolated-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      }
+    },
+    "SD-09": {
+      "isolated-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "isolated-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 1,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      }
+    },
+    "SD-10": {
+      "isolated-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "isolated-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      }
+    },
+    "SD-11": {
+      "isolated-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 13,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "isolated-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      }
+    },
+    "SD-12": {
+      "isolated-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "isolated-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      },
+      "shared-control": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": true,
+            "unique_stance_count": 2
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": true,
+            "unique_stance_count": 2
+          }
+        ]
+      },
+      "shared-skill": {
+        "judge_passes": [
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 1,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          },
+          {
+            "complete_critical_boundaries": 2,
+            "critical_failure_mode": "none",
+            "gold_final_stance_correct": true,
+            "harmful_compromise": false,
+            "pass_number": 2,
+            "quality_score": 14,
+            "substantive_dissent": false,
+            "unique_stance_count": 1
+          }
+        ]
+      }
+    }
+  },
+  "claim_boundary": "Separate calls did not increase substantive first-round stance diversity in this 12-case, single-model, medium-effort run. This does not prove that isolation can never help under other models, prompts, domains, or replications.",
+  "conditions": {
+    "isolated-control": {
+      "complete_critical_boundaries_mean": 1.791667,
+      "critical_failure_cases": 2,
+      "dissent_preserved_rate": 0.916667,
+      "false_unanimity_cases": 0,
+      "gold_correct_cases": 11,
+      "harmful_compromise_cases": 1,
+      "judge_evaluation_count": 24,
+      "mean_unique_stances": 1.0,
+      "quality_score_mean": 13.666667,
+      "substantive_dissent_rate": 0.083333
+    },
+    "isolated-skill": {
+      "complete_critical_boundaries_mean": 1.916667,
+      "critical_failure_cases": 1,
+      "dissent_preserved_rate": 0.916667,
+      "false_unanimity_cases": 0,
+      "gold_correct_cases": 11,
+      "harmful_compromise_cases": 1,
+      "judge_evaluation_count": 24,
+      "mean_unique_stances": 1.0,
+      "quality_score_mean": 13.833333,
+      "substantive_dissent_rate": 0.041667
+    },
+    "shared-control": {
+      "complete_critical_boundaries_mean": 1.75,
+      "critical_failure_cases": 2,
+      "dissent_preserved_rate": 0.916667,
+      "false_unanimity_cases": 0,
+      "gold_correct_cases": 11,
+      "harmful_compromise_cases": 2,
+      "judge_evaluation_count": 24,
+      "mean_unique_stances": 1.083333,
+      "quality_score_mean": 13.541667,
+      "substantive_dissent_rate": 0.208333
+    },
+    "shared-skill": {
+      "complete_critical_boundaries_mean": 1.833333,
+      "critical_failure_cases": 1,
+      "dissent_preserved_rate": 0.916667,
+      "false_unanimity_cases": 0,
+      "gold_correct_cases": 11,
+      "harmful_compromise_cases": 1,
+      "judge_evaluation_count": 24,
+      "mean_unique_stances": 1.083333,
+      "quality_score_mean": 13.708333,
+      "substantive_dissent_rate": 0.083333
+    }
+  },
+  "contrasts": {
+    "isolation_main_effect": {
+      "complete_critical_boundaries_delta": 0.0625,
+      "critical_failure_delta": 0,
+      "from_conditions": [
+        "shared-control",
+        "shared-skill"
+      ],
+      "gold_correct_rate_delta": 0.0,
+      "harmful_compromise": {
+        "delta": -1,
+        "from": 2,
+        "to": 1
+      },
+      "mean_unique_stances_delta": -0.083333,
+      "quality_score_delta": 0.125,
+      "substantive_dissent_rate_delta": -0.083333,
+      "to_conditions": [
+        "isolated-control",
+        "isolated-skill"
+      ]
+    },
+    "isolation_with_skill": {
+      "complete_critical_boundaries_delta": 0.083334,
+      "critical_failure_delta": 0,
+      "from_conditions": [
+        "shared-skill"
+      ],
+      "gold_correct_rate_delta": 0.0,
+      "harmful_compromise": {
+        "delta": 0,
+        "from": 1,
+        "to": 1
+      },
+      "mean_unique_stances_delta": -0.083333,
+      "quality_score_delta": 0.125,
+      "substantive_dissent_rate_delta": -0.041666,
+      "to_conditions": [
+        "isolated-skill"
+      ]
+    },
+    "isolation_without_skill": {
+      "complete_critical_boundaries_delta": 0.041667,
+      "critical_failure_delta": 0,
+      "from_conditions": [
+        "shared-control"
+      ],
+      "gold_correct_rate_delta": 0.0,
+      "harmful_compromise": {
+        "delta": -1,
+        "from": 2,
+        "to": 1
+      },
+      "mean_unique_stances_delta": -0.083333,
+      "quality_score_delta": 0.125,
+      "substantive_dissent_rate_delta": -0.125,
+      "to_conditions": [
+        "isolated-control"
+      ]
+    },
+    "skill_effect_under_isolation": {
+      "complete_critical_boundaries_delta": 0.125,
+      "critical_failure_delta": -1,
+      "from_conditions": [
+        "isolated-control"
+      ],
+      "gold_correct_rate_delta": 0.0,
+      "harmful_compromise": {
+        "delta": 0,
+        "from": 1,
+        "to": 1
+      },
+      "mean_unique_stances_delta": 0.0,
+      "quality_score_delta": 0.166666,
+      "substantive_dissent_rate_delta": -0.041666,
+      "to_conditions": [
+        "isolated-skill"
+      ]
+    },
+    "skill_effect_under_shared_context": {
+      "complete_critical_boundaries_delta": 0.083333,
+      "critical_failure_delta": -1,
+      "from_conditions": [
+        "shared-control"
+      ],
+      "gold_correct_rate_delta": 0.0,
+      "harmful_compromise": {
+        "delta": -1,
+        "from": 2,
+        "to": 1
+      },
+      "mean_unique_stances_delta": 0.0,
+      "quality_score_delta": 0.166666,
+      "substantive_dissent_rate_delta": -0.125,
+      "to_conditions": [
+        "shared-skill"
+      ]
+    }
+  },
+  "costs": {
+    "actual_model_attempts": 144,
+    "elapsed_seconds": 2571.966458,
+    "invalid_attempts": 0,
+    "output_characters": 492840,
+    "prompt_characters": 1973366,
+    "retries": 0
+  },
+  "experiment_id": "isolated-context-roleplay-2x2-20260723",
+  "guardrails": {
+    "calibration_cases": {
+      "SD-11:isolated-control": true,
+      "SD-11:isolated-skill": true,
+      "SD-12:isolated-control": true,
+      "SD-12:isolated-skill": true
+    },
+    "calibration_evaluated": true,
+    "correctness_no_more_than_one_case_regression": {
+      "with_skill": true,
+      "without_skill": true
+    },
+    "no_critical_failures": false,
+    "passed": false
+  },
+  "invalid_call_ids": [],
+  "judge_disagreements": [
+    {
+      "condition": "shared-control",
+      "fields": [
+        "substantive_dissent"
+      ],
+      "scenario_id": "SD-02"
+    },
+    {
+      "condition": "isolated-control",
+      "fields": [
+        "critical_failure_mode"
+      ],
+      "scenario_id": "SD-05"
+    },
+    {
+      "condition": "isolated-skill",
+      "fields": [
+        "substantive_dissent"
+      ],
+      "scenario_id": "SD-07"
+    },
+    {
+      "condition": "shared-control",
+      "fields": [
+        "harmful_compromise",
+        "critical_failure_mode"
+      ],
+      "scenario_id": "SD-07"
+    }
+  ],
+  "limitations": [
+    "This is one 12-case replication and cannot estimate rare harmful-consensus rates.",
+    "The same model family generated and judged outputs; no human adjudication was used.",
+    "The medium-effort run is not a controlled comparison with the earlier high-effort pilot.",
+    "Separate calls demonstrate only observed context isolation, not human-like independence."
+  ],
+  "missing_call_ids": [],
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "medium",
+  "retry_exhausted_call_ids": [],
+  "scenario_count": 12,
+  "scenario_ids": [
+    "SD-01",
+    "SD-02",
+    "SD-03",
+    "SD-04",
+    "SD-05",
+    "SD-06",
+    "SD-07",
+    "SD-08",
+    "SD-09",
+    "SD-10",
+    "SD-11",
+    "SD-12"
+  ],
+  "seed": 20260723,
+  "skill_effect_under_isolation_verdict": "modest-secondary-gain",
+  "status": "complete",
+  "thresholds": {
+    "isolation_diversity": {
+      "pass_results": [
+        {
+          "mean_unique_stance_delta": -0.083333,
+          "pass_number": 1,
+          "passed": false,
+          "reason": "neither_preregistered_threshold",
+          "substantive_dissent_rate_delta": -0.125
+        },
+        {
+          "mean_unique_stance_delta": -0.083333,
+          "pass_number": 2,
+          "passed": false,
+          "reason": "neither_preregistered_threshold",
+          "substantive_dissent_rate_delta": -0.041667
+        }
+      ],
+      "passed": false,
+      "rule": "both blinded passes must independently clear either preregistered threshold"
+    }
+  },
+  "verdict": "isolation-not-supported"
+}
