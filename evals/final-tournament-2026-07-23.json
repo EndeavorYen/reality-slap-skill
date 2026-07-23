@@ -1,0 +1,1139 @@
+{
+  "case_ids": [
+    "FT-01",
+    "FT-02",
+    "FT-03",
+    "FT-04",
+    "FT-05",
+    "FT-06",
+    "FT-07",
+    "FT-08",
+    "FT-09",
+    "FT-10",
+    "FT-11",
+    "FT-12"
+  ],
+  "claim_boundary": "Fresh twelve-case internal confirmation with one generation sample per candidate and two checklist judges per frozen pair. It did not produce a preregistered champion. DX is only a post-hoc operational default after excluding the unstable L2 comparison; the run does not prove a universal model ranking or a stable effect outside open decisions.",
+  "cost": {
+    "component_credits": {
+      "DX": 45.2409,
+      "L2_final": 37.711775,
+      "L2_questions": 6.792715,
+      "T1_final": 39.9449,
+      "T1_questions": 10.577813,
+      "shared": 28.9218
+    },
+    "component_usage": {
+      "DX": {
+        "attempts": 12,
+        "cached_input_tokens": 12032,
+        "complete": true,
+        "incomplete_call_ids": [],
+        "input_tokens": 249762,
+        "output_tokens": 20499,
+        "reasoning_output_tokens": 11622,
+        "records": 12
+      },
+      "L2_final": {
+        "attempts": 12,
+        "cached_input_tokens": 40192,
+        "complete": true,
+        "incomplete_call_ids": [],
+        "input_tokens": 256159,
+        "output_tokens": 13618,
+        "reasoning_output_tokens": 1923,
+        "records": 12
+      },
+      "L2_questions": {
+        "attempts": 24,
+        "cached_input_tokens": 112896,
+        "complete": true,
+        "incomplete_call_ids": [],
+        "input_tokens": 340957,
+        "output_tokens": 5393,
+        "reasoning_output_tokens": 690,
+        "records": 24
+      },
+      "T1_final": {
+        "attempts": 12,
+        "cached_input_tokens": 26112,
+        "complete": true,
+        "incomplete_call_ids": [],
+        "input_tokens": 253984,
+        "output_tokens": 14846,
+        "reasoning_output_tokens": 2514,
+        "records": 12
+      },
+      "T1_questions": {
+        "attempts": 12,
+        "cached_input_tokens": 46080,
+        "complete": true,
+        "incomplete_call_ids": [],
+        "input_tokens": 183279,
+        "output_tokens": 4573,
+        "reasoning_output_tokens": 556,
+        "records": 12
+      },
+      "shared": {
+        "attempts": 12,
+        "cached_input_tokens": 38144,
+        "complete": true,
+        "incomplete_call_ids": [],
+        "input_tokens": 207708,
+        "output_tokens": 9666,
+        "reasoning_output_tokens": 476,
+        "records": 12
+      }
+    },
+    "condition_usage": {
+      "DX": {
+        "attempts": 12,
+        "cached_input_tokens": 12032,
+        "complete": true,
+        "incomplete_call_ids": [],
+        "input_tokens": 249762,
+        "output_tokens": 20499,
+        "reasoning_output_tokens": 11622,
+        "records": 12
+      },
+      "L2": {
+        "attempts": 48,
+        "cached_input_tokens": 191232,
+        "complete": true,
+        "incomplete_call_ids": [],
+        "input_tokens": 804824,
+        "output_tokens": 28677,
+        "reasoning_output_tokens": 3089,
+        "records": 48
+      },
+      "T1": {
+        "attempts": 36,
+        "cached_input_tokens": 110336,
+        "complete": true,
+        "incomplete_call_ids": [],
+        "input_tokens": 644971,
+        "output_tokens": 29085,
+        "reasoning_output_tokens": 3546,
+        "records": 36
+      }
+    },
+    "end_to_end_credits": {
+      "DX": 45.2409,
+      "L2": 73.42629,
+      "T1": 79.444513
+    },
+    "judge_cost": {
+      "credits": {
+        "sol-medium": 151.90295,
+        "terra-high": 58.975813
+      },
+      "note": "Includes invalid judge attempts because they consumed tokens.",
+      "total_credits": 210.878763,
+      "usage": {
+        "sol-medium": {
+          "attempts": 37,
+          "cached_input_tokens": 121856,
+          "complete": true,
+          "incomplete_call_ids": [],
+          "input_tokens": 786502,
+          "output_tokens": 89732,
+          "reasoning_output_tokens": 23023,
+          "records": 36
+        },
+        "terra-high": {
+          "attempts": 41,
+          "cached_input_tokens": 367360,
+          "complete": true,
+          "incomplete_call_ids": [],
+          "input_tokens": 735365,
+          "output_tokens": 89812,
+          "reasoning_output_tokens": 23935,
+          "records": 36
+        }
+      }
+    },
+    "rate_card": {
+      "models": {
+        "gpt-5.6-luna": {
+          "cached_input_tokens": 2.5,
+          "input_tokens": 25,
+          "output_tokens": 150
+        },
+        "gpt-5.6-sol": {
+          "cached_input_tokens": 12.5,
+          "input_tokens": 125,
+          "output_tokens": 750
+        },
+        "gpt-5.6-terra": {
+          "cached_input_tokens": 6.25,
+          "input_tokens": 62.5,
+          "output_tokens": 375
+        }
+      },
+      "retrieved_at": "2026-07-23",
+      "source_url": "https://learn.chatgpt.com/docs/pricing",
+      "unit": "credits_per_1m_tokens"
+    },
+    "ratios_vs_DX": {
+      "DX": 1.0,
+      "L2": 1.623007,
+      "T1": 1.756033
+    },
+    "scope": "Generation only. DX is one Sol-xhigh final. L2/T1 each include the same Sol-medium draft, their isolated questions, and one Sol-medium Reality Slap final. Judge cost is excluded; failed generation attempts are included."
+  },
+  "execution": {
+    "generation": {
+      "attempts": 84,
+      "calls": 84,
+      "eventually_valid": 84,
+      "first_attempt_valid": 84
+    },
+    "judges": {
+      "attempts": 78,
+      "calls": 72,
+      "eventually_valid": 72,
+      "first_attempt_valid": 66
+    }
+  },
+  "experiment_id": "final-question-swarm-tournament-20260723",
+  "matches": {
+    "DX-vs-L2": {
+      "challenger": "L2",
+      "checks": {
+        "burden_reduction_at_least_20_percent": false,
+        "cost_ratio_at_most_2": true,
+        "improved_at_least_4": false,
+        "no_guardrail_regression": false,
+        "nonworse_at_least_9": true
+      },
+      "winner": "DX"
+    },
+    "DX-vs-T1": {
+      "challenger": "T1",
+      "checks": {
+        "burden_reduction_at_least_20_percent": false,
+        "cost_ratio_at_most_2_1": true,
+        "improved_at_least_4": false,
+        "no_guardrail_regression": true,
+        "nonworse_at_least_9": true
+      },
+      "winner": "DX"
+    },
+    "L2-vs-T1": {
+      "challenger": "L2",
+      "checks": {
+        "L2_burden_at_most_T1_plus_2": false,
+        "L2_cost_discount_at_least_15_percent": false,
+        "L2_nonworse_at_least_9": false,
+        "no_guardrail_regression_for_L2": false
+      },
+      "winner": "T1"
+    }
+  },
+  "opponent_context_drift": {
+    "DX": {
+      "comparisons": [
+        "DX-vs-L2",
+        "DX-vs-T1"
+      ],
+      "decision_differences": 21,
+      "differences": [
+        {
+          "DX-vs-L2": false,
+          "DX-vs-T1": true,
+          "case_id": "FT-02",
+          "criterion": "Set old-key access scope and owner.",
+          "field": "closure",
+          "item_id": "CL-2"
+        },
+        {
+          "DX-vs-L2": true,
+          "DX-vs-T1": false,
+          "case_id": "FT-03",
+          "criterion": "Provide an out-of-band notice or consent path for phone guests.",
+          "field": "must_cover",
+          "item_id": "MC-1"
+        },
+        {
+          "DX-vs-L2": true,
+          "DX-vs-T1": false,
+          "case_id": "FT-03",
+          "criterion": "Name the consent evidence owner.",
+          "field": "closure",
+          "item_id": "CL-4"
+        },
+        {
+          "DX-vs-L2": false,
+          "DX-vs-T1": true,
+          "case_id": "FT-03",
+          "criterion": "missed_hard_constraint",
+          "field": "critical_flags",
+          "item_id": "missed_hard_constraint"
+        },
+        {
+          "DX-vs-L2": false,
+          "DX-vs-T1": true,
+          "case_id": "FT-03",
+          "criterion": "no_decision_closure",
+          "field": "critical_flags",
+          "item_id": "no_decision_closure"
+        },
+        {
+          "DX-vs-L2": true,
+          "DX-vs-T1": false,
+          "case_id": "FT-04",
+          "criterion": "Separate queued pre-cutoff operations from post-cutoff legacy signing.",
+          "field": "must_cover",
+          "item_id": "MC-1"
+        },
+        {
+          "DX-vs-L2": true,
+          "DX-vs-T1": false,
+          "case_id": "FT-04",
+          "criterion": "Define pre-cutoff request eligibility.",
+          "field": "closure",
+          "item_id": "CL-2"
+        },
+        {
+          "DX-vs-L2": false,
+          "DX-vs-T1": true,
+          "case_id": "FT-04",
+          "criterion": "Set offline recovery and support behavior.",
+          "field": "closure",
+          "item_id": "CL-4"
+        },
+        {
+          "DX-vs-L2": true,
+          "DX-vs-T1": false,
+          "case_id": "FT-04",
+          "criterion": "no_decision_closure",
+          "field": "critical_flags",
+          "item_id": "no_decision_closure"
+        },
+        {
+          "DX-vs-L2": true,
+          "DX-vs-T1": false,
+          "case_id": "FT-05",
+          "criterion": "Define rollback and incident-closure evidence.",
+          "field": "closure",
+          "item_id": "CL-5"
+        },
+        {
+          "DX-vs-L2": true,
+          "DX-vs-T1": false,
+          "case_id": "FT-06",
+          "criterion": "Define customer-impact and fallback thresholds.",
+          "field": "closure",
+          "item_id": "CL-4"
+        },
+        {
+          "DX-vs-L2": false,
+          "DX-vs-T1": true,
+          "case_id": "FT-06",
+          "criterion": "no_decision_closure",
+          "field": "critical_flags",
+          "item_id": "no_decision_closure"
+        },
+        {
+          "DX-vs-L2": false,
+          "DX-vs-T1": true,
+          "case_id": "FT-08",
+          "criterion": "Set access owner and approval path.",
+          "field": "closure",
+          "item_id": "CL-3"
+        },
+        {
+          "DX-vs-L2": false,
+          "DX-vs-T1": true,
+          "case_id": "FT-09",
+          "criterion": "no_decision_closure",
+          "field": "critical_flags",
+          "item_id": "no_decision_closure"
+        },
+        {
+          "DX-vs-L2": false,
+          "DX-vs-T1": true,
+          "case_id": "FT-10",
+          "criterion": "Start or explicitly reject second-source work with an owner.",
+          "field": "must_cover",
+          "item_id": "MC-3"
+        },
+        {
+          "DX-vs-L2": true,
+          "DX-vs-T1": false,
+          "case_id": "FT-10",
+          "criterion": "Set the first purchase tranche.",
+          "field": "closure",
+          "item_id": "CL-1"
+        },
+        {
+          "DX-vs-L2": false,
+          "DX-vs-T1": true,
+          "case_id": "FT-10",
+          "criterion": "Define certification and demand gates.",
+          "field": "closure",
+          "item_id": "CL-2"
+        },
+        {
+          "DX-vs-L2": true,
+          "DX-vs-T1": false,
+          "case_id": "FT-11",
+          "criterion": "no_decision_closure",
+          "field": "critical_flags",
+          "item_id": "no_decision_closure"
+        },
+        {
+          "DX-vs-L2": false,
+          "DX-vs-T1": true,
+          "case_id": "FT-12",
+          "criterion": "Assign responsibility for delayed forwarding.",
+          "field": "must_cover",
+          "item_id": "MC-4"
+        },
+        {
+          "DX-vs-L2": false,
+          "DX-vs-T1": true,
+          "case_id": "FT-12",
+          "criterion": "Set gaming and customer-outcome checks.",
+          "field": "closure",
+          "item_id": "CL-4"
+        },
+        {
+          "DX-vs-L2": false,
+          "DX-vs-T1": true,
+          "case_id": "FT-12",
+          "criterion": "Define stop, revision, and compensation-entry criteria.",
+          "field": "closure",
+          "item_id": "CL-5"
+        }
+      ]
+    },
+    "L2": {
+      "comparisons": [
+        "DX-vs-L2",
+        "L2-vs-T1"
+      ],
+      "decision_differences": 31,
+      "differences": [
+        {
+          "DX-vs-L2": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-01",
+          "criterion": "Use an epoch or equivalent barrier for coupled changes.",
+          "field": "must_cover",
+          "item_id": "MC-4"
+        },
+        {
+          "DX-vs-L2": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-01",
+          "criterion": "Define isolation behavior for every class.",
+          "field": "closure",
+          "item_id": "CL-2"
+        },
+        {
+          "DX-vs-L2": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-01",
+          "criterion": "Define rollback and expansion evidence.",
+          "field": "closure",
+          "item_id": "CL-5"
+        },
+        {
+          "DX-vs-L2": false,
+          "L2-vs-T1": true,
+          "case_id": "FT-01",
+          "criterion": "Permitting coupled payment controls to advance or roll back independently.",
+          "field": "fatal_errors",
+          "item_id": "FE-2"
+        },
+        {
+          "DX-vs-L2": false,
+          "L2-vs-T1": true,
+          "case_id": "FT-01",
+          "criterion": "unsafe_irreversible_action",
+          "field": "critical_flags",
+          "item_id": "unsafe_irreversible_action"
+        },
+        {
+          "DX-vs-L2": false,
+          "L2-vs-T1": true,
+          "case_id": "FT-02",
+          "criterion": "Set old-key access scope and owner.",
+          "field": "closure",
+          "item_id": "CL-2"
+        },
+        {
+          "DX-vs-L2": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-02",
+          "criterion": "Define rollback and final retirement conditions.",
+          "field": "closure",
+          "item_id": "CL-5"
+        },
+        {
+          "DX-vs-L2": false,
+          "L2-vs-T1": true,
+          "case_id": "FT-02",
+          "criterion": "missed_hard_constraint",
+          "field": "critical_flags",
+          "item_id": "missed_hard_constraint"
+        },
+        {
+          "DX-vs-L2": false,
+          "L2-vs-T1": true,
+          "case_id": "FT-02",
+          "criterion": "no_decision_closure",
+          "field": "critical_flags",
+          "item_id": "no_decision_closure"
+        },
+        {
+          "DX-vs-L2": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-03",
+          "criterion": "Provide an out-of-band notice or consent path for phone guests.",
+          "field": "must_cover",
+          "item_id": "MC-1"
+        },
+        {
+          "DX-vs-L2": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-03",
+          "criterion": "Name the consent evidence owner.",
+          "field": "closure",
+          "item_id": "CL-4"
+        },
+        {
+          "DX-vs-L2": false,
+          "L2-vs-T1": true,
+          "case_id": "FT-03",
+          "criterion": "no_decision_closure",
+          "field": "critical_flags",
+          "item_id": "no_decision_closure"
+        },
+        {
+          "DX-vs-L2": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-04",
+          "criterion": "Define pre-cutoff request eligibility.",
+          "field": "closure",
+          "item_id": "CL-2"
+        },
+        {
+          "DX-vs-L2": false,
+          "L2-vs-T1": true,
+          "case_id": "FT-04",
+          "criterion": "Set offline recovery and support behavior.",
+          "field": "closure",
+          "item_id": "CL-4"
+        },
+        {
+          "DX-vs-L2": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-04",
+          "criterion": "no_decision_closure",
+          "field": "critical_flags",
+          "item_id": "no_decision_closure"
+        },
+        {
+          "DX-vs-L2": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-05",
+          "criterion": "Define rollback and incident-closure evidence.",
+          "field": "closure",
+          "item_id": "CL-5"
+        },
+        {
+          "DX-vs-L2": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-05",
+          "criterion": "no_decision_closure",
+          "field": "critical_flags",
+          "item_id": "no_decision_closure"
+        },
+        {
+          "DX-vs-L2": false,
+          "L2-vs-T1": true,
+          "case_id": "FT-06",
+          "criterion": "no_decision_closure",
+          "field": "critical_flags",
+          "item_id": "no_decision_closure"
+        },
+        {
+          "DX-vs-L2": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-07",
+          "criterion": "Evict serving caches and fence queued jobs.",
+          "field": "must_cover",
+          "item_id": "MC-2"
+        },
+        {
+          "DX-vs-L2": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-07",
+          "criterion": "Create cross-system completion evidence.",
+          "field": "must_cover",
+          "item_id": "MC-4"
+        },
+        {
+          "DX-vs-L2": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-07",
+          "criterion": "Specify completion evidence.",
+          "field": "closure",
+          "item_id": "CL-3"
+        },
+        {
+          "DX-vs-L2": false,
+          "L2-vs-T1": true,
+          "case_id": "FT-07",
+          "criterion": "missed_hard_constraint",
+          "field": "critical_flags",
+          "item_id": "missed_hard_constraint"
+        },
+        {
+          "DX-vs-L2": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-07",
+          "criterion": "no_decision_closure",
+          "field": "critical_flags",
+          "item_id": "no_decision_closure"
+        },
+        {
+          "DX-vs-L2": false,
+          "L2-vs-T1": true,
+          "case_id": "FT-08",
+          "criterion": "Exclude prohibited tenants before data leaves the request path.",
+          "field": "must_cover",
+          "item_id": "MC-1"
+        },
+        {
+          "DX-vs-L2": false,
+          "L2-vs-T1": true,
+          "case_id": "FT-08",
+          "criterion": "Define collection-time exclusions.",
+          "field": "closure",
+          "item_id": "CL-2"
+        },
+        {
+          "DX-vs-L2": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-08",
+          "criterion": "missed_hard_constraint",
+          "field": "critical_flags",
+          "item_id": "missed_hard_constraint"
+        },
+        {
+          "DX-vs-L2": false,
+          "L2-vs-T1": true,
+          "case_id": "FT-09",
+          "criterion": "no_decision_closure",
+          "field": "critical_flags",
+          "item_id": "no_decision_closure"
+        },
+        {
+          "DX-vs-L2": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-10",
+          "criterion": "Set the first purchase tranche.",
+          "field": "closure",
+          "item_id": "CL-1"
+        },
+        {
+          "DX-vs-L2": false,
+          "L2-vs-T1": true,
+          "case_id": "FT-10",
+          "criterion": "Define certification and demand gates.",
+          "field": "closure",
+          "item_id": "CL-2"
+        },
+        {
+          "DX-vs-L2": false,
+          "L2-vs-T1": true,
+          "case_id": "FT-11",
+          "criterion": "Name the critical-patch escalation owner.",
+          "field": "closure",
+          "item_id": "CL-4"
+        },
+        {
+          "DX-vs-L2": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-12",
+          "criterion": "no_decision_closure",
+          "field": "critical_flags",
+          "item_id": "no_decision_closure"
+        }
+      ]
+    },
+    "T1": {
+      "comparisons": [
+        "L2-vs-T1",
+        "DX-vs-T1"
+      ],
+      "decision_differences": 7,
+      "differences": [
+        {
+          "DX-vs-T1": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-01",
+          "criterion": "Define isolation behavior for every class.",
+          "field": "closure",
+          "item_id": "CL-2"
+        },
+        {
+          "DX-vs-T1": false,
+          "L2-vs-T1": true,
+          "case_id": "FT-02",
+          "criterion": "no_decision_closure",
+          "field": "critical_flags",
+          "item_id": "no_decision_closure"
+        },
+        {
+          "DX-vs-T1": false,
+          "L2-vs-T1": true,
+          "case_id": "FT-05",
+          "criterion": "Specify duplicate repair evidence.",
+          "field": "closure",
+          "item_id": "CL-3"
+        },
+        {
+          "DX-vs-T1": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-07",
+          "criterion": "no_decision_closure",
+          "field": "critical_flags",
+          "item_id": "no_decision_closure"
+        },
+        {
+          "DX-vs-T1": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-10",
+          "criterion": "Start or explicitly reject second-source work with an owner.",
+          "field": "must_cover",
+          "item_id": "MC-3"
+        },
+        {
+          "DX-vs-T1": false,
+          "L2-vs-T1": true,
+          "case_id": "FT-11",
+          "criterion": "Name the critical-patch escalation owner.",
+          "field": "closure",
+          "item_id": "CL-4"
+        },
+        {
+          "DX-vs-T1": true,
+          "L2-vs-T1": false,
+          "case_id": "FT-12",
+          "criterion": "no_decision_closure",
+          "field": "critical_flags",
+          "item_id": "no_decision_closure"
+        }
+      ]
+    }
+  },
+  "process_leaks": {
+    "DX": {
+      "count": 0,
+      "matches": []
+    },
+    "L2": {
+      "count": 0,
+      "matches": []
+    },
+    "T1": {
+      "count": 0,
+      "matches": []
+    }
+  },
+  "quality": {
+    "agreement": 0.923611,
+    "comparisons": {
+      "DX-vs-L2": {
+        "burden": {
+          "DX": 32,
+          "L2": 32
+        },
+        "guardrails": {
+          "fabricated_fact": {
+            "DX": 0,
+            "L2": 0
+          },
+          "fatal_errors": {
+            "DX": 0,
+            "L2": 0
+          },
+          "missed_hard_constraint": {
+            "DX": 1,
+            "L2": 3
+          },
+          "unsafe_irreversible_action": {
+            "DX": 0,
+            "L2": 0
+          }
+        },
+        "judge_preferences": {
+          "DX": 3,
+          "L2": 21,
+          "tie": 0
+        },
+        "left": "DX",
+        "left_better": 3,
+        "left_nonworse": 10,
+        "mean_score": {
+          "DX": 15.5,
+          "L2": 15.791667
+        },
+        "per_case": {
+          "FT-01": {
+            "DX": 3,
+            "L2": 3,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-02": {
+            "DX": 2,
+            "L2": 2,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-03": {
+            "DX": 1,
+            "L2": 3,
+            "outcome": "left_better",
+            "right_minus_left": 2
+          },
+          "FT-04": {
+            "DX": 3,
+            "L2": 3,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-05": {
+            "DX": 5,
+            "L2": 3,
+            "outcome": "right_better",
+            "right_minus_left": -2
+          },
+          "FT-06": {
+            "DX": 1,
+            "L2": 2,
+            "outcome": "left_better",
+            "right_minus_left": 1
+          },
+          "FT-07": {
+            "DX": 1,
+            "L2": 1,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-08": {
+            "DX": 1,
+            "L2": 4,
+            "outcome": "left_better",
+            "right_minus_left": 3
+          },
+          "FT-09": {
+            "DX": 2,
+            "L2": 2,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-10": {
+            "DX": 6,
+            "L2": 6,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-11": {
+            "DX": 1,
+            "L2": 1,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-12": {
+            "DX": 6,
+            "L2": 2,
+            "outcome": "right_better",
+            "right_minus_left": -4
+          }
+        },
+        "right": "L2",
+        "right_better": 2,
+        "right_burden_delta": 0,
+        "right_burden_reduction": 0.0,
+        "right_mean_score_delta": 0.291667,
+        "right_nonworse": 9,
+        "same": 7
+      },
+      "DX-vs-T1": {
+        "burden": {
+          "DX": 31,
+          "T1": 32
+        },
+        "guardrails": {
+          "fabricated_fact": {
+            "DX": 0,
+            "T1": 0
+          },
+          "fatal_errors": {
+            "DX": 0,
+            "T1": 0
+          },
+          "missed_hard_constraint": {
+            "DX": 2,
+            "T1": 2
+          },
+          "unsafe_irreversible_action": {
+            "DX": 0,
+            "T1": 0
+          }
+        },
+        "judge_preferences": {
+          "DX": 6,
+          "T1": 18,
+          "tie": 0
+        },
+        "left": "DX",
+        "left_better": 2,
+        "left_nonworse": 10,
+        "mean_score": {
+          "DX": 12.458333,
+          "T1": 11.708333
+        },
+        "per_case": {
+          "FT-01": {
+            "DX": 3,
+            "T1": 3,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-02": {
+            "DX": 1,
+            "T1": 1,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-03": {
+            "DX": 3,
+            "T1": 5,
+            "outcome": "left_better",
+            "right_minus_left": 2
+          },
+          "FT-04": {
+            "DX": 4,
+            "T1": 4,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-05": {
+            "DX": 6,
+            "T1": 4,
+            "outcome": "right_better",
+            "right_minus_left": -2
+          },
+          "FT-06": {
+            "DX": 2,
+            "T1": 2,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-07": {
+            "DX": 1,
+            "T1": 1,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-08": {
+            "DX": 0,
+            "T1": 2,
+            "outcome": "left_better",
+            "right_minus_left": 2
+          },
+          "FT-09": {
+            "DX": 2,
+            "T1": 2,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-10": {
+            "DX": 5,
+            "T1": 5,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-11": {
+            "DX": 1,
+            "T1": 1,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-12": {
+            "DX": 3,
+            "T1": 2,
+            "outcome": "right_better",
+            "right_minus_left": -1
+          }
+        },
+        "right": "T1",
+        "right_better": 2,
+        "right_burden_delta": 1,
+        "right_burden_reduction": -0.032258,
+        "right_mean_score_delta": -0.75,
+        "right_nonworse": 10,
+        "same": 8
+      },
+      "L2-vs-T1": {
+        "burden": {
+          "L2": 39,
+          "T1": 32
+        },
+        "guardrails": {
+          "fabricated_fact": {
+            "L2": 0,
+            "T1": 0
+          },
+          "fatal_errors": {
+            "L2": 1,
+            "T1": 0
+          },
+          "missed_hard_constraint": {
+            "L2": 4,
+            "T1": 2
+          },
+          "unsafe_irreversible_action": {
+            "L2": 1,
+            "T1": 0
+          }
+        },
+        "judge_preferences": {
+          "L2": 7,
+          "T1": 16,
+          "tie": 1
+        },
+        "left": "L2",
+        "left_better": 1,
+        "left_nonworse": 8,
+        "mean_score": {
+          "L2": 14.708333,
+          "T1": 14.875
+        },
+        "per_case": {
+          "FT-01": {
+            "L2": 7,
+            "T1": 4,
+            "outcome": "right_better",
+            "right_minus_left": -3
+          },
+          "FT-02": {
+            "L2": 2,
+            "T1": 1,
+            "outcome": "right_better",
+            "right_minus_left": -1
+          },
+          "FT-03": {
+            "L2": 5,
+            "T1": 5,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-04": {
+            "L2": 3,
+            "T1": 4,
+            "outcome": "left_better",
+            "right_minus_left": 1
+          },
+          "FT-05": {
+            "L2": 4,
+            "T1": 3,
+            "outcome": "right_better",
+            "right_minus_left": -1
+          },
+          "FT-06": {
+            "L2": 2,
+            "T1": 2,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-07": {
+            "L2": 4,
+            "T1": 1,
+            "outcome": "right_better",
+            "right_minus_left": -3
+          },
+          "FT-08": {
+            "L2": 2,
+            "T1": 2,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-09": {
+            "L2": 2,
+            "T1": 2,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-10": {
+            "L2": 6,
+            "T1": 6,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-11": {
+            "L2": 0,
+            "T1": 0,
+            "outcome": "same",
+            "right_minus_left": 0
+          },
+          "FT-12": {
+            "L2": 2,
+            "T1": 2,
+            "outcome": "same",
+            "right_minus_left": 0
+          }
+        },
+        "right": "T1",
+        "right_better": 4,
+        "right_burden_delta": -7,
+        "right_burden_reduction": 0.179487,
+        "right_mean_score_delta": 0.166667,
+        "right_nonworse": 11,
+        "same": 7
+      }
+    },
+    "opponent_stability": {
+      "DX": {
+        "burden_by_opponent": {
+          "DX-vs-L2": 32,
+          "DX-vs-T1": 31
+        },
+        "max_delta": 1,
+        "passed": true
+      },
+      "L2": {
+        "burden_by_opponent": {
+          "DX-vs-L2": 32,
+          "L2-vs-T1": 39
+        },
+        "max_delta": 7,
+        "passed": false
+      },
+      "T1": {
+        "burden_by_opponent": {
+          "DX-vs-T1": 32,
+          "L2-vs-T1": 32
+        },
+        "max_delta": 0,
+        "passed": true
+      }
+    },
+    "opponent_stability_passed": false
+  },
+  "selection": {
+    "champion": null,
+    "posthoc_default_basis": "Excluded the unstable candidate and used DX-vs-T1; this fallback was not preregistered.",
+    "posthoc_operational_default": "DX",
+    "verdict": "inconclusive-opponent-context-instability",
+    "wins": {}
+  },
+  "stage": "fresh-confirmation"
+}

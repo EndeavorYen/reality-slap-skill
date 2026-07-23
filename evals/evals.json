@@ -165,6 +165,55 @@
     "root_cause_note": "Generic self-evaluation increased reasoning and output work but rewrote away useful controls in one case. Luna questions surfaced a required customer-communication issue that the main model still omitted, exposing a discovery-to-disposition gap.",
     "claim_boundary": "Fresh four-case diagnostic screen with one generation sample per condition. It rejects the claimed large improvement but does not estimate a stable general effect size."
   },
+  "latest_final_question_swarm_tournament": {
+    "status": "live-complete",
+    "date": "2026-07-23",
+    "design": "twelve fresh cases, three frozen two-candidate matchups, and Sol-medium plus Terra-high checklist judges per matchup",
+    "conditions": {
+      "DX": "single direct Sol-xhigh Reality Slap decision",
+      "L2": "shared Sol-medium draft plus two isolated Luna-low question calls plus Sol-medium Reality Slap final",
+      "T1": "shared Sol-medium draft plus one isolated Terra-high question call plus Sol-medium Reality Slap final"
+    },
+    "result_json": "evals/final-tournament-2026-07-23.json",
+    "result_markdown": "evals/final-tournament-2026-07-23.md",
+    "case_bank": "evals/final-tournament-bank-2026-07-23.json",
+    "verdict": "inconclusive-opponent-context-instability",
+    "champion": null,
+    "posthoc_operational_default": "DX",
+    "checklist_agreement": 0.923611,
+    "match_burden": {
+      "DX_vs_L2": {"DX": 32, "L2": 32, "gate_winner": "DX"},
+      "L2_vs_T1": {"L2": 39, "T1": 32, "gate_winner": "T1"},
+      "DX_vs_T1": {"DX": 31, "T1": 32, "gate_winner": "DX"}
+    },
+    "opponent_stability": {
+      "DX": {"burdens": [32, 31], "max_delta": 1, "passed": true},
+      "L2": {"burdens": [32, 39], "max_delta": 7, "passed": false},
+      "T1": {"burdens": [32, 32], "max_delta": 0, "passed": true}
+    },
+    "item_decision_drift": {
+      "decision_count_per_candidate": 216,
+      "DX": 21,
+      "L2": 31,
+      "T1": 7
+    },
+    "end_to_end_credits": {
+      "DX": 45.2409,
+      "L2": 73.42629,
+      "T1": 79.444513
+    },
+    "reliability": {
+      "generation_calls": 84,
+      "generation_attempts": 84,
+      "generation_first_attempt_valid": 84,
+      "judge_calls": 72,
+      "judge_attempts": 78,
+      "judge_first_attempt_valid": 66,
+      "judge_cost_credits": 210.878763
+    },
+    "root_cause_note": "Pairwise preference, aggregate burden, and checklist identity diverged. L2 failed the preregistered opponent-context gate; aggregate stability for DX and T1 still hid offsetting item-level decision flips. Cheap Luna questions saved 35.8% at the challenger stage but only 7.6% end to end.",
+    "claim_boundary": "Fresh twelve-case internal confirmation with one generation sample per candidate. It did not produce a preregistered champion. DX is a post-hoc operational default after excluding L2, not a universal model ranking."
+  },
   "latest_live_ab": {
     "date": "2026-07-05",
     "workspace": "/tmp/reality-slap-full-decay-ab-20260705",

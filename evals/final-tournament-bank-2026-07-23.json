@@ -1,0 +1,798 @@
+{
+  "experiment_id": "final-question-swarm-tournament-20260723",
+  "seed": 20260727,
+  "cases": [
+    {
+      "case_id": "FT-01",
+      "title": "Regional feature flags during control-plane isolation",
+      "domain": "platform-architecture",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Runtime platform lead",
+        "objective": "Keep critical services operable during a feature-flag control-plane outage without allowing stale regional state to produce an unsafe split rollout.",
+        "facts": [
+          "Four regions cache flag values for fifteen minutes and then fail closed for flags marked safety-critical.",
+          "The flag service writes through one home region and replicates asynchronously with delays up to ninety seconds.",
+          "Two payment flags must change atomically across all regions, while most presentation flags may diverge temporarily.",
+          "Services currently cannot distinguish a deliberately pinned value from a cache value that merely expired.",
+          "A regional network isolation last quarter caused one region to roll back while three regions continued the new path."
+        ],
+        "decision_request": "Choose the consistency classes, isolation behavior, rollout cohort, and evidence required before expanding the new flag contract.",
+        "plausible_paths": [
+          "Require globally synchronous reads for every flag.",
+          "Introduce explicit flag classes with pinned regional fallbacks and atomic epochs for coupled safety flags.",
+          "Keep the current cache behavior and shorten time to live for every flag."
+        ],
+        "material_constraints": [
+          "Coupled payment flags cannot safely take different epochs.",
+          "The home region can be unreachable while local service traffic remains healthy.",
+          "Most flags do not justify a global request-path dependency.",
+          "Operators need to distinguish intentional pinning from stale cache state.",
+          "Rollback must not create another mixed epoch."
+        ],
+        "harmful_failure_paths": [
+          "One payment flag advances while its coupled flag remains on the old behavior.",
+          "A global flag dependency turns a control-plane outage into a four-region service outage."
+        ],
+        "incomplete_information": [
+          "The maximum business-safe duration for each noncritical flag class has not been agreed."
+        ],
+        "reversible_action": "Canary the classified contract on one non-payment service and replay regional isolation plus rollback."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Separate ordinary divergent flags from coupled safety-critical flags.",
+          "Provide a locally observable pinned or stale state during isolation.",
+          "Keep the flag control plane out of ordinary request availability.",
+          "Use an epoch or equivalent barrier for coupled changes.",
+          "Make rollback preserve the same consistency boundary as rollout."
+        ],
+        "acceptable_decision_families": [
+          "Classified flags with local pinned fallbacks, atomic epochs for coupled flags, and an isolation canary.",
+          "A narrow strongly coordinated safety class alongside locally available eventual classes."
+        ],
+        "fatal_errors": [
+          "Making every service request synchronously depend on the home flag region.",
+          "Permitting coupled payment controls to advance or roll back independently."
+        ],
+        "known_valid_insights": [
+          "Consistency should follow the coupling risk of the flag rather than one global policy."
+        ],
+        "decision_closure_requirements": [
+          "Name the first service and flag class.",
+          "Define isolation behavior for every class.",
+          "Specify the coupled-flag epoch owner.",
+          "Set divergence and stale-state stop thresholds.",
+          "Define rollback and expansion evidence."
+        ],
+        "reasoning_notes": "Reward a control-plane design that reserves coordination for true coupling and preserves local service availability."
+      }
+    },
+    {
+      "case_id": "FT-02",
+      "title": "Encryption-key rotation across archived restores",
+      "domain": "platform-architecture",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Storage security architect",
+        "objective": "Rotate a suspected storage encryption key without losing the ability to restore long-lived archives or extending normal trust indefinitely.",
+        "facts": [
+          "Production objects use envelope encryption and can be rewrapped without rewriting payloads.",
+          "Monthly archives are immutable for seven years and store encrypted data keys beside each object.",
+          "Restore workers fetch key metadata only when a restore starts.",
+          "The current master key is suspected of exposure but no misuse has been confirmed.",
+          "A full archive rewrap would take about eleven months at the available throughput."
+        ],
+        "decision_request": "Choose the rotation sequence, archive restore path, emergency revocation trigger, and completion evidence.",
+        "plausible_paths": [
+          "Disable the old key immediately and accept failed archive restores.",
+          "Rotate production now and use a bounded isolated archive decrypt-and-rewrap service.",
+          "Keep the old key generally enabled until all seven years of archives are rewrapped."
+        ],
+        "material_constraints": [
+          "Archived data must remain restorable for retention obligations.",
+          "The suspected key may need emergency revocation before rewrap completes.",
+          "Immutable archives cannot have payloads rewritten.",
+          "Restore workers currently assume ordinary key availability.",
+          "Completion cannot be inferred only from production-object rewrap counts."
+        ],
+        "harmful_failure_paths": [
+          "An emergency key disablement makes required archives permanently unreadable.",
+          "The suspected key remains broadly usable for years while background rewrap proceeds."
+        ],
+        "incomplete_information": [
+          "The number of archive restores that can tolerate a manual approval delay is unknown."
+        ],
+        "reversible_action": "Test an isolated approved restore flow against copied archive metadata while leaving the production restore path unchanged."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Separate production rotation from long-tail archive recovery.",
+          "Narrow old-key use to an isolated auditable restore boundary.",
+          "Define a viable response to confirmed misuse.",
+          "Validate restore behavior before disabling ordinary key access.",
+          "Measure archive recoverability rather than only rewrap progress."
+        ],
+        "acceptable_decision_families": [
+          "Immediate production rotation plus an isolated time-bounded legacy decrypt service and tested emergency recovery.",
+          "Cohort rewrap with approved archive restores, usage monitoring, and a confirmed-misuse kill path."
+        ],
+        "fatal_errors": [
+          "Disabling the only archive decryption path before recovery tests pass.",
+          "Leaving the suspected key available to ordinary workloads until the entire archive ages out."
+        ],
+        "known_valid_insights": [
+          "A narrow restore-only boundary can preserve recoverability without preserving general trust."
+        ],
+        "decision_closure_requirements": [
+          "Name the first production and archive cohorts.",
+          "Set old-key access scope and owner.",
+          "Define the confirmed-misuse trigger.",
+          "Specify restore and audit evidence.",
+          "Define rollback and final retirement conditions."
+        ],
+        "reasoning_notes": "Reward independent treatment of normal production trust and exceptional archive recoverability."
+      }
+    },
+    {
+      "case_id": "FT-03",
+      "title": "AI meeting summaries with uneven consent",
+      "domain": "product-launch",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Collaboration product lead",
+        "objective": "Test AI meeting summaries without surprising non-customer participants or making deletion promises the system cannot honor.",
+        "facts": [
+          "Enterprise hosts can enable recording, but external guests may join by phone without an account.",
+          "The summary model receives diarized transcript segments after the meeting ends.",
+          "Audio is deleted after seven days, while transcripts currently remain for ninety days.",
+          "Workspace administrators can export summaries but cannot yet export the underlying consent event.",
+          "The pilot customer wants automatic summaries for every sales call next month."
+        ],
+        "decision_request": "Choose the pilot cohort, notice and consent behavior, retention boundary, and expansion evidence.",
+        "plausible_paths": [
+          "Enable every sales call automatically under the host's workspace setting.",
+          "Run an explicit-notice opt-in pilot with bounded retention and auditable consent.",
+          "Delay all testing until every guest has a product account."
+        ],
+        "material_constraints": [
+          "Phone guests may not see in-product notice.",
+          "Transcript retention outlives audio retention.",
+          "Administrators need evidence of the consent state governing a summary.",
+          "A host preference does not communicate directly with every participant.",
+          "Deletion must cover transcript, summary, exports, and queued model work."
+        ],
+        "harmful_failure_paths": [
+          "A phone guest is summarized without receiving an effective notice or choice.",
+          "The product reports deletion while queued processing or exported summary data remains accessible."
+        ],
+        "incomplete_information": [
+          "The pilot customer's jurisdictions and required consent standard have not been classified."
+        ],
+        "reversible_action": "Run internal meetings with simulated phone guests and verify notice, refusal, deletion, and audit events end to end."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Provide an out-of-band notice or consent path for phone guests.",
+          "Avoid claiming a universal legal basis while classification is unresolved.",
+          "Align transcript and summary retention for the pilot.",
+          "Include queued work and exports in deletion evidence.",
+          "Make consent state exportable and auditable."
+        ],
+        "acceptable_decision_families": [
+          "A jurisdiction-bounded explicit opt-in pilot with phone notice, short retention, and deletion proof.",
+          "Internal validation followed by a narrow customer cohort only after consent classification and audit export work."
+        ],
+        "fatal_errors": [
+          "Treating the host setting as sufficient proof that every phone participant agreed.",
+          "Claiming complete erasure while model jobs or governed summary copies can still materialize."
+        ],
+        "known_valid_insights": [
+          "Participant reachability and lifecycle evidence are separate launch gates."
+        ],
+        "decision_closure_requirements": [
+          "Name the first meeting cohort.",
+          "Specify the phone-participant notice and refusal path.",
+          "Set pilot retention and deletion timing.",
+          "Name the consent evidence owner.",
+          "Define stop, rollback, and expansion criteria."
+        ],
+        "reasoning_notes": "Reward a useful narrow pilot that does not invent legal certainty or ignore non-account participants."
+      }
+    },
+    {
+      "case_id": "FT-04",
+      "title": "API deprecation with offline signed requests",
+      "domain": "product-launch",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Developer platform product manager",
+        "objective": "Retire an insecure API version without rejecting legitimate offline-signed requests or accepting replayed legacy operations indefinitely.",
+        "facts": [
+          "The old API signs requests without including the endpoint version in the signature.",
+          "Some field devices queue signed requests for up to fourteen days before reconnecting.",
+          "The new API includes a version and nonce but requires a firmware update.",
+          "Thirty-one percent of active devices have not checked in during the last week.",
+          "The gateway can translate payload shape but cannot safely manufacture a new device signature."
+        ],
+        "decision_request": "Choose the cutoff sequence, legacy queue treatment, replay protection, and completion evidence.",
+        "plausible_paths": [
+          "Reject every old-version request on the announced cutoff date.",
+          "Use a bounded drain window for pre-cutoff signed requests with an independent replay ledger.",
+          "Continue accepting old signatures until every device upgrades."
+        ],
+        "material_constraints": [
+          "Legitimate queued requests can arrive after the cutoff.",
+          "The old signature does not bind the request to one API version.",
+          "Payload translation does not upgrade authentication strength.",
+          "Long-offline devices need a recovery path.",
+          "The system must distinguish pre-cutoff work from newly replayed legacy requests."
+        ],
+        "harmful_failure_paths": [
+          "A replayed old signature remains valid throughout an unbounded migration.",
+          "The cutoff strands offline devices with no authenticated upgrade or recovery route."
+        ],
+        "incomplete_information": [
+          "The distribution of business-critical operations in long-delayed queues is unknown."
+        ],
+        "reversible_action": "Shadow-classify old signed requests by signing time, device, and nonce surrogate before enforcing any rejection."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Separate queued pre-cutoff operations from post-cutoff legacy signing.",
+          "Use durable replay detection across gateway retries.",
+          "Avoid presenting payload translation as signature migration.",
+          "Provide a recovery path for long-offline devices.",
+          "Define retirement evidence beyond recent check-in rate."
+        ],
+        "acceptable_decision_families": [
+          "A bounded authenticated drain with replay ledger, firmware cohorts, and offline recovery.",
+          "Shadow classification followed by staged cutoff of new legacy signatures while honoring verified queued work."
+        ],
+        "fatal_errors": [
+          "Accepting all old signatures until every device eventually reconnects.",
+          "Rejecting delayed devices without an authenticated path to obtain the new firmware or credential."
+        ],
+        "known_valid_insights": [
+          "A drain window is safe only if it distinguishes previously authorized work from fresh replay."
+        ],
+        "decision_closure_requirements": [
+          "Name the first device cohort.",
+          "Define pre-cutoff request eligibility.",
+          "Specify replay-ledger ownership and retention.",
+          "Set offline recovery and support behavior.",
+          "Define stop, rollback, and final cutoff evidence."
+        ],
+        "reasoning_notes": "Reward staged authentication retirement that closes replay risk without assuming all work is online."
+      }
+    },
+    {
+      "case_id": "FT-05",
+      "title": "Dual-write rollback during account backfill",
+      "domain": "operations-incidents",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Data migration incident commander",
+        "objective": "Resume a paused account-store migration without losing writes or treating a partial backfill rollback as data recovery.",
+        "facts": [
+          "The new store has received dual writes for six days and contains ninety-four percent of accounts.",
+          "A retry bug created duplicate address records for about 0.4 percent of migrated accounts.",
+          "The old store remains the read source, but one background worker reads from the new store.",
+          "Dual-write failures are logged asynchronously and may be delayed by twenty minutes.",
+          "The backfill cursor can restart, but it does not record the source version read for each account."
+        ],
+        "decision_request": "Choose containment, repair, resume criteria, and rollback evidence.",
+        "plausible_paths": [
+          "Delete the new store and restart the migration from zero.",
+          "Freeze affected writers, reconcile by version, repair duplicates, and resume a bounded cohort.",
+          "Continue backfill because the old store remains the primary read path."
+        ],
+        "material_constraints": [
+          "One production worker already consumes new-store state.",
+          "Delayed dual-write logs do not prove current parity.",
+          "A cursor restart can overwrite newer destination state with older source data.",
+          "Duplicate repair must preserve legitimate repeated addresses.",
+          "Rollback must account for writes accepted only by one store."
+        ],
+        "harmful_failure_paths": [
+          "A restarted backfill silently replaces newer destination changes with stale source versions.",
+          "Operators declare rollback while the background worker continues acting on corrupted new-store records."
+        ],
+        "incomplete_information": [
+          "The number of dual writes accepted only by the new store is not yet known."
+        ],
+        "reversible_action": "Pause the background consumer and replay a small version-aware reconciliation sample without applying mutations."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Contain every reader and writer that touches the new store.",
+          "Reconcile source and destination using version or equivalent causality.",
+          "Account for delayed and one-sided dual writes.",
+          "Repair duplicates using domain identity rather than row count.",
+          "Separate a logical rollback claim from deleting destination data."
+        ],
+        "acceptable_decision_families": [
+          "Full consumer containment followed by version-aware reconciliation and a small resume canary.",
+          "Keep the destination isolated, build a write ledger, repair deterministically, then resume only after parity evidence."
+        ],
+        "fatal_errors": [
+          "Restarting the cursor without protecting destination updates that are newer than the source snapshot.",
+          "Calling the incident rolled back while a production consumer still uses the affected destination."
+        ],
+        "known_valid_insights": [
+          "When both stores can accept unique writes, deleting one side is not automatically rollback."
+        ],
+        "decision_closure_requirements": [
+          "Name all contained readers and writers.",
+          "Define the reconciliation identity and version rule.",
+          "Specify duplicate repair evidence.",
+          "Set resume cohort and stop thresholds.",
+          "Define rollback and incident-closure evidence."
+        ],
+        "reasoning_notes": "Reward causal reconciliation and full containment over simplistic restart or delete actions."
+      }
+    },
+    {
+      "case_id": "FT-06",
+      "title": "Alert suppression during dependency flapping",
+      "domain": "operations-incidents",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Site reliability incident lead",
+        "objective": "Reduce paging noise from a flapping dependency without hiding customer-impacting failures or making the dependency team the sole detector.",
+        "facts": [
+          "A third-party identity endpoint has flapped for twenty minutes on four mornings this week.",
+          "Twenty-seven services emit individual pages even though most requests retry successfully.",
+          "Three services cannot retry because they perform interactive device authorization.",
+          "The vendor status feed has reported incidents between eight and thirty minutes after internal detection.",
+          "The paging system can group alerts by dependency but has no current customer-impact signal."
+        ],
+        "decision_request": "Choose suppression scope, fallback signals, ownership, and exit criteria.",
+        "plausible_paths": [
+          "Mute every alert mentioning the identity vendor for one hour.",
+          "Group retry-tolerant alerts while preserving independent impact pages and synthetic checks.",
+          "Leave all pages unchanged until the vendor permanently fixes the endpoint."
+        ],
+        "material_constraints": [
+          "Three services have direct user impact without retry protection.",
+          "Vendor status is delayed and cannot be the only trigger.",
+          "Grouping must not erase service-specific saturation or fallback failures.",
+          "Suppression state needs an owner and automatic expiry.",
+          "Customer-impact telemetry is not yet uniformly available."
+        ],
+        "harmful_failure_paths": [
+          "A broad mute hides failure of the interactive authorization path.",
+          "Operators wait for the vendor feed while internal synthetic checks already show impact."
+        ],
+        "incomplete_information": [
+          "The fraction of retried requests that later fail at the business-operation level is unknown."
+        ],
+        "reversible_action": "Apply grouping only to two retry-tolerant services for one incident window while retaining raw events and synthetic alerts."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Exclude non-retrying interactive services from broad suppression.",
+          "Retain independent internal detection rather than relying on vendor status.",
+          "Preserve visibility into fallback and saturation failures.",
+          "Give suppression an expiry and named owner.",
+          "Collect business-impact evidence before expansion."
+        ],
+        "acceptable_decision_families": [
+          "A small grouping canary for retry-tolerant services with preserved synthetic and impact signals.",
+          "Dependency-level deduplication plus service escape hatches, expiry, and raw-event retention."
+        ],
+        "fatal_errors": [
+          "Muting all vendor-related pages including services with no functional retry path.",
+          "Using the delayed vendor status page as the sole signal that an internal incident exists."
+        ],
+        "known_valid_insights": [
+          "Noise reduction is safe only when an independent impact path survives aggregation."
+        ],
+        "decision_closure_requirements": [
+          "Name the first grouped services.",
+          "List alerts that remain unsuppressed.",
+          "Set expiry and ownership.",
+          "Define customer-impact and fallback thresholds.",
+          "Specify rollback and expansion criteria."
+        ],
+        "reasoning_notes": "Reward targeted aggregation with surviving independent detection and explicit expiry."
+      }
+    },
+    {
+      "case_id": "FT-07",
+      "title": "Consent withdrawal for derived voice embeddings",
+      "domain": "data-privacy-security",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Privacy engineering lead",
+        "objective": "Honor voice-feature consent withdrawal across raw clips and derived embeddings without claiming that aggregate models can be selectively untrained today.",
+        "facts": [
+          "Users may opt in to speaker recognition and later withdraw consent.",
+          "Raw clips are stored for thirty days, while per-user embeddings persist until account deletion.",
+          "A shared acoustic model was fine-tuned quarterly using a mixture of opted-in clips.",
+          "The serving cache can retain an embedding for up to six hours after the database row is deleted.",
+          "The current audit log records deletion requests but not cache eviction or training-set membership."
+        ],
+        "decision_request": "Choose withdrawal semantics, cache and pipeline controls, user communication, and completion evidence.",
+        "plausible_paths": [
+          "Promise immediate removal from every current and historical model.",
+          "Stop future use, delete user-specific artifacts and caches, and disclose bounded aggregate-model limits.",
+          "Keep all embeddings until account deletion because the user originally opted in."
+        ],
+        "material_constraints": [
+          "User-specific embeddings and shared model parameters have different removal properties.",
+          "Serving caches can outlive the database delete.",
+          "Queued training jobs may already reference clips.",
+          "The audit trail cannot currently prove pipeline-wide completion.",
+          "Product wording must not invent selective unlearning capability."
+        ],
+        "harmful_failure_paths": [
+          "Recognition continues from a cache after withdrawal is recorded complete.",
+          "The product promises selective historical untraining that the pipeline cannot perform."
+        ],
+        "incomplete_information": [
+          "Policy has not defined whether the next shared-model refresh is sufficient treatment for prior aggregate contribution."
+        ],
+        "reversible_action": "Test withdrawal on internal identities with delayed cache eviction and a queued training job."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Separate deletion of user-specific artifacts from aggregate-model treatment.",
+          "Evict serving caches and fence queued jobs.",
+          "Avoid unsupported claims about historical untraining.",
+          "Create cross-system completion evidence.",
+          "Provide a truthful user-visible withdrawal outcome."
+        ],
+        "acceptable_decision_families": [
+          "Immediate future-use stop with artifact and cache deletion, job fencing, and explicit aggregate-model limits.",
+          "A staged withdrawal contract with auditable serving shutdown now and governed shared-model refresh treatment."
+        ],
+        "fatal_errors": [
+          "Reporting withdrawal complete while the serving cache can still identify the user.",
+          "Guaranteeing removal from every historical model without a mechanism capable of providing it."
+        ],
+        "known_valid_insights": [
+          "A truthful withdrawal contract distinguishes identifiable artifacts from diffuse aggregate influence."
+        ],
+        "decision_closure_requirements": [
+          "Define the immediate serving effect.",
+          "Name cache and training-pipeline owners.",
+          "Specify completion evidence.",
+          "State the aggregate-model limitation to users.",
+          "Set rollout, stop, and correction criteria."
+        ],
+        "reasoning_notes": "Reward concrete future-use prevention and honest limits rather than impossible erasure claims."
+      }
+    },
+    {
+      "case_id": "FT-08",
+      "title": "Cross-tenant telemetry during rare incident diagnosis",
+      "domain": "data-privacy-security",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Security observability owner",
+        "objective": "Diagnose a rare multi-tenant failure without turning emergency telemetry into unbounded cross-tenant data access.",
+        "facts": [
+          "The failure occurs about once per ten million requests and has not reproduced in staging.",
+          "Existing logs contain tenant identifiers but omit request payload fragments needed to distinguish two parser paths.",
+          "Engineers propose a seven-day one-percent payload capture across all tenants.",
+          "The logging platform supports tenant-specific encryption keys but not field-level retention policies.",
+          "Two regulated tenants have contracts that prohibit payload logging."
+        ],
+        "decision_request": "Choose capture scope, access controls, retention, and evidence for ending or expanding the diagnostic.",
+        "plausible_paths": [
+          "Capture one percent of payloads from every tenant for seven days.",
+          "Use eligible-tenant sampling with parser-path fingerprints and break-glass access.",
+          "Wait for the defect to reproduce in staging before collecting any new evidence."
+        ],
+        "material_constraints": [
+          "Two tenants cannot be included in payload capture.",
+          "The event is too rare for a tiny undirected sample to guarantee evidence.",
+          "The logging platform lacks field-specific deletion.",
+          "Cross-tenant access requires auditable purpose limitation.",
+          "The diagnostic must have an automatic end condition."
+        ],
+        "harmful_failure_paths": [
+          "Contract-prohibited tenant payloads enter the diagnostic store.",
+          "A temporary capture remains enabled after the incident question is answered."
+        ],
+        "incomplete_information": [
+          "It is unknown whether parser fingerprints alone can distinguish the failing path."
+        ],
+        "reversible_action": "Replay synthetic payloads to validate fingerprints, then canary encrypted capture on one eligible internal tenant."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Exclude prohibited tenants before data leaves the request path.",
+          "Test lower-content fingerprints before broad payload collection.",
+          "Use purpose-bound access with audit and tenant-aware encryption.",
+          "Compensate for the platform's coarse retention capability.",
+          "Set automatic expiry and evidence-based expansion."
+        ],
+        "acceptable_decision_families": [
+          "Fingerprint-first diagnosis followed by a small eligible-tenant encrypted capture with break-glass access.",
+          "A contract-filtered canary using isolated storage, whole-object expiry, and a specific diagnostic stop condition."
+        ],
+        "fatal_errors": [
+          "Sampling payloads before enforcing the regulated-tenant exclusion at collection time.",
+          "Enabling emergency cross-tenant capture without an expiry or named evidence question."
+        ],
+        "known_valid_insights": [
+          "When deletion granularity is coarse, isolation and whole-object expiry become primary controls."
+        ],
+        "decision_closure_requirements": [
+          "Name the first eligible cohort.",
+          "Define collection-time exclusions.",
+          "Set access owner and approval path.",
+          "Specify retention and automatic expiry.",
+          "Define diagnostic success, stop, and rollback."
+        ],
+        "reasoning_notes": "Reward minimum necessary evidence with enforceable exclusions and an expiring diagnostic contract."
+      }
+    },
+    {
+      "case_id": "FT-09",
+      "title": "Managed database migration with weak exit tooling",
+      "domain": "vendor-business-strategy",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Infrastructure strategy director",
+        "objective": "Reduce database operations burden without committing critical workloads to a provider before exit and recovery paths are proven.",
+        "facts": [
+          "The managed service would reduce projected operations staffing by three engineers.",
+          "It supports continuous export, but exports omit provider-specific access policies and scheduled jobs.",
+          "The proposed three-year discount requires moving sixty percent of spend within nine months.",
+          "One critical workload uses an extension available only in the provider's premium tier.",
+          "The current self-hosted fleet has passed two regional recovery exercises this year."
+        ],
+        "decision_request": "Choose commitment scope, migration sequence, exit proof, and negotiation conditions.",
+        "plausible_paths": [
+          "Sign the full discount and migrate the critical workload first.",
+          "Negotiate a smaller commitment and migrate portable workloads after an exit rehearsal.",
+          "Keep every workload self-hosted for the entire three-year period."
+        ],
+        "material_constraints": [
+          "Data export alone does not recreate policies or scheduled jobs.",
+          "The discount threshold creates schedule pressure before proof.",
+          "The premium extension increases both cost and technical dependence.",
+          "Recovery evidence for the managed service is not yet available.",
+          "A failed exit could outlast the staffing savings."
+        ],
+        "harmful_failure_paths": [
+          "The company commits most spend before it can reconstruct exported workloads elsewhere.",
+          "The first migration uses the least portable workload and makes the pilot hard to reverse."
+        ],
+        "incomplete_information": [
+          "The provider has not agreed to assistance or timing guarantees for a bulk exit."
+        ],
+        "reversible_action": "Migrate one portable noncritical workload and restore its export into an independent environment."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Treat policies and scheduled jobs as part of portability.",
+          "Avoid using the provider-specific extension as the first proof workload.",
+          "Tie commitment growth to tested recovery and exit evidence.",
+          "Include contractual exit assistance in negotiation.",
+          "Compare staffing savings with concentration and recovery cost."
+        ],
+        "acceptable_decision_families": [
+          "A smaller staged commitment with portable workload canaries and independent restores.",
+          "A time-bounded managed-service pilot whose expansion depends on full-stack exit rehearsal and contract terms."
+        ],
+        "fatal_errors": [
+          "Signing the majority-spend commitment before any independent restoration of a migrated workload.",
+          "Using the provider-only extension workload as the supposedly reversible first migration."
+        ],
+        "known_valid_insights": [
+          "Exit proof must recreate operational policy, not just copy table data."
+        ],
+        "decision_closure_requirements": [
+          "Name the first portable workload.",
+          "Set the initial commitment ceiling.",
+          "Define full-stack exit evidence.",
+          "List required contract protections.",
+          "Set expansion, stop, and rollback conditions."
+        ],
+        "reasoning_notes": "Reward staged economic commitment that follows technical exit evidence."
+      }
+    },
+    {
+      "case_id": "FT-10",
+      "title": "Component prebuy under uncertain certification",
+      "domain": "vendor-business-strategy",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Hardware supply-chain lead",
+        "objective": "Protect a product launch from component shortages without prebuying inventory that cannot be used if certification slips.",
+        "facts": [
+          "The sole qualified radio module has a twenty-six-week lead time.",
+          "The supplier offers allocation only with a noncancelable order for twelve months of forecast demand.",
+          "The product has not completed regional radio certification.",
+          "A second module could be qualified in sixteen weeks but requires a board revision.",
+          "Forecast demand ranges from forty thousand to one hundred ten thousand units."
+        ],
+        "decision_request": "Choose purchase volume, second-source work, certification gates, and downside controls.",
+        "plausible_paths": [
+          "Prebuy the high forecast immediately to guarantee launch supply.",
+          "Secure a staged allocation with option-like tranches while starting second-source qualification.",
+          "Wait for certification before ordering any module."
+        ],
+        "material_constraints": [
+          "The proposed order is noncancelable.",
+          "Certification delay can make early inventory unusable for the launch window.",
+          "The second source requires engineering capacity and a board change.",
+          "Demand uncertainty is wider than the supplier's commitment flexibility.",
+          "Launch supply and long-term supplier concentration are different risks."
+        ],
+        "harmful_failure_paths": [
+          "The company owns a year of unusable modules after certification or schedule changes.",
+          "A minimal first order preserves cash but leaves no credible path through the supplier lead time."
+        ],
+        "incomplete_information": [
+          "The supplier has not stated whether deposits can reserve later production slots without fixing final volume."
+        ],
+        "reversible_action": "Negotiate and price a small certification batch plus later tranches before signing the annual order."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Separate certification batch needs from full demand commitment.",
+          "Price downside across the forecast range.",
+          "Start or explicitly reject second-source work with an owner.",
+          "Seek commercial flexibility before treating the offered order as fixed.",
+          "Tie later volume to certification and demand evidence."
+        ],
+        "acceptable_decision_families": [
+          "A small noncancelable tranche plus conditional allocation and immediate second-source qualification.",
+          "A negotiated option or deposit structure with certification gates and capped exposure."
+        ],
+        "fatal_errors": [
+          "Committing to the high annual forecast before certification and without a reuse or resale path.",
+          "Waiting for final certification without reserving any capacity or developing an alternate source."
+        ],
+        "known_valid_insights": [
+          "The valuable negotiation target is production-slot access without premature volume certainty."
+        ],
+        "decision_closure_requirements": [
+          "Set the first purchase tranche.",
+          "Define certification and demand gates.",
+          "Name the second-source owner and deadline.",
+          "Specify maximum stranded-inventory exposure.",
+          "Define negotiation fallback and decision date."
+        ],
+        "reasoning_notes": "Reward real-option thinking that buys schedule protection while bounding irreversible inventory."
+      }
+    },
+    {
+      "case_id": "FT-11",
+      "title": "Automated code fixes in a shared repository",
+      "domain": "organization-process",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Developer productivity lead",
+        "objective": "Use automated code fixes to reduce maintenance toil without allowing a central bot to bypass service ownership or silently widen production risk.",
+        "facts": [
+          "A bot can generate dependency and lint fixes for eighty repositories.",
+          "Twenty repositories have reliable integration tests, while twelve have no active owner.",
+          "The bot currently opens pull requests but does not merge them.",
+          "Security wants critical patch latency below forty-eight hours.",
+          "Some repositories deploy automatically when a change reaches the default branch."
+        ],
+        "decision_request": "Choose automation tiers, approval ownership, orphan-repository handling, and expansion evidence.",
+        "plausible_paths": [
+          "Enable automatic merge for every bot pull request that passes available tests.",
+          "Use risk tiers with bounded auto-merge only for well-owned, well-tested low-risk changes.",
+          "Keep the bot advisory-only in every repository."
+        ],
+        "material_constraints": [
+          "Passing available tests means little in repositories with weak coverage.",
+          "Default-branch merge can be a production deployment.",
+          "Orphan repositories lack an accountable approver.",
+          "Critical security latency needs an escalation path.",
+          "Dependency updates can change runtime behavior despite small diffs."
+        ],
+        "harmful_failure_paths": [
+          "The bot merges into an auto-deploying orphan repository based on an empty or weak test suite.",
+          "A blanket manual policy leaves critical fixes waiting without an accountable escalation owner."
+        ],
+        "incomplete_information": [
+          "The fraction of generated dependency fixes that require runtime configuration changes is unknown."
+        ],
+        "reversible_action": "Canary auto-merge on owned libraries with strong tests and no automatic production deployment."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Distinguish patch generation from merge and deployment authority.",
+          "Require ownership and meaningful test evidence for any auto-merge tier.",
+          "Treat orphan repositories as a governance defect, not a low-friction target.",
+          "Provide a bounded critical-security escalation path.",
+          "Separate low-risk lint fixes from behavior-changing dependencies."
+        ],
+        "acceptable_decision_families": [
+          "Risk-tiered automation with a narrow library canary and human control over production-impacting changes.",
+          "Fast bot generation everywhere, bounded auto-merge only in owned nondeploying repositories, and explicit security escalation."
+        ],
+        "fatal_errors": [
+          "Auto-merging into unowned repositories merely because all existing checks are green.",
+          "Treating every dependency update as equivalent to a behavior-free formatting change."
+        ],
+        "known_valid_insights": [
+          "Faster patch generation does not require granting the same system universal merge authority."
+        ],
+        "decision_closure_requirements": [
+          "Define the first eligible repository cohort.",
+          "Set ownership and test thresholds.",
+          "Specify excluded change classes.",
+          "Name the critical-patch escalation owner.",
+          "Define rollback, stop, and expansion evidence."
+        ],
+        "reasoning_notes": "Reward useful low-risk automation while preserving ownership at high-impact boundaries."
+      }
+    },
+    {
+      "case_id": "FT-12",
+      "title": "Shared response-time metric across sales and support",
+      "domain": "organization-process",
+      "subset": "reserve",
+      "public": {
+        "decision_owner": "Customer operations vice president",
+        "objective": "Improve enterprise response speed without rewarding superficial acknowledgements or causing sales and support to hide transfers.",
+        "facts": [
+          "Enterprise customers complain that ownership is unclear during urgent issues.",
+          "Leadership proposes a shared metric of first response within fifteen minutes.",
+          "Sales can acknowledge quickly but usually cannot diagnose technical issues.",
+          "Support currently measures time to qualified triage and time to resolution.",
+          "Transfers between teams are not represented in the customer success dashboard."
+        ],
+        "decision_request": "Choose the shared metric, ownership handoff, pilot cohort, and evidence for incentive expansion.",
+        "plausible_paths": [
+          "Pay both teams on fifteen-minute first response for every enterprise issue.",
+          "Pilot a paired acknowledgement and qualified-ownership metric with visible transfers.",
+          "Keep separate team metrics and make no shared customer measure."
+        ],
+        "material_constraints": [
+          "A fast acknowledgement may not create accountable technical ownership.",
+          "Sales should not be rewarded for delaying transfer after replying.",
+          "Support cannot control when sales forwards an issue.",
+          "Transfer visibility is missing from current reporting.",
+          "Incentives can change classification and channel behavior."
+        ],
+        "harmful_failure_paths": [
+          "Teams optimize acknowledgements while customers still wait without a qualified owner.",
+          "Transfers or issue reclassification disappear from measurement and make the target look healthy."
+        ],
+        "incomplete_information": [
+          "The baseline relationship between acknowledgement speed and customer outcome is unknown."
+        ],
+        "reversible_action": "Run the paired metric as a noncompensated dashboard for one enterprise segment and audit transfers."
+      },
+      "adjudication": {
+        "must_cover_constraints": [
+          "Separate acknowledgement from qualified ownership.",
+          "Make handoff time and transfer count visible.",
+          "Avoid compensation before gaming and outcome relationships are measured.",
+          "Assign responsibility for delayed forwarding.",
+          "Include customer outcome or resolution evidence."
+        ],
+        "acceptable_decision_families": [
+          "A shadow dashboard combining acknowledgement, qualified ownership, transfer quality, and customer outcome.",
+          "A narrow noncompensated pilot with explicit handoff clocks before any shared incentive."
+        ],
+        "fatal_errors": [
+          "Paying on acknowledgement speed alone while ignoring whether a qualified owner accepts the issue.",
+          "Launching a shared incentive while cross-team transfers remain invisible to the metric."
+        ],
+        "known_valid_insights": [
+          "The metric should reward transfer into accountable ownership, not merely the first message."
+        ],
+        "decision_closure_requirements": [
+          "Name the pilot segment.",
+          "Define acknowledgement and qualified ownership separately.",
+          "Specify transfer instrumentation and owner.",
+          "Set gaming and customer-outcome checks.",
+          "Define stop, revision, and compensation-entry criteria."
+        ],
+        "reasoning_notes": "Reward a shadow incentive pilot that measures the full handoff rather than a cosmetically fast first touch."
+      }
+    }
+  ]
+}

@@ -206,6 +206,45 @@ or inspect the [machine-readable result](evals/self-eval-pilot-2026-07-23.json).
 This rejects the claimed large improvement on four fresh cases; it is not a
 stable general effect-size estimate.
 
+### Final cost/quality tournament
+
+A fresh twelve-case round robin compared the three remaining command designs:
+direct Sol-xhigh with Reality Slap (DX), a shared Sol-medium draft plus two
+Luna-low question calls and Sol-medium final (L2), and the same pipeline with
+one Terra-high question call (T1). The 36 candidate answers were frozen before
+72 two-candidate blind judge calls.
+
+| Match | Defect burden | Judge preference | Gate winner |
+|---|---:|---:|---|
+| DX vs L2 | 32 vs 32 | 3 vs 21 | DX |
+| L2 vs T1 | 39 vs 32 | 7 vs 16, 1 tie | T1 |
+| DX vs T1 | 31 vs 32 | 6 vs 18 | DX |
+
+The preregistered tournament had **no valid champion**. L2's identical answers
+received burden 32 against DX and 39 against T1, failing the opponent-context
+stability gate. Even stable aggregate totals concealed item swaps: individual
+checklist decisions changed across opponents 21/216 times for DX, 31/216 for
+L2, and 7/216 for T1. High within-match agreement (92.4%) therefore did not
+make the ranking context-independent.
+
+The practical default is nevertheless DX, explicitly as a post-hoc operating
+choice rather than a tournament victory. It cost 45.240900 credits versus
+73.426290 for L2 and 79.444513 for T1. L2 questions were 35.8% cheaper than T1
+questions, but L2 was only 7.6% cheaper end to end because the Sol draft and
+final dominated cost. Neither pipeline demonstrated lower defect burden than
+DX. T1 remains an opt-in premium challenge mode; L2 is removed from the
+production shortlist.
+
+Forced preference was not a safety metric: judges strongly preferred L2 and T1
+over DX while checklist burden and guardrail counts did not improve. Future
+offline evaluation should require item-level anchor stability, not merely a
+stable aggregate defect total.
+
+[Read the final tournament report](evals/final-tournament-2026-07-23.md) or
+inspect the [machine-readable result](evals/final-tournament-2026-07-23.json).
+This is one internal fresh holdout with one generation sample per candidate; it
+does not establish a universal model ranking.
+
 ### Same-model roleplay remains limited
 
 In the same-model roleplay pilot, Reality Slap improved boundary completeness
